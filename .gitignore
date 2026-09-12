@@ -1,0 +1,46 @@
+# --- Secrets (anayasa §2.2, §15) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials*.json
+
+# --- WordPress çekirdek yapılandırma (makineye özel, secret içerir) ---
+wp-config.php
+wp-config-*.php
+
+# --- Uploads / cache ---
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+cache/
+.cache/
+
+# --- Yedekler ve üretim DB dökümleri (anayasa §8.3: siteden ayrı konumda) ---
+*.sql
+*.sql.gz
+*.dump
+*.bak
+backups/
+*.backup
+
+# --- Node / PHP bağımlılıkları ---
+node_modules/
+vendor/
+
+# --- Dispatch: çalışma logları ignore, report'lar (out-*.md) KANIT olarak takip edilir ---
+dispatch/run-*.log
+.hermes/dispatch/tmp*
+
+# --- OS / editör artıkları ---
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
