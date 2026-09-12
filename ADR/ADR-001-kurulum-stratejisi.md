@@ -3,7 +3,7 @@
 - Durum: TASLAK — SAHİP ONAYI BEKLENİYOR (OWNER_APPROVAL_REQUIRED)
 - Tarih: 2026-09-12. Sahip: @architect.
 - Bu bir KARAR DEĞİLDİR. Hosting/domain/bütçe girdileri gelmeden (PROJECT_INPUTS.md §Domain ve altyapı tümü NEEDS_OWNER_INPUT) kurulum yöntemi taahhüdü verilemez (anayasa §0.2).
-- Sürüm notu: PHP/WordPress/WooCommerce sürüm bilgisi P6 çıkışından gelir; `docs/architecture/version-lock.md` henüz yok, bu ADR sürüm bağımsız yazılmıştır.
+- Sürüm notu: Sürüm kilidi P6'dan geldi: `docs/architecture/version-lock.md` (WP 7.1 / WC 11.1.0 / PHP 8.4, 2026-09-12 doğrulama). Kurulum anında version-lock §6 tekrar doğrulama kapısı geçerli.
 
 ## Bağlam
 Faz 1 (anayasa §13) gereği: Git + local/staging/production ayrımı, kararlı sürümler, SSL, e-posta teslimatı, sistem cron, cache, yedek, restore testi. Hosting gereksinimleri P3'te `docs/architecture/hosting-requirements.md` olarak kilitlendi. Salih'in hosting/domain/bütçe girdisi yok. Hedef: AI ajanının tekrarlanabilir, geri alınabilir iş yapması (§0.6 akışı) ve sürüm kilidi/yedek/staging izolasyonunun §8.1–8.3 ile uyumu.

@@ -2,7 +2,7 @@
 
 > Belge türü: MİMARİ ŞEMA TASLAĞI. KARAR DEĞİL — ADR-001 (SAHİP ONAYI BEKLENİYOR) kapısı kapanmadan kurulum taahhüdü yok (anayasa §0.2).
 > Kaynak: anayasa §0.6, §2.2, §3.3, §4.2, §7, §8, §9; docs/architecture/hosting-requirements.md (P3). Sahip: @architect. Tarih: 2026-09-12.
-> Sürüm notu: Sürüm değerleri P6'dan gelir (`docs/architecture/version-lock.md` henüz yok).
+> Sürüm notu: Sürüm değerleri P6 çıktısından gelir: `docs/architecture/version-lock.md` (WP 7.1 / WC 11.1.0 / PHP 8.4, 2026-09-12 doğrulama). Kurulum anında bu belgenin §6 tekrar doğrulama kapısı geçerlidir.
 
 ## 1. Ortam şeması
 
