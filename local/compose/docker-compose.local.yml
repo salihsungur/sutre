@@ -1,0 +1,70 @@
+# docker-compose.local.yml — LOCAL-ONLY compose iskeleti
+#
+# DURUM: ADR-001 KARAR BEKLEMEDE (TASLAK / OWNER_APPROVAL_REQUIRED).
+# Bu dosya, ADR-001'de TAVSİYE B (Docker Compose self-host) seçilirse kullanılacak
+# local geliştirme iskeletidir. A seçilirse staging/local referans şablon olarak kalır.
+# ADR-001 onaysız HİÇBİR kurulum taahhüdü içermez — anayasa §0.2, §0.6.
+#
+# Kapsam: yalnız local geliştirme. Staging/production compose DEĞİLDİR.
+# - Tüm port exposure'ları 127.0.0.1'e bağlı (dışarıya kapalı).
+# - Adminer/phpMyAdmin gibi yan araç YOK (anayasa §3.2 minimal eklenti ilkesi).
+# - Sürüm kilidi: docs/architecture/version-lock.md (WP 7.1 / WC 11.1.0 / PHP 8.4).
+#   Kurulum anında version-lock §6 tekrar doğrulama kapısı geçerlidir.
+# - MariaDB 10.11: WordPress resmî gereksinimiyle (MariaDB 10.11+) uyum (version-lock §5 kayıt 6).
+# - Secret DEĞERİ BU DOSYADA YOKTUR; tüm değerler .env'den gelir (anayasa §4.2, §3.3).
+#   .env dosyası Git dışıdır (kök .gitignore: .env.*), yalnız .env.example takip edilir.
+# - LOCAL stack'e canlı secret veya production veri kopyalanmaz (anayasa §7).
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: brand-local-db
+    restart: "no"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    # Local-only: DB portunu host'a hiç açmıyoruz; yalnız iç ağ (wp servis erişimi).
+    # Gerekirse geçici debug için aşağıdaki satırı AÇIP tekrar KAPATIN:
+    # ports:
+    #   - "127.0.0.1:3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    image: wordpress:7.1-php8.4-apache
+    container_name: brand-local-wp
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
+      WORDPRESS_CONFIG_EXTRA: |
+        $wp_env = getenv('WP_ENV') ?: 'local';
+        define('WP_ENV', $wp_env);
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('DISALLOW_FILE_EDIT', true);
+        define('DISABLE_WP_CRON', true);
+    volumes:
+      - wp_data:/var/www/html
+      # Proje kodu (tema/core plugin) host'tan bağlanır; wp-content/uploads cache volume'de kalır.
+      # Not: kök repo layout'una göre bağlama noktası local stack çalıştırma paketinde ayarlanır.
+
+volumes:
+  db_data:
+  wp_data:
