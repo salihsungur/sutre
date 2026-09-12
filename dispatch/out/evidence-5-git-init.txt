@@ -1,0 +1,47 @@
+KANIT: PAKET 5 — Faz 1/1 Git Deposu Kurulumu
+Tarih: 2026-09-12 (Europe/Istanbul)
+Komutlar: /opt/data/workspace/proje altında çalıştırıldı.
+
+$ git status  (init ÖNCESİ)
+fatal: not a git repository (or any parent up to mount point /opt)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+
+$ git init -b main
+Initialized empty Git repository in /opt/data/workspace/proje/.git/
+
+$ git log --oneline
+10f261e chore: dispatch altyapısı ve git kuralları
+01c0e6b docs: proje anayasası ve Faz 0 girdi/envanter dosyaları
+
+$ git branch -a
+  dev
+* main
+  staging
+
+$ git status
+On branch main
+nothing to commit, working tree clean
+
+$ git status --ignored --short
+!! dispatch/run-pack-1-project-inputs.log
+!! dispatch/run-pack-2-privacy-legal.log
+!! dispatch/run-pack-3-threat-hosting.log
+!! dispatch/run-pack-4-agents-update.log
+!! dispatch/run-pack-5-git-init.log
+
+Commit 1 içeriği (8 dosya):
+AGENTS.md, PRIVACY-DATA-MAP.md, PROJECT_INPUTS.md, SECURITY.md,
+WOOCOMMERCE_PAYTR_AI_PROJE_ANAYASASI.md,
+docs/architecture/hosting-requirements.md,
+docs/integrations/paytr-readiness.md,
+docs/legal-placeholders/README.md
+
+Commit 2 içeriği (10 dosya):
+.gitignore,
+dispatch/pack-1..5-*.md (5 dosya),
+dispatch/out/out-1..4-*.md (4 dosya)
+
+Notlar:
+- run-*.log dosyaları .gitignore ile ignore edildi (!! işaretli).
+- dispatch/pack-*.md ve dispatch/out/out-*.md iş geçmişi/kanıt olarak takip ediliyor.
+- Remote eklenmedi; remote seçimi OWNER_APPROVAL_REQUIRED.
