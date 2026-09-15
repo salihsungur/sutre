@@ -1,0 +1,33 @@
+# KANIT — PAKET 20 (Faz 2/4): Sutre Child Theme Full Redesign
+Tarih: 2026-09-15 · yazan: @coder · sahibin yetki verbali: 2026-09-15 (Playwriter+Brave, GitHub)
+
+## 1. Diskte üretilen dosyalar (write_file verified:true kanıtı)
+- theme/sutre-child/style.css        (child header: Template: twentytwentyfive; palet değişkenleri --sutre-bone/ink/ink-soft/silk/marine/whisper; touch 44px; logo mobil 36px)
+- theme/sutre-child/main.css         (mobil-first komponent CSS; desktop ≥782px media query; tabular padding 16px; WCAG focus-visible silk)
+- theme/sutre-child/fonts.css        (Google Fonts CDN fallback family notları + .sutre-ornament)
+- theme/sutre-child/functions.php    (enqueue Cormorant Garamond 300-700 + Jost 300-600, preconnect; WC theme support; Login block'a DOKUNMAZ; no-payment notice Türkçe)
+- theme/sutre-child/page-templates/home.php            ("Deniz ve dokumanın zarafeti" hero; SUTRE logo; Şal & Foulard tagline; Giyim→Kadın→Şal breadcrumb)
+- theme/sutre-child/page-templates/shop-page.php       (2 sütun grid mobil / 4 desktop; ADR-003 kategori butonları; [products] shortcode)
+- theme/sutre-child/page-templates/product-detail.php  (single-product akışı; 44px sepete ekleme)
+- theme/sutre-child/block-templates/checkout.html      (P17 kuralı: Login block korunur — şablon Yorum içinde belgeli; remove koşullu yok)
+- docs/operations/smtp-setup.md      (Brevo signup; WP Mail SMTP 587 TLS; wp-config env yolu; firewall PORT587 testi; SECRET_REFERENCE_ONLY)
+
+## 2. Git kanıtı
+- Commit: 6821a0976a3b44724002930d843f8e901976840b "feat(theme): Sutre child theme full redesign (Cormorant/Jost/palet/Türkçe/mobil-first)"
+- Push origin main SOLO (pipe olarak cPanel Update from Remote sadece SAHİP elle): commit SHA aşağıda.
+- Push ssh config: /opt/data/home/.ssh/config "github-sutre" alias + sutre_deploy key.
+
+## 3. Playwriter (Sahibin Brave) — CANLI test kanıtı
+- version endpoint: {"version":"0.6.0"} HTTP 200 aracılığıyla (host.docker.internal:19988, PLAYWRITER_TOKEN çalıştı)
+- Session 3 üzerinden canlı navigasyon başarılı.Screenshot dosyaya yazılamadı: extension bağlantısı düştü; b64 çıkışı CLI 10K limitine takıldı.
+- → Screenshot kanıtı sahibin elle alınacak (Brave Playwriter ekran kaydı veya WP-admin export)
+Ekran görüntüsü denemesi: "X".repeat(15000) testi yalnız 10.071 char döndü — Playwriter CLI console çıktı limiti 10K.
+
+## 4. Kapanmamış / sahibin elle yapacakları
+- (a) cPanel → Git Version Control → "Update from Remote" → WP-admin → Sutre Child temasını aktive et → /, /shop, /checkout kontrol
+- (b) Sahibin Playwriter ikonu Brave'de tıkla → tekrar screenshot testi yapılır
+- (c) SMTP Kılavuzunda sahibin kapları — Brevo alan doğrulama, DKIM/SPF/DMARC
+- (d) Login block P17 koruma öneleme: checkout.html DOĞRUDAN korur (dosya içinde).
+
+## 5. Rollback adımı
+- cPanel:  'Sutre Child' temasını deactivate → Twenty Twenty-Five aktive et; git revert 6821a09 ve "Update from Remote".
