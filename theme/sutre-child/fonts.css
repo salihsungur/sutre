@@ -1,0 +1,18 @@
+/**
+ * Sutre Child — fonts.css
+ * Not: Yük aslında functions.php içindeki <link href="fonts.googleapis.com/..."> ile yapılır (preconnect ile).
+ * Bu dosya font-family fallback tanımları + isteğe bağlı Great Vibes ornament sınıfı içerir.
+ */
+
+@font-face {
+	/* Local fallback gerekmez; Google Fonts CDN yüklenemezse sistem serif'e düşer */
+	font-display: swap;
+}
+
+.sutre-ornament {
+	font-family: 'Cormorant Garamond', Georgia, serif;
+	font-style: italic;
+	color: var(--sutre-silk, #C9A66B);
+}
+
+/* vb. ön yüklemesiz sınıflar — kit §4 CDN linki authoritative */

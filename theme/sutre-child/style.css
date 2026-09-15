@@ -1,0 +1,150 @@
+/*
+Theme Name: Sutre Child
+Theme URI: https://sutre.store
+Description: Sutre şal markası için Twenty Twenty-Five child theme — Cormorant Garamond + Jost, Sutre paleti (Bone/Ink/Silk/Marine/Whisper), %100 Türkçe içerik, mobile-first (anayasa §9).
+Author: Sutre (AI-built, PAKET 20)
+Template: twentytwentyfive
+Version: 1.0.0
+Requires at least: 6.7
+Tested up to: 7.1
+Requires PHP: 8.2
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: sutre-child
+Tags: e-commerce, woocommerce, mobile-first, luxury, serif
+*/
+
+/* ============================================================
+   SUTRE PALETİ (CSS custom properties — design-system.md §3)
+   ============================================================ */
+:root {
+	--sutre-bone:      #F5F2EC;  /* Sayfa zemini (krem) */
+	--sutre-ink:       #1A1A1A;  /* Başlık / ana metin / logo */
+	--sutre-ink-soft:  #3A3A3A;  /* Body metin */
+	--sutre-silk:      #C9A66B;  /* Hover, ayırıcı, CTA vurgusu */
+	--sutre-marine:    #1B3A4B;  /* Sekundör buton, footer */
+	--sutre-whisper:   #B8B4AC;  /* Alt metin, meta, kategori */
+	--sutre-white:     #FFFFFF;  /* Kart yüzeyi */
+
+	--sutre-font-serif: 'Cormorant Garamond', Georgia, serif;
+	--sutre-font-sans:  'Jost', 'Helvetica Neue', Arial, sans-serif;
+
+	--sutre-tracking: 0.08em;
+	--sutre-touch: 44px;       /* Mobil dokunma hedefi (§9) */
+	--sutre-logo-mobile: 36px; /* 32–40px aralığında logo */
+	--sutre-tab-pad: 16px;     /* Mobil tablo/kart padding */
+}
+
+/* ============================================================
+   TEMEL
+   ============================================================ */
+body,
+.wp-site-blocks {
+	background-color: var(--sutre-bone);
+	color: var(--sutre-ink-soft);
+	font-family: var(--sutre-font-sans);
+	font-weight: 300;
+	font-size: 16px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4,
+.wp-block-heading {
+	font-family: var(--sutre-font-serif);
+	color: var(--sutre-ink);
+	font-weight: 400;
+	line-height: 1.2;
+}
+
+a { color: var(--sutre-ink); }
+a:hover { color: var(--sutre-silk); }
+
+/* Mobil'de swash'li büyük başlık sadeleşir (kit §6) */
+.site-logo,
+.custom-logo { max-height: var(--sutre-logo-mobile); width: auto; }
+
+/* ============================================================
+   TİPOGRAFİ ROLLERİ (kit §4.1)
+   ============================================================ */
+.sutre-hero-title {
+	font-family: var(--sutre-font-serif);
+	font-weight: 400;
+	font-size: clamp(28px, 7vw, 40px); /* mobil 28–32, desktop 40 */
+	letter-spacing: 0.02em;
+}
+
+.sutre-section-title {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-size: clamp(18px, 4vw, 24px);
+}
+
+.sutre-product-title {
+	font-family: var(--sutre-font-sans);
+	font-weight: 400;
+	font-size: 17px;
+	letter-spacing: 0.01em;
+}
+
+.sutre-price,
+.sutre-sku {
+	font-family: var(--sutre-font-sans);
+	font-weight: 400;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   BUTONLAR / CTA — Jost 500/600 uppercase, ≥44px dokunma
+   ============================================================ */
+.button,
+.wp-block-button__link,
+.wc-block-components-button,
+.woocommerce-button {
+	min-height: var(--sutre-touch);
+	min-width: var(--sutre-touch);
+	padding: 10px 22px;
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: var(--sutre-tracking);
+	border-radius: 0;
+	transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.button {
+	background-color: var(--sutre-ink);
+	color: var(--sutre-white);
+	border: 1px solid var(--sutre-ink);
+}
+.button:hover { background-color: var(--sutre-silk); border-color: var(--sutre-silk); color: var(--sutre-ink); }
+
+.button-secondary,
+.woocommerce-button.button.alt {
+	background: transparent;
+	color: var(--sutre-marine);
+	border: 1px solid var(--sutre-marine);
+}
+.button-secondary:hover { background: var(--sutre-marine); color: var(--sutre-white); }
+
+/* ============================================================
+   FORM ELEMANLARI
+   ============================================================ */
+input[type="text"], input[type="email"], input[type="tel"],
+input[type="password"], input[type="search"], textarea, select {
+	font-family: var(--sutre-font-sans);
+	font-size: 16px; /* iOS zoom'u engellemek için <16px olmaz */
+	padding: 11px 14px;
+	min-height: var(--sutre-touch);
+	background: var(--sutre-white);
+	border: 1px solid var(--sutre-whisper);
+	border-radius: 0;
+	color: var(--sutre-ink);
+}
+input:focus, textarea:focus, select:focus {
+	outline: 2px solid var(--sutre-silk);
+	outline-offset: 1px;
+}
+label { font-weight: 400; color: var(--sutre-ink); }

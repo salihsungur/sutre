@@ -1,0 +1,163 @@
+/* ============================================================
+   SUTRE CHILD — main.css (PAKET 20, Faz 2/4)
+   Mobile-first bileşen stili. Desktop üstü media query ile ekleme yapılır.
+   Zemin: krem (bone); kartlar beyaz; vurgu silk altını.
+   ============================================================ */
+
+/* ---------- HEADER / NAV ---------- */
+.sutre-header {
+	background: var(--sutre-bone);
+	border-bottom: 1px solid rgba(184, 180, 172, .45);
+	padding: 12px var(--sutre-tab-pad);
+}
+.sutre-header__brand {
+	font-family: var(--sutre-font-serif);
+	font-weight: 600;
+	font-size: var(--sutre-logo-mobile);
+	letter-spacing: 0.14em;      /* geniş tracking, lüks kodu */
+	color: var(--sutre-ink);
+	text-transform: uppercase;
+	line-height: 1;
+}
+.sutre-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+.sutre-nav a {
+	display: flex; align-items: center;
+	min-height: var(--sutre-touch);
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 15px;
+	letter-spacing: var(--sutre-tracking);
+	text-transform: uppercase;
+	color: var(--sutre-ink);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(184, 180, 172, .25);
+}
+.sutre-nav a:hover { color: var(--sutre-silk); }
+
+/* Mobilde nav kapanır (details/summary veya checkbox hack saf CSS) */
+.sutre-nav-toggle { display: block; }
+.sutre-nav-toggle summary {
+	list-style: none; cursor: pointer;
+	min-height: var(--sutre-touch); min-width: var(--sutre-touch);
+	display: flex; align-items: center; justify-content: center;
+}
+.sutre-nav-toggle[open] ~ .sutre-nav { display: block; }
+
+/* ---------- HERO (Ana Sayfa) ---------- */
+.sutre-hero {
+	padding: 48px var(--sutre-tab-pad) 40px;
+	background: var(--sutre-bone);
+	text-align: center;
+}
+.sutre-hero__logo {
+	font-family: var(--sutre-font-serif);
+	font-weight: 400;
+	font-size: clamp(40px, 11vw, 56px);
+	letter-spacing: 0.16em;
+	color: var(--sutre-ink);
+	line-height: 1;
+}
+.sutre-hero__tagline {
+	font-family: var(--sutre-font-sans);
+	font-weight: 300;
+	font-size: 15px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--sutre-whisper);
+	margin-top: 14px;
+}
+.sutre-hero__heading {
+	margin-top: 32px;
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	font-size: clamp(26px, 6.4vw, 38px);
+	color: var(--sutre-ink);
+}
+
+/* ---------- KATEGORİ SEKMELERİ (Giyim → Kadın → Şal, ADR-003) ---------- */
+.sutre-cat-table,
+table.variations, table.shop_table {
+	width: 100%;
+	border-collapse: collapse;
+	font-variant-numeric: tabular-nums;
+}
+.sutre-cat-table td, .sutre-cat-table th,
+table.shop_table td, table.shop_table th {
+	padding: var(--sutre-tab-pad);
+	border-bottom: 1px solid rgba(184, 180, 172, .3);
+	text-align: left;
+}
+.sutre-cat-table .sutre-cat-breadcrumb {
+	font-family: var(--sutre-font-sans);
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sutre-whisper);
+}
+.sutre-cat-breadcrumb .sep { color: var(--sutre-silk); padding: 0 6px; }
+
+/* ---------- ÜRÜN KARTI (Shop grid, mobil 2 sütun) ---------- */
+.sutre-products,
+ul.products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 0; padding: 0; }
+.sutre-product-card,
+ul.products li.product {
+	background: var(--sutre-white);
+	padding-bottom: var(--sutre-tab-pad);
+	text-align: center;
+	border: 1px solid rgba(184, 180, 172, .22);
+}
+.sutre-product-card img { width: 100%; height: auto; display: block; }
+.sutre-product-card .sutre-product-title { margin-top: 10px; color: var(--sutre-ink); text-decoration: none; display: block; min-height: 22px; }
+.sutre-product-card .sutre-price { color: var(--sutre-ink-soft); font-size: 15px; margin-top: 4px; }
+.sutre-product-card .sutre-price del { color: var(--sutre-whisper); }
+.sutre-product-card .sutre-price ins { text-decoration: none; color: var(--sutre-silk); }
+
+/* ---------- ÜRÜN DETAY ---------- */
+.sutre-product-detail .product_title {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	font-size: clamp(22px, 5.6vw, 28px);
+	color: var(--sutre-ink);
+}
+.sutre-product-detail .price { color: var(--sutre-ink); font-size: 20px; font-variant-numeric: tabular-nums; }
+.sutre-product-detail .woocommerce-product-details__short-description {
+	color: var(--sutre-ink-soft); font-size: 15px; line-height: 1.6;
+}
+.sutre-product-detail .variations label { font-weight: 400; text-transform: uppercase; font-size: 12px; letter-spacing: 0.08em; color: var(--sutre-whisper); }
+
+/* ---------- FOOTER ---------- */
+.sutre-footer {
+	background: var(--sutre-marine);
+	color: rgba(255,255,255,.85);
+	padding: 40px var(--sutre-tab-pad) 28px;
+	margin-top: 48px;
+}
+.sutre-footer a { color: rgba(255,255,255,.85); text-decoration: none; min-height: var(--sutre-touch); display: inline-flex; align-items: center; }
+.sutre-footer a:hover { color: var(--sutre-silk); }
+.sutre-footer__title {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500; font-size: 22px;
+	letter-spacing: 0.14em; color: #fff; text-transform: uppercase;
+}
+.sutre-footer ul { list-style: none; padding: 0; margin: 0; font-size: 14px; line-height: 2; }
+.sutre-footer__legal { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 24px; border-top: 1px solid rgba(255,255,255,.15); padding-top: 14px; }
+
+/* ============================================================
+   DESKTOP (≥782px) — minimal ekleme, mobil düzen korunur
+   ============================================================ */
+@media (min-width: 782px) {
+	.sutre-header { padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+	.sutre-nav ul { flex-direction: row; gap: 32px; }
+	.sutre-nav a { min-height: 40px; border-bottom: none; }
+	.sutre-nav-toggle { display: none !important; }
+	.sutre-hero { padding: 88px 40px 72px; }
+	.sutre-products, ul.products { grid-template-columns: repeat(4, 1fr); gap: 24px; }
+	.sutre-footer { padding: 56px 40px 32px; }
+	.sutre-footer__cols { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+}
+
+/* WCAG 2.2 AA: görünür focus */
+a:focus-visible, button:focus-visible, summary:focus-visible {
+	outline: 2px solid var(--sutre-silk);
+	outline-offset: 2px;
+}
