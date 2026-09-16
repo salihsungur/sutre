@@ -148,3 +148,97 @@ input:focus, textarea:focus, select:focus {
 	outline-offset: 1px;
 }
 label { font-weight: 400; color: var(--sutre-ink); }
+
+/* ============================================================
+   P21 — MARKA HERO ANA SAYFA (design-system.md §5, §7)
+   H1 "Sutre" (Cormorant Garamond), Türkçe tagline,
+   Silk accent CTA → /shop/. Mobil-first, 44×44 dokunma.
+   ============================================================ */
+.sutre-hero {
+	position: relative;
+	padding: 56px var(--sutre-tab-pad) 48px;
+	background: var(--sutre-bone);
+	text-align: center;
+}
+
+/* H1: marka adı, serif glifler + geniş tracking (kit §1.3 — lüks kodu) */
+.sutre-hero__logo {
+	font-family: var(--sutre-font-serif);
+	font-weight: 400;
+	font-size: clamp(40px, 11vw, 64px);
+	letter-spacing: 0.16em;
+	text-transform: none;             /* "Sutre" — kit şartı: serif glifler */
+	margin: 0;
+	color: var(--sutre-ink);
+	line-height: 1.1;
+}
+
+/* Tagline: Türkçe, tek satır mobilde; whisper alt metin rengi */
+.sutre-hero__tagline {
+	font-family: var(--sutre-font-sans);
+	font-weight: 300;
+	font-size: clamp(15px, 4.2vw, 18px);
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--sutre-whisper);
+	margin: 16px auto 0;
+	max-width: 22em;
+	line-height: 1.55;
+}
+
+/* CTA blok: Silk accent vurgu — /shop/ yoluna bağlar */
+.sutre-hero__cta {
+	margin-top: 32px;
+	display: flex;
+	justify-content: center;
+}
+.sutre-hero__cta-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--sutre-touch);   /* 44px dokunma hedefi (§9) */
+	min-width: 176px;
+	padding: 12px 32px;
+	box-sizing: border-box;
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: var(--sutre-tracking);
+	text-decoration: none;
+	color: var(--sutre-ink);
+	background: transparent;
+	border: 1px solid var(--sutre-silk);
+	border-radius: 0;
+	transition: background-color .2s ease, color .2s ease;
+}
+.sutre-hero__cta-button:hover,
+.sutre-hero__cta-button:focus-visible { background: var(--sutre-silk); color: var(--sutre-white); }
+
+/* Mobil: hero glifler sade küçülür; tagline satır kesilme riski düşük */
+@media (max-width: 781px) {
+	.sutre-hero { padding: 44px var(--sutre-tab-pad) 40px; }
+	.sutre-hero__logo { font-size: clamp(38px, 12vw, 48px); letter-spacing: 0.14em; }
+	.sutre-hero__cta-button { width: min(100% - 32px, 320px); }
+}
+
+/* Desktop: hero nefes alanı büyür, glifler ekran boyutuna göre büyür */
+@media (min-width: 782px) {
+	.sutre-hero { padding: 120px 40px 96px; }
+	.sutre-hero__logo { font-size: clamp(56px, 7vw, 88px); }
+	.sutre-hero__tagline { font-size: 18px; margin-top: 20px; }
+	.sutre-hero__cta { margin-top: 40px; }
+	.sutre-hero__cta-button { min-width: 200px; }
+}
+
+/* WCAG 2.2 AA klavye focus'u */
+.sutre-hero__cta-button:focus-visible {
+	outline: 2px solid var(--sutre-silk);
+	outline-offset: 3px;
+}
+
+/* Baskı / ekran nedeniyle koşullu — serif gliflerde harf-boyu uyarısı */
+@media (prefers-reduced-motion: reduce) {
+	.sutre-hero__cta-button { transition: none; }
+}
+

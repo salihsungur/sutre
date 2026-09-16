@@ -2,8 +2,9 @@
 /**
  * Template Name: Sutre Ana Sayfa
  * Template Post Type: page
- * PAKET 20 — Mobil-first ana sayfa: hero + kategori girişleri.
- * İçerik %100 Türkçe; logo/tagline design-system.md'den.
+ * PAKET 21 (Faz 2/5) — Marka Hero ana sayfası.
+ * İçerik %100 Türkçe; tipografi/palet design-system.md'den (§3, §4, §7).
+ * Kategori bölümü (Giyim → Kadın → Şal) ADR-003 onaylı akış; bot dokunmaz.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -12,17 +13,13 @@ get_header(); // Twenty Twenty-Five header'ı (blok) devralınır.
 ?>
 
 <main class="sutre-home">
-	<section class="sutre-hero" aria-label="Giriş">
-		<h1 class="sutre-hero__logo">SUTRE</h1>
-		<p class="sutre-hero__tagline">Şal &amp; Foulard</p>
-		<h2 class="sutre-hero__heading">Deniz ve dokumanın zarafeti</h2>
-		<p class="sutre-hero__desc">
-			Elle dokunan şallar; kumaş denizden, tasarım zarafetten doğar.
-			Sezonluk koleksiyon mağazamızda sizi bekliyor.
-		</p>
-		<p>
-			<a class="button" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
-		</p>
+	<section class="sutre-hero" aria-label="Sutre giriş">
+		<h1 class="sutre-hero__logo">Sutre</h1>
+		<p class="sutre-hero__tagline">Deniz ve dokumanın zarafeti</p>
+
+		<div class="sutre-hero__cta">
+			<a class="sutre-hero__cta-button" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
+		</div>
 	</section>
 
 	<section class="sutre-cats" aria-label="Kategoriler">
