@@ -64,6 +64,41 @@ function sutre_child_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'sutre_child_enqueue_assets' );
 
 /**
+ * PAKET 22 — Header/footer tekilleştirme stilleri (parts/override.css).
+ * Anayasa §3.1: tema görüntü stilidir; iş mantığı içermez.
+ *
+ * @return void
+ */
+function sutre_child_enqueue_parts_override() {
+	wp_enqueue_style(
+		'sutre-child-parts-override',
+		get_stylesheet_directory_uri() . '/parts/override.css',
+		array( 'sutre-child-main' ),
+		sutre_child_asset_version( 'parts/override.css' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'sutre_child_enqueue_parts_override', 20 );
+
+/**
+ * PAKET 22 — "Sutre Staging" → "Sutre" görüntü çift dili.
+ * ANAYASA NOTU: gerçek kalıcı çözüm Sahibin WP-admin → Settings → General
+ * → Site Title alanını elle "Sutre" yapmasıdır (NEEDS_OWNER_INPUT, 2026-09-17).
+ * Aşağıdaki filter YALNIZCA sahibin elle düzeltmesini tamamlayana kadar
+ * görüntüde "Staging" sonekini temizler; DB değeri değiştirilmez.
+ *
+ * @param string $name Site adı.
+ * @return string
+ */
+function sutre_child_clean_site_title( $name ) {
+	if ( is_admin() ) {
+		return $name; // Admin'de gerçek DB değeri görünür — sahibin elle düzeltmesi için.
+	}
+	return preg_replace( '/\s*Staging\b/u', '', (string) $name );
+}
+add_filter( 'option_blogname', 'sutre_child_clean_site_title' );
+add_filter( 'the_title', 'sutre_child_clean_site_title' );
+
+/**
  * Tema desteği. Editör + blok şablonları aktif; checkout.html blok şablonu
  * (block-templates/) yalnızca WooCommerce checkout wrapper'ını devralır;
  * P17 kuralı: Checkout sayfasındaki Login block SAHİBİN sayfa içeriğinde kalır,

@@ -1,0 +1,118 @@
+/* ============================================================
+   SUTRE CHILD — parts/override.css (PAKET 22, Faz 2/6)
+   Header/footer tekilleştirme stilleri (kit §3, §4, §6).
+   parts/header.html + parts/footer.html blok markup'ının
+   mobil-first stili. Sayfalar arası aynı üst ibare garantisi.
+   ============================================================ */
+
+/* ---------- HEADER (tek satır: marka + 3 link) ---------- */
+.sutre-header {
+	background: var(--sutre-bone);
+	border-bottom: 1px solid rgba(184, 180, 172, .45);
+	padding: 12px var(--sutre-tab-pad);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.sutre-header__brand {
+	font-family: var(--sutre-font-serif);
+	font-weight: 600;
+	font-size: clamp(26px, 7.5vw, 40px);
+	letter-spacing: 0.14em;
+	color: var(--sutre-ink);
+	text-transform: uppercase;
+	line-height: 1;
+	text-decoration: none;
+}
+.sutre-header__brand a { color: inherit; text-decoration: none; }
+
+.sutre-nav ul {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+}
+.sutre-nav .wp-block-navigation-item__content,
+.sutre-nav a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: var(--sutre-touch);
+	min-height: var(--sutre-touch);
+	padding: 0 8px;
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 14px;
+	letter-spacing: var(--sutre-tracking);
+	text-transform: uppercase;
+	color: var(--sutre-ink);
+	text-decoration: none;
+}
+.sutre-nav a:hover,
+.sutre-nav a:focus { color: var(--sutre-silk); }
+
+.sutre-nav .wp-block-navigation-item + .wp-block-navigation-item { border-left: 1px solid rgba(184, 180, 172, .35); }
+.sutre-nav .wp-block-navigation-item .link-active,
+.sutre-nav .sutre-nav .current-menu-item a { color: var(--sutre-silk); }
+
+/* ---------- FOOTER (marka + hukuki + telif) ---------- */
+.sutre-footer {
+	background: var(--sutre-marine);
+	color: rgba(255, 255, 255, .85);
+	padding: 40px var(--sutre-tab-pad) 28px;
+	margin-top: 48px;
+}
+.sutre-footer__title {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	font-size: 22px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #FFFFFF;
+	margin-bottom: 16px;
+}
+.sutre-footer__title a { color: inherit; text-decoration: none; }
+
+.sutre-footer__legal-label {
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	color: rgba(255, 255, 255, .65);
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+.sutre-footer__legal-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.sutre-footer__legal-links p { margin: 0; }
+.sutre-footer__legal-links a {
+	color: rgba(255, 255, 255, .9);
+	text-decoration: none;
+	min-height: var(--sutre-touch);
+	display: inline-flex;
+	align-items: center;
+	border-bottom: 1px solid rgba(201, 166, 107, .5);
+}
+.sutre-footer__legal-links a:hover,
+.sutre-footer__legal-links a:focus { color: var(--sutre-silk); }
+
+.sutre-footer__copyright {
+	margin-top: 20px;
+	padding-top: 14px;
+	border-top: 1px solid rgba(255, 255, 255, .15);
+	font-size: 12px;
+	color: rgba(255, 255, 255, .7);
+}
+
+.sutre-footer__draft-note {
+	margin-top: 8px;
+	font-size: 11px;
+	color: rgba(255, 255, 255, .45);
+}
+
+/* Desktop üstü — min ekleme, mobil düzen aynı kalsın */
+@media (min-width: 782px) {
+	.sutre-header { padding: 16px 40px; }
+	.sutre-footer { padding: 56px 40px 32px; }
+}

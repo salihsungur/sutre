@@ -1,5 +1,9 @@
 # Hukuki Sayfa Envanteri — LEGAL PLACEHOLDERS (SKELETON)
 
+> **PAKET 22 GÜNCELLEME (2026-09-17):** Aşağıdaki 5 sayfa için Türkçe DRAFT taslak metinleri üretildi (`LEGAL_REVIEW_REQUIRED` kapısı aynen geçerli, taslak avukat dışı KULLANILAMAZ):
+> - `gizlilik-politikasi.md` · `mesafeli-satis-sozlesmesi.md` · `iade-ve-cayma.md` · `on-bilgilendirme-formu.md` · `cerez-politikasi.md`
+> Sahibin elle adım listesi: `docs/operations/p22-owner-manual-steps.md`.
+>
 > **Durum: ENVANTER / PLACEHOLDER — YAYINA HAZIR DEĞİL.**
 > Anayasa §6.1 gereği yayınlanması zorunlu 10 sayfanın envanteridir. **Sayfa içerikleri bu dosyada YOK** — tam metinler Faz 4'te (anayasa §13) dış uzman onayıyla üretilecektir. §6.1: "Şablonlar placeholder olarak üretilebilir; şirket ve ürün bilgileri doğrulanmadan yayına alınamaz."
 >
