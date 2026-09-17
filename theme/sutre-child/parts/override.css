@@ -93,13 +93,31 @@
 .sutre-nav .sutre-nav .current-menu-item a { color: var(--sutre-silk); }
 
 /* ============================================================
-   PAKET 24 — ANA SAYFA %100 SATIŞ ODAKLI (P23'ten kısmi geri alma)
-   story ("Hikâyemiz") ve values ("Neden Sutre?") CSS blokları
-   KALDIRILDI — bu bölümler home.php'den de silindi.
-   collection / featured korunur. Custom property'ler
-   style.css :root'tan (hardcode yok). Mobil-first; desktop
-   ≥782px grid. Dark mode: gövdeye dayanır.
+   PAKET 25 — ANA SAYFA BUTİK SATIŞ SAYFASI: satış bandı
+   (Marine/Ink renk şerit), ÜRÜNLER ana grid, WooCommerce
+   fiyat biçimleri (regular del + ins sale bold Silk).
+   story/values (P24 kararı) HTML/CSS'de YOK.
+   Collection kartları P23 tasarımı korunur; dil satış-appropriate.
+   Custom property'ler style.css :root'tan (hardcode yok).
+   Mobil-first; desktop ≥782px grid; 44px dokunma hedefleri.
    ============================================================ */
+
+/* ---------- SATIŞ BANTI: Marine/Ink renk şeritleri ---------- */
+/* İçerik yok — iki yatay ince renk şeridi (§0.7 tahmin yasağı: rakama
+   yer açmayan nötr görsel vurgu; §9 mobil tek satır bant yüksekliğine uyar). */
+.sutre-strip {
+	height: 6px;
+	background: linear-gradient(
+		to right,
+		var(--sutre-marine) 0%,
+		var(--sutre-marine) 50%,
+		var(--sutre-ink) 50%,
+		var(--sutre-ink) 100%
+	);
+}
+@media (prefers-reduced-motion: reduce) {
+	.sutre-strip { transition: none; }
+}
 
 /* Ortak: bölüm başlığı altına silk kısa çizgi (vurgu hissi) */
 .sutre-home .sutre-section-title {
@@ -118,18 +136,101 @@
 	background: var(--sutre-silk);
 }
 
-/* ---------- ANA SAYFA TANITIM CÜMLESİ (P24) ---------- */
-.sutre-home__intro {
-	padding: 0 var(--sutre-tab-pad);
-	margin: 0 0 8px;
-	font-family: var(--sutre-font-sans);
-	font-size: 15px;
-	line-height: 1.6;
-	color: var(--sutre-ink-soft);
-	text-align: center;
+/* ---------- ÜRÜNLER (PAKET 25 — ana ürün grid) ---------- */
+.sutre-products {
+	padding: 48px var(--sutre-tab-pad);
+	background: var(--sutre-bone);
 }
+/* WooCommerce kısa kod ürün grid'i: mobil 1 kolon; 782px+ 2 kolon (sahip kararı). */
+.sutre-products ul.products {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	width: 100%;
+	max-width: 100%;
+}
+.sutre-products ul.products li.product {
+	background: var(--sutre-white);
+	border: 1px solid rgba(26, 26, 26, .08);
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	max-width: 100%;
+	float: none;
+	text-align: left;
+	overflow: hidden;
+}
+/* WooCommerce placeholder görsel (uploads/woocommerce-placeholder.webp) —
+   grading: tam genişlik, düzenli aspect ratio. */
+.sutre-products ul.products li.product img {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 5;
+	object-fit: cover;
+	display: block;
+	margin: 0;
+}
+.sutre-products ul.products li.product .woocommerce-loop-product__title {
+	font-family: var(--sutre-font-sans);
+	font-weight: 400;
+	font-size: 17px;
+	color: var(--sutre-ink);
+	padding: 14px 16px 4px;
+	margin: 0;
+}
+/* Ürün varyant/renk sayısı WooCommerce çekirdek çıktısında görünmez; bu stil
+   yalnız fiyat/kart düzenini sarar — renk varyant sayısı sahibin elle gireceği
+   ürün açıklaması üzerinden WooCommerce core render eder (kod eklenmez). */
+.sutre-products ul.products li.product .price {
+	padding: 0 16px 16px;
+	font-family: var(--sutre-font-sans);
+	font-variant-numeric: tabular-nums;
+	color: var(--sutre-ink);
+}
+/* Regular çizgili fiyat + sale bold Silk — WooCommerce del/ins markup'ını stiller */
+.sutre-products ul.products li.product .price del {
+	color: var(--sutre-whisper);
+	font-weight: 300;
+	text-decoration: line-through;
+	opacity: 1;
+	margin-right: 8px;
+}
+.sutre-products ul.products li.product .price ins {
+	color: var(--sutre-silk);
+	font-weight: 600;
+	text-decoration: none;
+}
+/* WooCommerce butonları kalıtılır (44px dokunma, style.css sınıfı). */
+.sutre-products ul.products li.product .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	align-self: flex-start;
+	margin: 0 16px 16px;
+	min-height: var(--sutre-touch);
+}
+/* "Tümünü Gör →" /shop/ mikro-linki */
+.sutre-shop-all-link {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--sutre-touch);
+	margin-top: 16px;
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 13px;
+	letter-spacing: var(--sutre-tracking);
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--sutre-ink);
+	border-bottom: 1px solid var(--sutre-silk);
+}
+.sutre-shop-all-link:hover,
+.sutre-shop-all-link:focus { color: var(--sutre-silk); }
 
-/* ---------- KOLEKSİYON KARTLARI (P23 redesign — tablo breadcrumb ATILDI) ---------- */
+/* ---------- KATEGORİLER (P23 kart tasarımı korunur; içerik satış-appropriate) ---------- */
 .sutre-collection {
 	padding: 48px var(--sutre-tab-pad);
 	background: var(--sutre-bone);
@@ -171,13 +272,6 @@
 	transform-origin: left;
 	transition: transform .2s ease;
 }
-.sutre-collection__no {
-	font-family: var(--sutre-font-serif);
-	font-weight: 300;
-	font-size: 15px;
-	letter-spacing: 0.12em;
-	color: var(--sutre-whisper);
-}
 .sutre-collection__name {
 	font-family: var(--sutre-font-serif);
 	font-weight: 500;
@@ -216,33 +310,13 @@
 }
 .sutre-collection__link:hover .sutre-collection__cta,
 .sutre-collection__link:focus-visible .sutre-collection__cta { color: var(--sutre-silk); }
-.sutre-collection__all { margin: 20px 0 0; text-align: right; }
-.sutre-collection__all a {
-	display: inline-flex;
-	align-items: center;
-	min-height: var(--sutre-touch);
-	font-family: var(--sutre-font-sans);
-	font-weight: 500;
-	font-size: 13px;
-	letter-spacing: var(--sutre-tracking);
-	text-transform: uppercase;
-	text-decoration: none;
-	color: var(--sutre-ink);
-	border-bottom: 1px solid var(--sutre-silk);
-}
-
-/* ---------- ÖNE ÇIKAN ÜRÜNLER ---------- */
-.sutre-featured {
-	padding: 48px var(--sutre-tab-pad);
-	background: var(--sutre-bone);
-}
-.sutre-featured__grid { margin-top: 8px; }
 
 /* ---------- Desktop (≥782px) — grid yükseltmeleri ---------- */
 @media (min-width: 782px) {
+	.sutre-products { padding: 72px 40px; }
+	.sutre-products ul.products { grid-template-columns: repeat(2, 1fr); gap: 24px; }
 	.sutre-collection { padding: 72px 40px; }
 	.sutre-collection__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-	.sutre-featured { padding: 72px 40px; }
 }
 
 /* ---------- prefers-reduced-motion (§9 a11y) ---------- */

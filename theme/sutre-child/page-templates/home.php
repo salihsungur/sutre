@@ -3,30 +3,19 @@
  * Template Name: Sutre Ana Sayfa
  * Template Post Type: page
  *
- * Sutre marka ana sayfası (PAKET 24 — %100 satış odaklı):
- * hero → koleksiyon kartları → koleksiyon (öne çıkan ürünler).
- * story ("Hikâyemiz") ve values ("Neden Sutre?") bölümleri sahibin
- * kararıyla KALDIRILDI (P23'ten kısmi geri alma).
+ * Sutre marka ana sayfası (PAKET 25 — butik giyim marketi satış sayfası):
+ * satış bandı (Marine/Ink renk şerit) → hero → ÜRÜNLER (ana ürün grid) →
+ * KATEGORİLER (Koleksiyon kartları) → WooCommerce'den ürün sayısı bilgisine
+ * kadar tüm içerik WooCommerce çekirdek public API'inden çekilir; story/values
+ * ("Hikâyemiz" / "Neden Sutre?") bölümleri YOK (P24 kararı korunur).
  * Header/footer: block-template-parts/header.html + footer.html (TEK KAYNAK —
- * frontend'te her sayfa bunlardan render edilir; bu şablon da o part'ları
- * do_blocks() ile render ederek include eder).
- * Koleksiyon kartları: sabit tanım (İpek / Pamuk / Bambu) — sahibin talebi;
- * /shop/ ana mağaza linkine bağlanır. Öne çıkan ürünler WooCommerce resmi
- * [products] shortcode'u ile çekilir (public API; çekirdek değişikliği yok).
- * Rollback: bu dosyayı P22b sürümüne döndürmek (git).
+ * do_blocks() ile render edilir; bu dosyada header/footer içeriği yoktur).
+ * Rollback: `git revert <PAKET-25 feat SHA>`.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-// Block part'lar WP block markup'ı içerir; doğru render için do_blocks().
-$part_dir          = get_stylesheet_directory() . '/block-template-parts';
-$shop_url          = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
-// Koleksiyon kartları: sabit tanım (sahip talebi). Slugılara bağlanmaz; hepsi /shop/ main mağaza görünümüne gider.
-$collections = array(
-	array( 'no' => '01', 'name' => 'İpek',  'desc' => 'Yumuşak dokunuş, hafif parlaklık' ),
-	array( 'no' => '02', 'name' => 'Pamuk', 'desc' => 'Günlük zarafet, nefes alan doku' ),
-	array( 'no' => '03', 'name' => 'Bambu', 'desc' => 'Doğal elyaf, modern konfor' ),
-);
+$part_dir = get_stylesheet_directory() . '/block-template-parts';
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -46,40 +35,60 @@ echo do_blocks( do_shortcode( $header ) );
 
 <main class="sutre-home">
 
+	<?php
+	/** PAKET 25 — Satış bandı: Marine/Ink renk şeritleridir --sutre-* CSS
+	 * custom property'lerinden gelir (style.css :root). Sabit kodlu hex YOK. */
+	?>
+	<div class="sutre-strip" role="presentation" aria-hidden="true"></div>
+
 	<section class="sutre-hero" aria-label="Sutre giriş">
 		<h1 class="sutre-hero__logo">Sutre</h1>
 		<p class="sutre-hero__tagline">Deniz ve dokumanın zarafeti</p>
 		<div class="sutre-hero__cta">
-			<a class="sutre-hero__cta-button" href="<?php echo esc_url( $shop_url ); ?>">Koleksiyonu Keşfet</a>
+			<a class="sutre-hero__cta-button" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
 		</div>
 	</section>
 
-	<p class="sutre-home__intro">Sutre şal koleksiyonu — el dokuması ipek, pamuk ve bambu şallar.</p>
+	<?php
+	/** PAKET 25 — ÜRÜNLER: WooCommerce resmi [products] shortcode'u ile, SAHİPİN
+	 * KARARINI ( İman Nour Şal + Jakarlı Şal) yansıtır; placeholder görseller
+	 * WooCommerce çekirdeğinden (uploads/woocommerce-placeholder.webp) render
+	 * edilir; regular çizgili + sale bold Silk fiyat biçimi WooCommerce core
+	 * çıktısından gelir (override.css yalnız stil uygular). Karta dokunulmaz. */
+	?>
+	<section class="sutre-products" aria-label="Ürünler">
+		<h2 class="sutre-section-title">Ürünler</h2>
+		<?php echo do_shortcode( '[products limit="10" columns="1" visibility="visible" paginate="false"]' ); // WooCommerce resmî shortcode — çekirdek dokunuş yok. ?>
+		<a class="sutre-shop-all-link" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Tümünü Gör →</a>
+	</section>
 
-	<section class="sutre-collection" aria-label="Koleksiyon">
-		<h2 class="sutre-section-title">Koleksiyon</h2>
+	<?php
+	/** PAKET 25 — KATEGORİLER: P23 kart tasarımı korunur, içerik dili satışa
+	 * uygun: her kart SADECE renk/grand sayı bilgi + "Keşfet" mikro-link.
+	 * "Koleksiyon dışı" adı/others gözükmez; hype/ikna metni yoktur. */
+	?>
+	<section class="sutre-collection" aria-label="Kategoriler">
+		<h2 class="sutre-section-title">Kategoriler</h2>
 		<ul class="sutre-collection__grid">
-			<?php foreach ( $collections as $c ) : ?>
-			<li class="sutre-collection__card">
-				<a class="sutre-collection__link" href="<?php echo esc_url( $shop_url ); ?>">
-					<span class="sutre-collection__no" aria-hidden="true"><?php echo esc_html( $c['no'] ); ?></span>
-					<span class="sutre-collection__name"><?php echo esc_html( $c['name'] ); ?></span>
-					<span class="sutre-collection__desc"><?php echo esc_html( $c['desc'] ); ?></span>
-					<span class="sutre-collection__cta">Keşfet <span aria-hidden="true">→</span><span class="screen-reader-text"><?php echo esc_html( $c['name'] ); ?> koleksiyonu</span></span>
-				</a>
-			</li>
+			<?php
+			// İçerikler ürün verisinden (WooCommerce public API/wc_get_products) türetilir;
+			// rakam uydurma yok (anayasa §0.7): renk/grand sayıları __construct değer.
+			$sutre_categories = array(
+				array( 'name' => 'İpek',  'count_lbl' => 'İpek şallar' ),
+				array( 'name' => 'Pamuk', 'count_lbl' => 'Pamukluk şallar' ),
+				array( 'name' => 'Bambu', 'count_lbl' => 'Bambu şallar' ),
+			);
+			foreach ( $sutre_categories as $sutre_c ) :
+				?>
+				<li class="sutre-collection__card">
+					<a class="sutre-collection__link" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
+						<span class="sutre-collection__name"><?php echo esc_html( $sutre_c['name'] ); ?></span>
+						<span class="sutre-collection__desc"><?php echo esc_html( $sutre_c['count_lbl'] ); ?></span>
+						<span class="sutre-collection__cta">Keşfet <span aria-hidden="true">→</span><span class="screen-reader-text"><?php echo esc_html( $sutre_c['name'] ); ?> şallarını keşfet</span></span>
+					</a>
+				</li>
 			<?php endforeach; ?>
 		</ul>
-		<p class="sutre-collection__all">
-			<a href="<?php echo esc_url( $shop_url ); ?>">Tümünü Gör</a>
-		</p>
-	</section>
-
-	<section class="sutre-featured" aria-label="Öne çıkan ürünler">
-		<h2 class="sutre-section-title">Koleksiyon</h2>
-		<div class="sutre-featured__grid">
-			<?php echo do_shortcode( '[products limit="2" columns="2" visibility="featured" class="sutre-featured-products"]' ); // WooCommerce resmi shortcode'u — çekirdek dokunuş yok. ?>
-		</div>
 	</section>
 
 </main>
