@@ -92,6 +92,211 @@
 .sutre-nav .wp-block-navigation-item .link-active,
 .sutre-nav .sutre-nav .current-menu-item a { color: var(--sutre-silk); }
 
+/* ============================================================
+   PAKET 23 — ANA SAYFA İÇERİK DOLGUSU (P23)
+   story / collection / featured / values. Tümü Bone zemin;
+   custom property'ler style.css :root'tan (hardcode yok).
+   Mobil-first; desktop ≥782px grid. Dark mode: gövdeye dayanır.
+   ============================================================ */
+
+/* Ortak: bölüm başlığı altına silk kısa çizgi (vurgu hissi) */
+.sutre-home .sutre-section-title {
+	position: relative;
+	display: inline-block;
+	padding-bottom: 10px;
+	margin-bottom: 18px;
+}
+.sutre-home .sutre-section-title::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 40px;
+	height: 2px;
+	background: var(--sutre-silk);
+}
+
+/* ---------- MARKA HİKAYESİ ---------- */
+.sutre-story {
+	padding: 48px var(--sutre-tab-pad);
+	background: var(--sutre-bone);
+	text-align: left;
+}
+.sutre-story__inner { max-width: 720px; margin: 0 auto; }
+.sutre-story__text {
+	font-size: 16px;
+	line-height: 1.7;
+	color: var(--sutre-ink-soft);
+	margin: 0;
+}
+
+/* ---------- KOLEKSİYON KARTLARI (P23 redesign — tablo breadcrumb ATILDI) ---------- */
+.sutre-collection {
+	padding: 48px var(--sutre-tab-pad);
+	background: var(--sutre-bone);
+}
+.sutre-collection__grid {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+}
+.sutre-collection__card {
+	background: var(--sutre-white);
+	border: 1px solid rgba(26, 26, 26, .08);
+}
+.sutre-collection__link {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+	padding: 24px 20px;
+	min-height: var(--sutre-touch);
+	text-decoration: none;
+	color: var(--sutre-ink);
+	/* Silk alt çizgi animasyonu — hover'da soldan büyür */
+	overflow: hidden;
+}
+.sutre-collection__link::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 2px;
+	width: 100%;
+	background: var(--sutre-silk);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform .2s ease;
+}
+.sutre-collection__no {
+	font-family: var(--sutre-font-serif);
+	font-weight: 300;
+	font-size: 15px;
+	letter-spacing: 0.12em;
+	color: var(--sutre-whisper);
+}
+.sutre-collection__name {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	font-size: clamp(24px, 6vw, 32px);
+	line-height: 1.1;
+	color: var(--sutre-ink);
+}
+.sutre-collection__desc {
+	font-family: var(--sutre-font-sans);
+	font-weight: 300;
+	font-size: 14px;
+	color: var(--sutre-ink-soft);
+}
+.sutre-collection__cta {
+	margin-top: 8px;
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--sutre-touch);
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 13px;
+	letter-spacing: var(--sutre-tracking);
+	text-transform: uppercase;
+	color: var(--sutre-marine);
+}
+.sutre-collection__card:hover,
+.sutre-collection__card:focus-within {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 18px rgba(26, 26, 26, .06);
+	transition: transform .2s ease, box-shadow .2s ease;
+}
+.sutre-collection__card { transition: transform .2s ease, box-shadow .2s ease; }
+.sutre-collection__card:hover .sutre-collection__link::after,
+.sutre-collection__card:focus-within .sutre-collection__link::after {
+	transform: scaleX(1);
+}
+.sutre-collection__link:hover .sutre-collection__cta,
+.sutre-collection__link:focus-visible .sutre-collection__cta { color: var(--sutre-silk); }
+.sutre-collection__all { margin: 20px 0 0; text-align: right; }
+.sutre-collection__all a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--sutre-touch);
+	font-family: var(--sutre-font-sans);
+	font-weight: 500;
+	font-size: 13px;
+	letter-spacing: var(--sutre-tracking);
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--sutre-ink);
+	border-bottom: 1px solid var(--sutre-silk);
+}
+
+/* ---------- ÖNE ÇIKAN ÜRÜNLER ---------- */
+.sutre-featured {
+	padding: 48px var(--sutre-tab-pad);
+	background: var(--sutre-bone);
+}
+.sutre-featured__grid { margin-top: 8px; }
+
+/* ---------- NEDEN SUTRE (values) ---------- */
+.sutre-values {
+	padding: 48px var(--sutre-tab-pad) 56px;
+	background: var(--sutre-bone);
+}
+.sutre-values__grid {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 24px;
+}
+.sutre-values__item {
+	background: var(--sutre-white);
+	border: 1px solid rgba(26, 26, 26, .08);
+	padding: 20px var(--sutre-tab-pad);
+}
+.sutre-values__head {
+	font-family: var(--sutre-font-serif);
+	font-weight: 500;
+	font-size: 20px;
+	color: var(--sutre-marine);
+	margin: 0 0 8px;
+}
+.sutre-values__text {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.65;
+	color: var(--sutre-ink-soft);
+}
+.sutre-values__hint,
+.sutre-values__item .sutre-values__text small {
+	font-size: 12px;
+	color: var(--sutre-whisper);
+}
+
+/* ---------- Desktop (≥782px) — grid yükseltmeleri ---------- */
+@media (min-width: 782px) {
+	.sutre-story { padding: 72px 40px; }
+	.sutre-collection { padding: 72px 40px; }
+	.sutre-collection__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+	.sutre-featured { padding: 72px 40px; }
+	.sutre-values { padding: 72px 40px 80px; }
+	.sutre-values__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+}
+
+/* ---------- prefers-reduced-motion (§9 a11y) ---------- */
+@media (prefers-reduced-motion: reduce) {
+	.sutre-collection__link::after,
+	.sutre-collection__card { transition: none; }
+	.sutre-collection__card:hover,
+	.sutre-collection__card:focus-within {
+		transform: none;
+		box-shadow: none;
+	}
+}
+
 /* ---------- FOOTER (marka + hukuki + telif) ---------- */
 .sutre-footer {
 	background: var(--sutre-marine);
