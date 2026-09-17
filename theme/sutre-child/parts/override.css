@@ -178,6 +178,18 @@
 	margin: 0 !important;
 }
 
+/* P26d — SECTION.sutre-products'a TT5'in yanlış grid layout'u sızıyor (4×317px) — izole et */
+.sutre-products {
+    display: block !important;
+    grid-template-columns: none !important;
+    grid: none !important;
+}
+.sutre-products .woocommerce.columns-2 {
+    display: block !important;
+    width: 100% !important;
+    grid-template-columns: none !important;
+}
+
 .sutre-products ul.products {
 	display: grid;
 	grid-template-columns: 1fr;
