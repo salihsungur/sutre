@@ -75,7 +75,6 @@ echo do_blocks( do_shortcode( $header ) );
 	/** PAKET 25 — Satış bandı: Marine/Ink renk şeritleridir --sutre-* CSS
 	 * custom property'lerinden gelir (style.css :root). Sabit kodlu hex YOK. */
 	?>
-	<div class="sutre-strip" role="presentation" aria-hidden="true"></div>
 
 	<section class="sutre-hero" aria-label="Sutre giriş">
 		<h1 class="sutre-hero__logo">Sutre</h1>
