@@ -1,0 +1,57 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"header"} /-->
+
+<!--
+	PAKET 22b — FOOTER DOĞRUDAN GÖMÜLÜ (pattern referansı YOK):
+	Parent TT5'in "footer" part'ı yalnız <!-- wp:pattern twentytwentyfive/footer -->
+	çağırır ve "Designed with WordPress" orada yaşar; bu yüzden template-part
+	"footer" KULLANILMAZ. Footer bloğu AŞAĞIDA DOĞRUDAN yazılır (block-templates
+	 klasörü child'ın index template'ini override eder — kök tabanlı düzeltme).
+	"WordPress ile gururla..." YASAK (anayasa §16 — sahibin açık talimatı).
+-->
+
+<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+<main class="wp-block-group" style="margin-top:var(--wp--preset--spacing--60)">
+	<!-- wp:pattern {"slug":"twentytwentyfive/hidden-blog-heading"} /-->
+	<!-- wp:pattern {"slug":"twentytwentyfive/template-query-loop"} /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"footer","className":"sutre-footer","layout":{"type":"constrained"}} -->
+<footer class="wp-block-group sutre-footer">
+
+	<!-- wp:group {"className":"sutre-footer__brand","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group sutre-footer__brand">
+		<!-- wp:site-title {"level":0,"className":"sutre-footer__title"} / -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:paragraph {"className":"sutre-footer__legal-label"} -->
+	<p class="sutre-footer__legal-label">Hukuki:</p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:group {"className":"sutre-footer__legal-links","layout":{"type":"flex","flexWrap":"wrap"}} -->
+	<div class="wp-block-group sutre-footer__legal-links">
+		<!-- wp:paragraph -->
+		<p><a href="/gizlilik-politikasi/">Gizlilik</a></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph -->
+		<p><a href="/mesafeli-satis/">Mesafeli Satış</a></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph -->
+		<p><a href="/iade-ve-cayma/">İade</a></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:paragraph {"className":"sutre-footer__copyright"} -->
+	<p class="sutre-footer__copyright">© 2026 Sutre — Tüm hakları saklıdır</p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:paragraph {"className":"sutre-footer__draft-note"} -->
+	<p class="sutre-footer__draft-note">Hukuki sayfalar taslak aşamasındadır (LEGAL_REVIEW_REQUIRED); yayından önce avukat onayı gereklidir.</p>
+	<!-- /wp:paragraph -->
+
+</footer>
+<!-- /wp:group -->
