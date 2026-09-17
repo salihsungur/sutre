@@ -157,6 +157,14 @@
 }
 /* PAKET 26 — D1: eşit kartlar, stretch; mobil 1 kolon / 782px+ 2 kolon */
 /* P26b fix — Woo kendi columns-2/float grid'i ile çakışma: kapsayıcı reset */
+/* P26c — .woocommerce.columns-2 wrapper'ın kendisi de tam genişlik/İki kolon olmalı */
+.sutre-products .woocommerce.columns-2 {
+    display: block;
+    width: 100%;
+    max-width: none;
+}
+.sutre-products .woocommerce.columns-2 ul.products { width: 100%; }
+
 .sutre-products .woocommerce.columns-2 ul.products,
 .sutre-products ul.products.columns-2 {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
