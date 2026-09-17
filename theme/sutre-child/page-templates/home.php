@@ -25,13 +25,14 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  * markup'a zorlanır; `[products]` thumb render'ı bozuksa dahi düzelir.
  */
 function sutre_fix_placeholder_img( $html, $size, $dimensions, $placeholder_img_src ) {
-	if ( empty( $placeholder_img_src ) ) {
+	$src = is_array( $placeholder_img_src ) ? (string) reset( $placeholder_img_src ) : (string) $placeholder_img_src;
+	if ( empty( $src ) ) {
 		return '';
 	}
 	// WooCommerce çekirdeği placeholder'ı img etiketiyle verir; kendi fallback:
 	$img = sprintf(
 		'<img src="%s" alt="%s" class="woocommerce-placeholder wp-post-image" width="%s" height="%s" loading="lazy" />',
-		esc_url( $placeholder_img_src ),
+		esc_url( $src ),
 		esc_attr__( 'Ürün görseli yüklenmedi', 'sutre-child' ),
 		esc_attr( isset( $dimensions['width'] ) ? $dimensions['width'] : 400 ),
 		esc_attr( isset( $dimensions['height'] ) ? $dimensions['height'] : 500 )
