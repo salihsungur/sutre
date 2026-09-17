@@ -528,3 +528,22 @@
     /* Tek Giyim kartını da dev[parent]den incele — yatay banner kart make */
     .sutre-collection__card--single { max-width: 980px; margin: 0 auto; }
 }
+
+
+/* P26g — P26f'ten sonra Desktop'ta hâlâ 2 kolon; Woo default kaltura: 
+   her şey seviye: spesifik + !important */
+.sutre-products .woocommerce.columns-2 ul.products,
+.sutre-products ul.products {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+.sutre-products .woocommerce.columns-2 ul.products li.product,
+.sutre-products ul.products li.product {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+/* içerik konteynerini tama doğru sabitle (13 kollyy —  ssüsince hero/collect):
+section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
+.sutre-hero,
+.sutre-strip { max-width: 980px !important; margin-left: auto; margin-right: auto; }
+.sutre-collection ul { grid-template-columns: 1fr !important; }
