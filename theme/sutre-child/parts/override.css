@@ -156,6 +156,20 @@
 	background: var(--sutre-bone);
 }
 /* PAKET 26 — D1: eşit kartlar, stretch; mobil 1 kolon / 782px+ 2 kolon */
+/* P26b fix — Woo kendi columns-2/float grid'i ile çakışma: kapsayıcı reset */
+.sutre-products .woocommerce.columns-2 ul.products,
+.sutre-products ul.products.columns-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.sutre-products ul.products::before,
+.sutre-products ul.products::after { display: none; content: none; }
+.sutre-products ul.products li.product {
+	float: none !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+}
+
 .sutre-products ul.products {
 	display: grid;
 	grid-template-columns: 1fr;
