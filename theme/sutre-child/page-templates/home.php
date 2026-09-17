@@ -40,6 +40,16 @@ function sutre_fix_placeholder_img( $html, $size, $dimensions, $placeholder_img_
 }
 add_filter( 'woocommerce_placeholder_img', 'sutre_fix_placeholder_img', 10, 4 );
 
+
+/**
+ * Güvenli URL: wc_get_page_permalink / get_permalink bazen dizi döndürebilir
+ * (PHP 8.5 strict) — cast + boş fallback; sonra esc_url.
+ */
+function sutre_safe_url( $value ) {
+    $url = is_array( $value ) ? reset( $value ) : $value;
+    $url = (string) ( is_object( $url ) ? '' : $url );
+    return esc_url( $url );
+}
 $part_dir = get_stylesheet_directory() . '/block-template-parts';
 ?>
 <!DOCTYPE html>
@@ -70,7 +80,7 @@ echo do_blocks( do_shortcode( $header ) );
 		<h1 class="sutre-hero__logo">Sutre</h1>
 		<p class="sutre-hero__tagline">Deniz ve dokumanın zarafeti</p>
 		<div class="sutre-hero__cta">
-			<a class="sutre-hero__cta-button" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
+			<a class="sutre-hero__cta-button" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
 		</div>
 	</section>
 
@@ -82,7 +92,7 @@ echo do_blocks( do_shortcode( $header ) );
 	<section class="sutre-products" aria-label="Ürünler">
 		<div class="sutre-products__header">
 			<h2 class="sutre-section-title">Ürünler</h2>
-			<a class="sutre-shop-all-link" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Tümünü Gör <span aria-hidden="true">→</span></a>
+			<a class="sutre-shop-all-link" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">Tümünü Gör <span aria-hidden="true">→</span></a>
 		</div>
 		<?php echo do_shortcode( '[products limit="10" columns="2" paginate="false"]' ); // WooCommerce resmî shortcode — çekirdek dokunuş yok; default tüm görünür ürünler. ?>
 	</section>
@@ -98,7 +108,7 @@ echo do_blocks( do_shortcode( $header ) );
 		<h2 class="sutre-section-title">Kategoriler</h2>
 		<ul class="sutre-collection__grid">
 			<li class="sutre-collection__card sutre-collection__card--single">
-				<a class="sutre-collection__link" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
+				<a class="sutre-collection__link" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">
 					<span class="sutre-collection__number" aria-hidden="true">01</span>
 					<span class="sutre-collection__name">Giyim</span>
 					<span class="sutre-collection__desc">Sezonun tamamı /shop/ sayfasında</span>
