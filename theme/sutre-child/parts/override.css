@@ -504,3 +504,15 @@
 	.sutre-header { padding: 16px 40px; }
 	.sutre-footer { padding: 56px 40px 32px; }
 }
+
+
+/* P26e — kart boyutu dengesi: görsel yüksekliğini premium sınıra çek */
+.sutre-products ul.products li.product img {
+    aspect-ratio: 3 / 4;   /* 4:5 yerine birazcık incek — kart boyu daha dengeli */
+}
+.sutre-products ul.products li.product .woocommerce-loop-product__title {
+    font-size: 19px;       /* ürün adı okunaklığında artırım */
+}
+.sutre-products ul.products li.product .button {
+    font-size: 14px;
+}
