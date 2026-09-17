@@ -175,11 +175,3 @@ function sutre_child_get_shop_categories() {
 	return $terms;
 }
 
-/**
- * PAKET 22c-b: WooCommerce block template'lerini KAPAT — klasik PHP şablonlara dön.
- * Amaç (sahibin talimatı, 2026-09-17): header/footer TEK KAYNAK olsun (header.php/footer.php);
- * shop/ürün sayfaları ana sayfayla birebir aynı header/footer'ı alsın.
- * Şablonlar: child/woocommerce/archive-product.php + single-product.php (klasik PHP,
- * get_header/get_footer — header.php/footer.php'ye düşer). WooCommerce public API — çekirdek yok.
- */
-add_filter( 'woocommerce_use_block_template', '__return_false', 20 );
