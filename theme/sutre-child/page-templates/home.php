@@ -58,7 +58,7 @@ echo do_blocks( do_shortcode( $header ) );
 	?>
 	<section class="sutre-products" aria-label="Ürünler">
 		<h2 class="sutre-section-title">Ürünler</h2>
-		<?php echo do_shortcode( '[products limit="10" columns="1" visibility="visible" paginate="false"]' ); // WooCommerce resmî shortcode — çekirdek dokunuş yok. ?>
+		<?php echo do_shortcode( '[products limit="10" columns="1" paginate="false"]' ); // WooCommerce resmî shortcode — çekirdek dokunuş yok; visibility belirtilmez (tüm görünür ürünler). ?>
 		<a class="sutre-shop-all-link" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Tümünü Gör →</a>
 	</section>
 
