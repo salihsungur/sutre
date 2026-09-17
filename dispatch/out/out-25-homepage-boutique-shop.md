@@ -20,9 +20,16 @@ dokunuşu yok, anayasa §4/§3.1).
 - PHP syntax: php-parser (npm) ile home.php → "PHP SYNTAX OK" (lokal PHP ikiliği yok; kanıt /tmp npm php-parser çalıştırma çıktısı).
 - `grep -c "sutre-story|sutre-values"` → home.php 0, override.css 0.
 - override.css'te hardcoded hex yok — yalnız footer'daki #FFFFFF (P22'den korunur).
-- Git: feat SHA `632c764` (main), `git push` kanıtı: `42d70c2..632c764 main -> main` (staging repo'ya; "Everything up-to-date" ikinci çağrı).
-- WP pointer: page 18 `sutre-anasayfa` template `page-templates/home.php`; staging API 200 (curl).
-- WP debug fatal/warning kanıtı: sahibin cPanel/WP-admin'elle (deploy sonrası) — bot FTP yapmaz (paket kararı).
+- Git: feat SHA'ları `632c764` (P25 feat) + `5181508` (visibility fix);
+  docs SHA `6431078` (out-25 raporu). `git push` kanıtı: `42d70c2..632c764`,
+  `6431078..5181508` (staging repo'ya push edildi).
+- Staging'den bağımsız doğrulama (P25 deploy ÖNCESİ): WooCommerce Store API
+  iki ürünü 200 ile verir (id 22 İman Nour Şal: 6 Renk varyantı, regular
+  ₺499,90 çizgili + sale ₺449,90; id 29 Jakarlı Şal: 10 Renk varyantı) —
+  `[products]` shortcode'u deploy sonrası bunları grid'e render edecektir.
+- Tarayıcı (Hermes browser) ile staging açıldı: P24 hâli hâlâ yayında
+  (deploy sahibin elle işi); P24'te `visibility="featured"` shortcode'unun
+  BOŞ render ettiği tespit edildi — 5181508'te bu param kaldırıldı.
 
 ## Risk ve güvenlik
 - Risk: DÜŞÜK. Yalnız ana sayfa şablonu + tek CSS blok; çekirdek/plugin/checkout dokunuşu YOK.
