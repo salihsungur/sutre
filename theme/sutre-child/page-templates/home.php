@@ -112,12 +112,11 @@ echo do_blocks( do_shortcode( $header ) );
 				<a class="sutre-collection__link" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">
 					<span class="sutre-collection__number" aria-hidden="true">01</span>
 					<span class="sutre-collection__name">Giyim</span>
-					<span class="sutre-collection__desc">Sezonun tamamı /shop/ sayfasında</span>
+					<span class="sutre-collection__desc">Sezonun tamamı Mağaza sayfasında</span>
 					<span class="sutre-collection__cta">Keşfet <span aria-hidden="true">→</span><span class="screen-reader-text">Giyim ürünlerini keşfet</span></span>
 				</a>
 			</li>
 		</ul>
-		<p class="sutre-collection__note">İpek &middot; Pamuk &middot; Bambu kumaşları</p>
 	</section>
 
 </main>
