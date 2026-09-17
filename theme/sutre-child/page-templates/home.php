@@ -3,8 +3,10 @@
  * Template Name: Sutre Ana Sayfa
  * Template Post Type: page
  *
- * Sutre marka ana sayfası (PAKET 23):
- * hero → marka hikayesi → koleksiyon kartları → öne çıkan ürünler → neden Sutre.
+ * Sutre marka ana sayfası (PAKET 24 — %100 satış odaklı):
+ * hero → koleksiyon kartları → koleksiyon (öne çıkan ürünler).
+ * story ("Hikâyemiz") ve values ("Neden Sutre?") bölümleri sahibin
+ * kararıyla KALDIRILDI (P23'ten kısmi geri alma).
  * Header/footer: block-template-parts/header.html + footer.html (TEK KAYNAK —
  * frontend'te her sayfa bunlardan render edilir; bu şablon da o part'ları
  * do_blocks() ile render ederek include eder).
@@ -52,20 +54,10 @@ echo do_blocks( do_shortcode( $header ) );
 		</div>
 	</section>
 
-	<section class="sutre-story" aria-label="Hikâyemiz">
-		<div class="sutre-story__inner">
-			<h2 class="sutre-section-title">Hikâyemiz</h2>
-			<p class="sutre-story__text">
-				Sutre, 2026'da İstanbul'da kuruldu. İpek, pamuk ve bambudan dokunan
-				şallarımız; el işçiliğinin sabrını deniz zarafetiyle birleştirir.
-				Bir şal, güverte soyulmuş bir yelken hediyesi gibi, size geçen
-				küçük bir seremoni. Her dokuman, bir yolculuktur.
-			</p>
-		</div>
-	</section>
+	<p class="sutre-home__intro">Sutre şal koleksiyonu — el dokuması ipek, pamuk ve bambu şallar.</p>
 
-	<section class="sutre-collection" aria-label="Koleksiyonlar">
-		<h2 class="sutre-section-title sutre-collection__title">Koleksiyonlar</h2>
+	<section class="sutre-collection" aria-label="Koleksiyon">
+		<h2 class="sutre-section-title">Koleksiyon</h2>
 		<ul class="sutre-collection__grid">
 			<?php foreach ( $collections as $c ) : ?>
 			<li class="sutre-collection__card">
@@ -84,28 +76,10 @@ echo do_blocks( do_shortcode( $header ) );
 	</section>
 
 	<section class="sutre-featured" aria-label="Öne çıkan ürünler">
-		<h2 class="sutre-section-title">Öne Çıkan Ürünler</h2>
+		<h2 class="sutre-section-title">Koleksiyon</h2>
 		<div class="sutre-featured__grid">
 			<?php echo do_shortcode( '[products limit="2" columns="2" visibility="featured" class="sutre-featured-products"]' ); // WooCommerce resmi shortcode'u — çekirdek dokunuş yok. ?>
 		</div>
-	</section>
-
-	<section class="sutre-values" aria-label="Neden Sutre">
-		<h2 class="sutre-section-title">Neden Sutre?</h2>
-		<ul class="sutre-values__grid">
-			<li class="sutre-values__item">
-				<h3 class="sutre-values__head">Doğal İpek</h3>
-				<p class="sutre-values__text">Yumuşak dokusuyla cildinize nazik davranır; doğal elyaflar, premium hissi her mevsimde taşır.</p>
-			</li>
-			<li class="sutre-values__item">
-				<h3 class="sutre-values__head">El Dokuması</h3>
-				<p class="sutre-values__text">Her şal, ustaların elinde, sabırla dokunur. Endüstriyel üretimin tekdüzeliğinden uzak, işçilik hissini taşır.</p>
-			</li>
-			<li class="sutre-values__item">
-				<h3 class="sutre-values__head">14 Gün Cayma Hakkı</h3>
-				<p class="sutre-values__text">İade ve cayma koşulları için mesafeli satış sayfamıza bakınız. (DRAFT — hukuki metin onayı bekliyor.)</p>
-			</li>
-		</ul>
 	</section>
 
 </main>

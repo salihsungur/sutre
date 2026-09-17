@@ -93,10 +93,12 @@
 .sutre-nav .sutre-nav .current-menu-item a { color: var(--sutre-silk); }
 
 /* ============================================================
-   PAKET 23 — ANA SAYFA İÇERİK DOLGUSU (P23)
-   story / collection / featured / values. Tümü Bone zemin;
-   custom property'ler style.css :root'tan (hardcode yok).
-   Mobil-first; desktop ≥782px grid. Dark mode: gövdeye dayanır.
+   PAKET 24 — ANA SAYFA %100 SATIŞ ODAKLI (P23'ten kısmi geri alma)
+   story ("Hikâyemiz") ve values ("Neden Sutre?") CSS blokları
+   KALDIRILDI — bu bölümler home.php'den de silindi.
+   collection / featured korunur. Custom property'ler
+   style.css :root'tan (hardcode yok). Mobil-first; desktop
+   ≥782px grid. Dark mode: gövdeye dayanır.
    ============================================================ */
 
 /* Ortak: bölüm başlığı altına silk kısa çizgi (vurgu hissi) */
@@ -116,18 +118,15 @@
 	background: var(--sutre-silk);
 }
 
-/* ---------- MARKA HİKAYESİ ---------- */
-.sutre-story {
-	padding: 48px var(--sutre-tab-pad);
-	background: var(--sutre-bone);
-	text-align: left;
-}
-.sutre-story__inner { max-width: 720px; margin: 0 auto; }
-.sutre-story__text {
-	font-size: 16px;
-	line-height: 1.7;
+/* ---------- ANA SAYFA TANITIM CÜMLESİ (P24) ---------- */
+.sutre-home__intro {
+	padding: 0 var(--sutre-tab-pad);
+	margin: 0 0 8px;
+	font-family: var(--sutre-font-sans);
+	font-size: 15px;
+	line-height: 1.6;
 	color: var(--sutre-ink-soft);
-	margin: 0;
+	text-align: center;
 }
 
 /* ---------- KOLEKSİYON KARTLARI (P23 redesign — tablo breadcrumb ATILDI) ---------- */
@@ -239,51 +238,11 @@
 }
 .sutre-featured__grid { margin-top: 8px; }
 
-/* ---------- NEDEN SUTRE (values) ---------- */
-.sutre-values {
-	padding: 48px var(--sutre-tab-pad) 56px;
-	background: var(--sutre-bone);
-}
-.sutre-values__grid {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 24px;
-}
-.sutre-values__item {
-	background: var(--sutre-white);
-	border: 1px solid rgba(26, 26, 26, .08);
-	padding: 20px var(--sutre-tab-pad);
-}
-.sutre-values__head {
-	font-family: var(--sutre-font-serif);
-	font-weight: 500;
-	font-size: 20px;
-	color: var(--sutre-marine);
-	margin: 0 0 8px;
-}
-.sutre-values__text {
-	margin: 0;
-	font-size: 15px;
-	line-height: 1.65;
-	color: var(--sutre-ink-soft);
-}
-.sutre-values__hint,
-.sutre-values__item .sutre-values__text small {
-	font-size: 12px;
-	color: var(--sutre-whisper);
-}
-
 /* ---------- Desktop (≥782px) — grid yükseltmeleri ---------- */
 @media (min-width: 782px) {
-	.sutre-story { padding: 72px 40px; }
 	.sutre-collection { padding: 72px 40px; }
 	.sutre-collection__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
 	.sutre-featured { padding: 72px 40px; }
-	.sutre-values { padding: 72px 40px 80px; }
-	.sutre-values__grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
 }
 
 /* ---------- prefers-reduced-motion (§9 a11y) ---------- */
