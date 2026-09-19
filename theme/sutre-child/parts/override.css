@@ -777,3 +777,38 @@ section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
 	background-position: center;
 	min-height: inherit;
 }
+
+/* P28b — E3 gerçek fix: kategori kartına görsel background direkt */
+.sutre-collection__card--single .sutre-collection__link {
+	background-image: url('/wp-content/themes/sutre-child/assets/img/site/kategori-giyim-kart.png') !important;
+	background-size: cover !important;
+	background-position: center !important;
+	min-height: 300px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: flex-end !important;
+	padding: 28px !important;
+	border-radius: 2px;
+}
+.sutre-collection__card--single .sutre-collection__link::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(26,26,26,.78) 0%, rgba(26,26,26,.25) 60%, rgba(26,26,26,.15) 100%);
+	border-radius: 2px;
+}
+.sutre-collection__card--single .sutre-collection__link > * {
+	position: relative;
+	z-index: 1;
+}
+.sutre-collection__card--single {
+	position: relative;
+	overflow: hidden;
+}
+/* P28b — E6 strip: hero section'ın DIŞINDA en üstte olduğundan emin ol + tam genişlik */
+.sutre-strip {
+	width: 100vw !important;
+	max-width: 100vw !important;
+	margin-left: calc(-50vw + 50%) !important;
+	height: 6px !important;
+}
