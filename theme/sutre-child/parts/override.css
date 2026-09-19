@@ -809,8 +809,16 @@ section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
 
 /* P29 — footer/footer logo ve header logo boyut final */
 .sutre-footer__logo-img {
+	height: 84px;
+	width: auto;
+	max-width: 380px;
+	display: block;
+	margin: 0 auto 18px;
+}
+.sutre-footer__logo-img {
 	height: 84px !important;
-	max-width: 320px !important;
+	width: auto !important;
+	max-width: 380px !important;
 }
 .sutre-header__logo-img,
 .sutre-header__logo-link img {
