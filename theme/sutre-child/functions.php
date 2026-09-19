@@ -129,6 +129,29 @@ function sutre_child_theme_support() {
 add_action( 'after_setup_theme', 'sutre_child_theme_support' );
 
 /**
+ * PAKET 27 — G5: /shop/ üst banner (woocommerce archive-product.php override
+ * YOK; hook = WooCommerce public API, anayasa §3.1 ihlali yok).
+ * YALNIZCA shop ana sayfasında (is_shop && !is_product_taxonomy) render;
+ * kategori/etiket arşivlerinde tekrarlanmaz. Görsel CSS background
+ * (parts/override.css .sutre-shop-banner); başlık beyaz + gölge.
+ * Cevap güvenliği: is_shop() WooCommerce koşullu fonksiyonu; Woo aktifken
+ * tanımlıdır (theme support ile kilitli). function_exists guard eklendi.
+ *
+ * @return void
+ */
+function sutre_shop_banner() {
+	if ( ! function_exists( 'is_shop' ) || ! is_shop() || is_product_taxonomy() || is_product() ) {
+		return;
+	}
+	?>
+	<div class="sutre-shop-banner" role="img" aria-label="Sutre koleksiyon banner">
+		<h1 class="sutre-shop-banner__title">Koleksiyon</h1>
+	</div>
+	<?php
+}
+add_action( 'woocommerce_before_shop_loop', 'sutre_shop_banner', 5 );
+
+/**
  * Üçüncü adım breadcrumb'ı: Giyim → Kadın → Şal akışı Woo çekirdeği
  * (WooCommerce breadcrumb + ADR-003 kategori ağacı) aracılığıyla render edilir;
  * tema yalnız stil uygular, kategori mantığı koymaz.

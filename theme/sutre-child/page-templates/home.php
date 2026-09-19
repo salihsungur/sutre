@@ -3,17 +3,17 @@
  * Template Name: Sutre Ana Sayfa
  * Template Post Type: page
  *
- * Sutre marka ana sayfası (PAKET 26 — ana sayfa görsel bug düzeltmeleri):
- * satış bandı (Marine/Ink renk şerit) → hero → ÜRÜNLER ([products] +
- * WooCommerce placeholder görsel) → KATEGORİLER (sahibin 2026-09-17 kararı:
- * yalnız "Giyim" tek kart; İpek/Pamuk/Bambu kartları kaldırıldı — kumaş
- * dili yalnız minik alt not satırında) içeriği WooCommerce çekirdek public
- * API'inden gelir; story/values bölümleri YOK (P24 kararı korunur).
+ * Sutre marka ana sayfası (PAKET 27 — logo + site görselleri entegrasyonu):
+ * satış bandı (Marine/Ink renk şerit) → HERO (hero-banner arka plan +
+ * sutre-hero-lockup img; TAGLINE YOK — sahibin kararı, lockup görselinde
+ * slogan yok) → ÜRÜNLER ([products] + WooCommerce placeholder görsel) →
+ * KATEGORİLER (yalnız "Giyim" tek kart; P26 kararı korunur — artık
+ * kategori-giyim-kart.png arka plan + gradient overlay ile).
  * Header/footer: block-template-parts/header.html + footer.html (TEK KAYNAK
  * — do_blocks() ile render edilir; bu dosyada header/footer içeriği yoktur).
  * Ürün görsel placeholder düzeltmesi (D4): woocommerce_placeholder_img()
  * filtresi — WooCommerce çekirdek placeholder görselini loop'ta garanti eder.
- * Rollback: `git revert <PAKET-26 feat SHA>`.
+ * Rollback: `git revert <PAKET-27 feat SHA>`.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -77,10 +77,12 @@ echo do_blocks( do_shortcode( $header ) );
 	?>
 
 	<section class="sutre-hero" aria-label="Sutre giriş">
-		<h1 class="sutre-hero__logo">Sutre</h1>
-		<p class="sutre-hero__tagline">Deniz ve dokumanın zarafeti</p>
-		<div class="sutre-hero__cta">
-			<a class="sutre-hero__cta-button" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
+		<div class="sutre-hero__bg" role="presentation" aria-hidden="true"></div>
+		<div class="sutre-hero__content">
+			<img src="/wp-content/themes/sutre-child/assets/img/logo/sutre-hero-lockup.png" alt="Sutre" class="sutre-hero__lockup-img">
+			<div class="sutre-hero__cta">
+				<a class="sutre-hero__cta-button" href="<?php echo sutre_safe_url( wc_get_page_permalink( 'shop' ) ); ?>">Koleksiyonu Keşfet</a>
+			</div>
 		</div>
 	</section>
 
