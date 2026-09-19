@@ -730,10 +730,12 @@ section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
 /* ═══ P28 — boyut/renk/dizilim düzeltmeleri (sahibin raporu E1-E7) ═══ */
 
 /* E1+E7: header logo — boyut + tüm sayfalarda tutarlı max-width */
-.sutre-header__logo img {
-	height: 48px;
-	width: auto;
-	max-width: 220px;
+.sutre-header__logo-img,
+.sutre-header__logo img,
+.sutre-header__logo-link img {
+	height: 48px !important;
+	width: auto !important;
+	max-width: 240px;
 	display: block;
 }
 
