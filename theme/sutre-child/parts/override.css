@@ -725,3 +725,53 @@ section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
 	.sutre-shop-banner { background-attachment: scroll; }
 }
 
+
+
+/* ═══ P28 — boyut/renk/dizilim düzeltmeleri (sahibin raporu E1-E7) ═══ */
+
+/* E1+E7: header logo — boyut + tüm sayfalarda tutarlı max-width */
+.sutre-header__logo img {
+	height: 48px;
+	width: auto;
+	max-width: 220px;
+	display: block;
+}
+
+/* E4: footer arka plan — sahibin kararı: siyah */
+.sutre-footer {
+	background: #111111;
+}
+
+/* E4: footer logo — okunabilir boyut (transparan png) */
+.sutre-footer__logo-img {
+	height: 64px;
+	width: auto;
+	max-width: 260px;
+	display: block;
+	margin-bottom: 18px;
+}
+
+/* E5: footer dizilim — dikey ritim, sözleşme linkleri görünür alanda */
+.sutre-footer__inner {
+	padding: 44px 24px 36px;
+}
+.sutre-footer__legal-links a {
+	min-height: 44px;
+}
+
+/* E6: strip gradient — düz soldan sağa (marine→ink), orta bozulması yok */
+.sutre-strip {
+	background: linear-gradient(90deg, var(--sutre-marine) 0%, var(--sutre-marine) 55%, var(--sutre-ink) 55%, var(--sutre-ink) 100%);
+}
+
+/* E3: kategori kartı — yatay görsel yatay kartta, dikey ezme yok */
+.sutre-collection__card--single {
+	min-height: 240px;
+	max-height: 420px;
+	overflow: hidden;
+}
+.sutre-collection__card--single .sutre-collection__link {
+	background-size: cover;
+	background-position: center;
+	min-height: inherit;
+}
