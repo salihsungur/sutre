@@ -9,8 +9,7 @@
  * slogan yok) → ÜRÜNLER ([products] + WooCommerce placeholder görsel) →
  * KATEGORİLER (yalnız "Giyim" tek kart; P26 kararı korunur — artık
  * kategori-giyim-kart.png arka plan + gradient overlay ile).
- * Header/footer: block-template-parts/header.html + footer.html (TEK KAYNAK
- * — do_blocks() ile render edilir; bu dosyada header/footer içeriği yoktur).
+ * Header/footer: header.php + footer.php (klasik PHP — TEK KAYNAK; Woo klasik şablonları dahil her sayfa aynı).
  * Ürün görsel placeholder düzeltmesi (D4): woocommerce_placeholder_img()
  * filtresi — WooCommerce çekirdek placeholder görselini loop'ta garanti eder.
  * Rollback: `git revert <PAKET-27 feat SHA>`.
@@ -18,6 +17,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
+get_header();
 /**
  * D4 — Kırık ürün görselleri: WooCommerce placeholder görsel yolu çekirdek
  * public API'sinden doğru hesaplanır (kodda URL yazılmaz; sabit yol yok).
@@ -53,16 +53,6 @@ function sutre_safe_url( $value ) {
 }
 $part_dir = get_stylesheet_directory() . '/block-template-parts';
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<?php wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
-<?php wp_body_open(); ?>
-
 <?php
 // Header part'ını WP bloklarıyla doğru render: dosya içeriğini block parser'dan geçir.
 $header = file_get_contents( $part_dir . '/header.html' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
@@ -122,10 +112,4 @@ echo do_blocks( do_shortcode( $header ) );
 
 </main>
 
-<?php
-$footer = file_get_contents( $part_dir . '/footer.html' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
-echo do_blocks( do_shortcode( $footer ) );
-wp_footer();
-?>
-</body>
-</html>
+<?php get_footer();

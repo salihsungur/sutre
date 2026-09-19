@@ -198,3 +198,9 @@ function sutre_child_get_shop_categories() {
 	return $terms;
 }
 
+
+/**
+ * P29: Woo block template'leri kapalı — klasik PHP şablonlar (TEK KAYNAK header/footer).
+ * child/woocommerce/archive-product.php + single-product.php kullanılır.
+ */
+add_filter( 'woocommerce_has_block_template', '__return_false', 999 );

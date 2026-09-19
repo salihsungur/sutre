@@ -106,14 +106,8 @@
 /* İçerik yok — iki yatay ince renk şeridi (§0.7 tahmin yasağı: rakama
    yer açmayan nötr görsel vurgu; §9 mobil tek satır bant yüksekliğine uyar). */
 .sutre-strip {
-	height: 6px;
-	background: linear-gradient(
-		to right,
-		var(--sutre-marine) 0%,
-		var(--sutre-marine) 50%,
-		var(--sutre-ink) 50%,
-		var(--sutre-ink) 100%
-	);
+	height: 4px;
+	background: var(--sutre-ink);
 }
 @media (prefers-reduced-motion: reduce) {
 	.sutre-strip { transition: none; }
@@ -811,4 +805,14 @@ section sınıf kon不适; onun yerine tutarlı 'max-width 980' */
 	max-width: 100vw !important;
 	margin-left: calc(-50vw + 50%) !important;
 	height: 6px !important;
+}
+
+/* P29 — footer/footer logo ve header logo boyut final */
+.sutre-footer__logo-img {
+	height: 84px !important;
+	max-width: 320px !important;
+}
+.sutre-header__logo-img,
+.sutre-header__logo-link img {
+	height: 52px !important;
 }
