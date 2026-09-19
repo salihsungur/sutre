@@ -1,229 +1,717 @@
 /*
 Theme Name: Sutre
-Description: Sutre şal markası — temiz yeniden kurulum v2. Klasik PHP, tek mimari.
-Version: 2.0.0
+Description: Sutre şal markası — quiet luxury tasarım sistemi v3. Klasik PHP, tek mimari.
+Version: 3.0.0
 Text Domain: sutre
 */
 
+/* ═══════════════════════════════════════════════════════════
+   SUTRE — QUIET LUXURY DESIGN SYSTEM
+   Palet: Bone/Ivory/Ink/Charcoal/Silk/Marine/Whisper/White
+   Tipografi: Cormorant Garamond (display) + Jost (body/UI)
+   Grid: 8px · Köşe: 0 (keskin) · Gölge: YOK
+   ═══════════════════════════════════════════════════════════ */
+
 :root {
 	--bone: #F5F2EC;
+	--ivory: #FAF8F4;
 	--ink: #1A1A1A;
+	--charcoal: #2D2D2D;
 	--silk: #C9A66B;
 	--marine: #1B3A4B;
 	--whisper: #B8B4AC;
-	--font-serif: 'Cormorant Garamond', serif;
-	--font-sans: 'Jost', sans-serif;
+	--white: #FFFFFF;
+	--font-serif: 'Cormorant Garamond', Georgia, serif;
+	--font-sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
 	--touch: 44px;
+	--ease: cubic-bezier(.25, .46, .45, .94);
 }
 
+/* ── Reset ── */
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
 	margin: 0;
 	background: var(--bone);
 	color: var(--ink);
 	font-family: var(--font-sans);
+	font-weight: 300;
 	font-size: 16px;
-	line-height: 1.6;
+	line-height: 1.7;
 	-webkit-font-smoothing: antialiased;
+	overflow-x: clip;
 }
 
-a { color: inherit; text-decoration: none; }
+a { color: inherit; text-decoration: none; transition: color .3s var(--ease); }
 a:hover, a:focus-visible { color: var(--silk); }
 img { max-width: 100%; height: auto; display: block; }
+ul, ol { margin: 0; padding: 0; }
+h1, h2, h3, h4, p { margin: 0; }
 
-.skip-link {
-	position: absolute; left: -9999px;
-}
+:focus-visible { outline: 2px solid var(--silk); outline-offset: 2px; }
+
+.skip-link { position: absolute; left: -9999px; }
 .skip-link:focus {
-	left: 12px; top: 12px; z-index: 999;
+	left: 16px; top: 16px; z-index: 999;
 	background: var(--ink); color: var(--bone);
-	padding: 8px 16px;
+	padding: 12px 24px; font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
 }
 
-/* ═══ HEADER ═══ */
+/* ── Tipografi ölçeği ── */
+h1, .sv-h1 {
+	font-family: var(--font-serif); font-weight: 400;
+	font-size: clamp(42px, 7vw, 76px);
+	letter-spacing: .02em; line-height: 1.12; color: var(--ink);
+}
+h2, .sv-h2 {
+	font-family: var(--font-serif); font-weight: 400;
+	font-size: clamp(28px, 4vw, 44px);
+	letter-spacing: .04em; line-height: 1.2; color: var(--ink);
+}
+h3, .sv-h3 {
+	font-family: var(--font-serif); font-weight: 500;
+	font-size: clamp(20px, 3vw, 26px);
+	letter-spacing: .03em; line-height: 1.3; color: var(--ink);
+}
+
+/* ═══ HEADER — statik, Bone zemin, hairline alt çizgi ═══ */
 .sv-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
-	padding: 14px 24px;
+	height: 60px;                 /* mobil — height ile, padding ile değil */
+	padding: 0 16px;
 	background: var(--bone);
-	border-bottom: 1px solid rgba(184,180,172,.45);
+	border-bottom: 1px solid rgba(26, 26, 26, .08);
 }
-.sv-header__logo img { height: 48px; width: auto; }
-.sv-header__nav { display: flex; gap: 4px; flex-wrap: wrap; }
-.sv-header__nav a {
-	display: inline-flex; align-items: center;
-	min-height: var(--touch); padding: 0 12px;
-	font-size: 14px; letter-spacing: .12em; text-transform: uppercase;
-	font-weight: 500; color: var(--ink);
-}
-.sv-header__nav a:hover, .sv-header__nav a:focus-visible { color: var(--silk); }
+.sv-header__logo { display: inline-flex; align-items: center; flex-shrink: 0; }
+.sv-header__logo img { height: 36px; width: auto; }
 
-/* ═══ HERO ═══ */
-.sv-hero { position: relative; min-height: 420px; overflow: hidden; }
-.sv-hero__bg {
-	position: absolute; inset: 0;
-	width: 100%; height: 100%;
-	object-fit: cover; object-position: right center;
+.sv-header__nav {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	white-space: nowrap;
 }
-.sv-hero__overlay {
-	position: relative; z-index: 1;
-	display: flex; flex-direction: column;
-	justify-content: center; align-items: flex-start;
-	gap: 28px;
-	min-height: 420px;
-	padding: 48px 24px;
-	max-width: 520px;
-}
-.sv-hero__lockup { max-width: 380px; width: 100%; }
-.sv-hero__cta {
-	display: inline-flex; align-items: center; justify-content: center;
-	min-height: var(--touch); padding: 12px 28px;
-	border: 1px solid var(--silk);
+.sv-header__nav a {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	height: 60px;                 /* tam header yüksekliği = touch target */
+	padding: 0 4px;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 11px;
+	letter-spacing: .08em;
+	text-transform: uppercase;
 	color: var(--ink);
-	font-family: var(--font-serif);
-	font-size: 17px; letter-spacing: .1em;
-	background: rgba(245,242,236,.15);
-	transition: background .2s, color .2s;
+}
+.sv-header__nav a::after {
+	content: '';
+	position: absolute;
+	left: 0; bottom: 12px;
+	width: 0; height: 1px;
+	background: var(--silk);
+	transition: width .3s var(--ease);
+}
+.sv-header__nav a:hover, .sv-header__nav a:focus-visible { color: var(--ink); }
+.sv-header__nav a:hover::after, .sv-header__nav a:focus-visible::after { width: 100%; }
+
+/* ═══ HERO — tam ekran premium ═══ */
+.sv-hero {
+	position: relative;
+	height: 70vh;                 /* mobil */
+	min-height: 420px;
+	overflow: hidden;
+	background: var(--bone);
+}
+.sv-hero__bg {
+	position: absolute;
+	inset: 0;
+	width: 100%; height: 100%;
+	object-fit: cover;
+	object-position: right center;
+	transform: scale(1.05);
+	animation: sv-hero-in 2s var(--ease) 1 both;
+}
+@keyframes sv-hero-in {
+	from { transform: scale(1.05); }
+	to   { transform: scale(1); }
+}
+/* Okunabilirlik overlay: sol yarısı Bone → transparan (tek izinli gradient) */
+.sv-hero::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: linear-gradient(to right,
+		rgba(245, 242, 236, .94) 0%,
+		rgba(245, 242, 236, .55) 34%,
+		rgba(245, 242, 236, 0) 62%);
+	pointer-events: none;
+}
+.sv-hero__content {
+	position: relative;
+	z-index: 2;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 40px;
+	padding: 0 20px;
+}
+.sv-hero__lockup { width: 100%; max-width: 280px; height: auto; }
+.sv-hero__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--touch);
+	padding: 16px 48px;
+	border: 1px solid var(--silk);
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	transition: background .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease);
 }
 .sv-hero__cta:hover, .sv-hero__cta:focus-visible {
-	background: var(--silk); color: var(--bone);
+	background: var(--silk);
+	color: var(--bone);
+	border-color: var(--silk);
 }
 
-/* ═══ SECTIONS ═══ */
-.sv-products, .sv-cats {
-	padding: 48px 24px;
-	max-width: 980px;
+/* ═══ SECTION KABU ═══ */
+.sv-section {
+	padding: 64px 20px;
+	max-width: 1240px;
 	margin: 0 auto;
 }
 .sv-section-head {
-	display: flex; align-items: baseline; justify-content: space-between;
-	gap: 16px; margin-bottom: 24px;
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 40px;
 }
-.sv-section-title {
-	font-family: var(--font-serif);
-	font-weight: 600; font-size: clamp(24px, 4vw, 34px);
-	margin: 0;
+/* Section başlığı + ince Silk alt çizgi (40×1px) */
+.sv-section-title { position: relative; padding-bottom: 16px; }
+.sv-section-title::after {
+	content: '';
+	position: absolute;
+	left: 0; bottom: 0;
+	width: 40px; height: 1px;
+	background: var(--silk);
 }
-.sv-shop-all { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
-.sv-shop-all:hover { color: var(--silk); }
-
-/* ═══ ÜRÜN GRID (WooCommerce) ═══ */
-.sv-products ul.products {
-	display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
-	gap: 20px; margin: 0; padding: 0; list-style: none; width: 100%;
-}
-.sv-products ul.products li.product {
-	background: #fff;
-	border: 1px solid rgba(26,26,26,.08);
-	overflow: hidden; position: relative;
-	margin: 0; width: 100% !important; float: none !important;
-	display: flex; flex-direction: column;
-}
-.sv-products ul.products li.product img { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
-.sv-products ul.products li.product .onsale {
-	position: absolute; top: 12px; left: 12px; z-index: 2;
-	background: var(--marine); color: #fff;
-	padding: 5px 10px; font-size: 11px; letter-spacing: .08em;
+.sv-shop-all {
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
 	text-transform: uppercase;
+	color: var(--charcoal);
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--touch);
 }
-.sv-products ul.products li.product .woocommerce-loop-product__title {
-	font-size: 17px; font-weight: 500; padding: 14px 16px 4px; margin: 0;
-}
-.sv-products ul.products li.product .price {
-	padding: 0 16px 12px; color: var(--ink);
-}
-.sv-products ul.products li.product .price del { opacity: .5; font-size: 13px; }
-.sv-products ul.products li.product .price ins {
-	text-decoration: none; font-weight: 600; color: var(--silk);
-}
-.sv-products ul.products li.product .button {
-	margin: auto 16px 16px;
-	display: inline-flex; align-items: center; justify-content: center;
-	min-height: var(--touch); padding: 0 20px; width: calc(100% - 32px);
-	background: var(--ink); color: var(--bone);
-	border: none; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
-	cursor: pointer;
-}
-.sv-products ul.products li.product .button:hover { background: var(--silk); color: var(--ink); }
+.sv-shop-all:hover, .sv-shop-all:focus-visible { color: var(--silk); }
 
-/* ═══ KATEGORİ KARTI ═══ */
-.sv-cats .sv-section-title { margin-bottom: 20px; }
+/* ═══ ÜRÜN GRID — evrensel (home shortcode + Woo archive) ═══ */
+ul.products {
+	display: grid;
+	grid-template-columns: 1fr;   /* mobil */
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	width: 100%;
+}
+ul.products li.product {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	margin: 0;
+	width: 100% !important;
+	float: none !important;
+	background: var(--white);
+	border: none;
+	border-radius: 0;             /* yasak zaten */
+	box-shadow: none;
+	text-align: left;
+}
+ul.products li.product > a.woocommerce-LoopProduct-link {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+/* Görsel: 3/4 oranı, hover'da hafif zoom */
+ul.products li.product img {
+	width: 100%;
+	aspect-ratio: 3 / 4;
+	object-fit: cover;
+	transition: transform 600ms var(--ease);
+}
+ul.products li.product:hover img,
+ul.products li.product:focus-within img {
+	transform: scale(1.03);
+}
+/* İndirim rozeti: siyah zemin, beyaz metin */
+ul.products li.product .onsale {
+	position: absolute;
+	top: 16px; left: 16px;
+	z-index: 2;
+	margin: 0;
+	min-width: 0; min-height: 0;
+	padding: 4px 10px;
+	background: var(--ink);
+	color: var(--white);
+	border-radius: 0;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 10px;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	line-height: 1.6;
+}
+/* Ürün adı: Jost 400 15px */
+ul.products li.product .woocommerce-loop-product__title {
+	padding: 16px 16px 4px;
+	margin: 0;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 15px;
+	letter-spacing: .04em;
+	line-height: 1.5;
+	color: var(--ink);
+}
+ul.products li.product .woocommerce-loop-product__title:hover { color: var(--ink); }
+/* Fiyat: regular whisper üstü çizili 13px · sale Ink 15px 500 */
+ul.products li.product .price {
+	padding: 0 16px 16px;
+	margin: 0;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-weight: 500;
+	font-size: 15px;
+}
+ul.products li.product .price del {
+	color: var(--whisper);
+	font-weight: 300;
+	font-size: 13px;
+	opacity: 1;
+}
+ul.products li.product .price ins {
+	text-decoration: none;
+	color: var(--ink);
+	font-weight: 500;
+	font-size: 15px;
+}
+/* "Seçenekler" butonu: mobilde hep görünür full-width */
+ul.products li.product .button,
+ul.products li.product .added_to_cart {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin: 0;
+	padding: 12px 16px;
+	min-height: var(--touch);
+	width: 100%;
+	background: var(--bone);
+	border: 1px solid rgba(26, 26, 26, .08);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	border-radius: 0;
+	transition: background .3s var(--ease), color .3s var(--ease);
+}
+ul.products li.product .button:hover,
+ul.products li.product .button:focus-visible,
+ul.products li.product .added_to_cart:hover {
+	background: var(--ink);
+	color: var(--bone);
+}
+
+.sv-cats__title { margin-bottom: 40px; }
+
+/* ═══ KATEGORİ KARTI — tam genişlik banner ═══ */
 .sv-cat-card {
-	position: relative; display: block;
-	min-height: 260px; overflow: hidden;
-	border-radius: 2px;
+	position: relative;
+	display: block;
+	height: 320px;                /* mobil */
+	width: 100%;
+	overflow: hidden;
+	background: var(--marine);
+}
+/* Banner container'dan taşıp tam genişliğe açılır */
+.sv-cats { position: relative; }
+.sv-cat-card {
+	width: calc(100% + 40px);
+	margin-left: -20px;
 }
 .sv-cat-card__bg {
-	position: absolute; inset: 0;
+	position: absolute;
+	inset: 0;
 	width: 100%; height: 100%;
-	object-fit: cover; object-position: center;
-	transition: transform .4s;
+	object-fit: cover;
+	object-position: center;
+	transition: transform 600ms var(--ease);
 }
-.sv-cat-card:hover .sv-cat-card__bg { transform: scale(1.04); }
+.sv-cat-card:hover .sv-cat-card__bg,
+.sv-cat-card:focus-visible .sv-cat-card__bg {
+	transform: scale(1.03);
+}
+/* Overlay: alttan koyu, yukarıya şeffaf */
 .sv-cat-card::after {
-	content: ''; position: absolute; inset: 0;
-	background: linear-gradient(to top, rgba(26,26,26,.72) 0%, rgba(26,26,26,.2) 65%);
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top,
+		rgba(26, 26, 26, .75) 0%,
+		rgba(26, 26, 26, .15) 60%,
+		rgba(26, 26, 26, 0) 100%);
+}
+.sv-cat-card__inner {
+	position: absolute;
+	left: 20px; bottom: 24px; right: 20px;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
 }
 .sv-cat-card__num {
-	position: absolute; top: 20px; left: 24px; z-index: 1;
-	font-family: var(--font-serif); font-size: 42px; color: var(--silk);
+	font-family: var(--font-serif);
+	font-weight: 400;
+	font-size: 48px;
 	line-height: 1;
+	color: var(--silk);
 }
 .sv-cat-card__name {
-	position: absolute; bottom: 56px; left: 24px; z-index: 1;
-	font-family: var(--font-serif); font-size: 30px; color: #fff;
+	font-family: var(--font-serif);
+	font-weight: 400;
+	font-size: 32px;
+	line-height: 1.15;
+	letter-spacing: .02em;
+	color: var(--white);
 }
 .sv-cat-card__cta {
-	position: absolute; bottom: 20px; left: 24px; z-index: 1;
-	font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--silk);
-	min-height: var(--touch); display: inline-flex; align-items: center;
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--touch);
+	margin-top: 8px;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	color: var(--white);
+}
+.sv-cat-card:hover .sv-cat-card__cta,
+.sv-cat-card:focus-visible .sv-cat-card__cta { color: var(--silk); }
+
+/* ═══ SHOP SAYFASI (WooCommerce archive) ═══ */
+.sv-shop-banner {
+	position: relative;
+	height: 280px;
+	overflow: hidden;
+	background-color: var(--marine);
+	background-image: url('assets/img/site/shop-banner-sutre.png');
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.sv-shop-banner::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: rgba(26, 26, 26, .35);  /* düz ton — metin kontrastı için */
+}
+.sv-shop-banner__inner {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 0 20px;
+}
+.sv-shop-banner__title {
+	font-family: var(--font-serif);
+	font-weight: 400;
+	font-size: 36px;
+	letter-spacing: .04em;
+	line-height: 1.15;
+	color: var(--white);
+}
+.sv-shop-banner__sub {
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	color: var(--white);
+}
+/* Banner altı 48px boşluk, sonra grid */
+#sutre-content .woocommerce {
+	max-width: 1240px;
+	margin: 0 auto;
+	padding: 48px 20px 64px;
+}
+.woocommerce .woocommerce-result-count {
+	color: var(--charcoal);
+	font-size: 13px;
+	letter-spacing: .04em;
+	margin: 0 0 24px;
+}
+.woocommerce .woocommerce-ordering {
+	margin-bottom: 24px;
+}
+.woocommerce .woocommerce-ordering select {
+	padding: 10px 16px;
+	background: var(--white);
+	border: 1px solid rgba(26, 26, 26, .15);
+	border-radius: 0;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 13px;
+	letter-spacing: .04em;
+	min-height: var(--touch);
+}
+.woocommerce .woocommerce-pagination ul {
+	display: flex;
+	justify-content: center;
+	gap: 24px;
+	list-style: none;
+	border-top: none;
+	margin-top: 64px;
+	padding-top: 24px;
+}
+.woocommerce .woocommerce-pagination ul li a,
+.woocommerce .woocommerce-pagination ul li span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: var(--touch);
+	min-height: var(--touch);
+	font-size: 13px;
+	letter-spacing: .1em;
+	color: var(--charcoal);
+}
+.woocommerce .woocommerce-pagination ul li span.current {
+	color: var(--ink);
+	border-bottom: 1px solid var(--silk);
 }
 
-/* ═══ FOOTER ═══ */
-.sv-footer {
-	background: #111;
+/* ═══ WOOCOMMERCE GENEL — buton / form / tablo (checkout, hesap) ═══ */
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce a.button.alt,
+.woocommerce #respond input#submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--touch);
+	padding: 12px 32px;
+	background: var(--ink);
 	color: var(--bone);
-	padding: 40px 24px 32px;
-	text-align: center;
+	border: 1px solid var(--ink);
+	border-radius: 0;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background .3s var(--ease), color .3s var(--ease);
 }
-.sv-footer__logo {
-	height: 56px; width: auto; margin: 0 auto 20px;
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce a.button.alt:hover {
+	background: var(--silk);
+	border-color: var(--silk);
+	color: var(--bone);
 }
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select,
+.woocommerce-checkout .input-text,
+#customer_login .input-text,
+.woocommerce-EditAccountForm .input-text {
+	background: var(--white);
+	border: 1px solid rgba(26, 26, 26, .15);
+	border-radius: 0;
+	padding: 12px 16px;
+	min-height: var(--touch);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 15px;
+}
+.woocommerce form .form-row label {
+	color: var(--charcoal);
+	font-size: 13px;
+	letter-spacing: .04em;
+}
+.woocommerce .woocommerce-info,
+.woocommerce .woocommerce-error,
+.woocommerce .woocommerce-message {
+	background: var(--ivory);
+	border-top: 1px solid var(--silk);
+	border-radius: 0;
+	color: var(--ink);
+}
+.woocommerce table.shop_table {
+	border: 1px solid rgba(26, 26, 26, .08);
+	border-radius: 0;
+	background: var(--white);
+}
+.woocommerce table.shop_table th {
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+}
+
+/* ═══ FOOTER — 3 satır, Ink zemin ═══ */
+.sv-footer {
+	background: var(--ink);
+	color: var(--bone);
+}
+.sv-footer__inner {
+	max-width: 1240px;
+	margin: 0 auto;
+	padding: 48px 24px;           /* mobil */
+}
+/* Satır 1: logo solda + hukuki linkler sağda */
+.sv-footer__top {
+	display: flex;
+	flex-direction: column;       /* mobil: alt alta */
+	align-items: flex-start;
+	gap: 24px;
+}
+.sv-footer__brand { display: inline-flex; align-items: center; }
+.sv-footer__logo { height: 40px; width: auto; }
 .sv-footer__legal {
-	display: flex; flex-wrap: wrap; justify-content: center;
-	gap: 8px 24px; margin-bottom: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
 }
 .sv-footer__legal a {
-	color: rgba(245,242,236,.85); font-size: 14px;
-	min-height: var(--touch); display: inline-flex; align-items: center;
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--touch);
+	font-family: var(--font-sans);
+	font-weight: 400;
+	font-size: 13px;
+	letter-spacing: .08em;
+	color: var(--bone);
 }
-.sv-footer__legal a:hover { color: var(--silk); }
-.sv-footer__copyright { font-size: 12px; color: rgba(245,242,236,.55); margin: 0; }
+.sv-footer__legal a:hover, .sv-footer__legal a:focus-visible { color: var(--silk); }
+/* Satır 2: 32px boşluk → Satır 3: telif */
+.sv-footer__copy {
+	margin-top: 32px;
+	font-family: var(--font-sans);
+	font-weight: 300;
+	font-size: 12px;
+	letter-spacing: .04em;
+	color: var(--whisper);
+}
 
-/* ═══ DESKTOP ═══ */
+/* ═══ SCROLL REVEAL ═══ */
+.sv-reveal {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+}
+.sv-reveal.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* ═══ DESKTOP (≥782px) ═══ */
 @media (min-width: 782px) {
-	.sv-header { padding: 18px 40px; }
-	.sv-header__logo img { height: 56px; }
-	.sv-hero { min-height: 560px; }
-	.sv-hero__overlay { min-height: 560px; padding: 64px 64px; }
-	.sv-hero__lockup { max-width: 440px; }
-	.sv-products, .sv-cats { padding: 64px 40px; }
-	.sv-products ul.products { grid-template-columns: repeat(3, minmax(0,1fr)); }
+	/* Header: 72px, nav 13px geniş aralık */
+	.sv-header { height: 72px; padding: 0 40px; }
+	.sv-header__logo img { height: 44px; }
+	.sv-header__nav { gap: 32px; }
+	.sv-header__nav a { height: 72px; font-size: 13px; letter-spacing: .16em; padding: 0 2px; }
+
+	/* Hero: 82vh, içerik solda */
+	.sv-hero { height: 82vh; min-height: 560px; }
+	.sv-hero__content {
+		align-items: flex-start;
+		justify-content: center;
+		padding: 0 40px;
+	}
+	.sv-hero__lockup { max-width: 480px; }
+
+	/* Section ölçeği */
+	.sv-section { padding: 96px 40px; }
+	ul.products { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+
+	/* "Seçenekler": hover'da alttan slide-up (desktop only) */
+	ul.products li.product .button,
+	ul.products li.product .added_to_cart {
+		position: absolute;
+		bottom: 0; left: 0;
+		transform: translateY(100%);
+		opacity: 0;
+		background: var(--bone);
+		border: none;
+		border-top: 1px solid rgba(26, 26, 26, .08);
+		transition: transform .3s var(--ease), opacity .3s var(--ease),
+			background .3s var(--ease), color .3s var(--ease);
+	}
+	ul.products li.product:hover .button,
+	ul.products li.product:focus-within .button,
+	ul.products li.product:hover .added_to_cart {
+		transform: translateY(0);
+		opacity: 1;
+	}
+
+	/* Kategori banner: 420px, tam genişlik */
+	.sv-cat-card { height: 420px; width: calc(100% + 80px); margin-left: -40px; }
+	.sv-cat-card__inner { left: 40px; bottom: 40px; right: 40px; }
+
+	/* Footer: tek satır üst küme, kompakt */
+	.sv-footer__inner { padding: 56px 40px; }
+	.sv-footer__top {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.sv-footer__legal a { min-height: 40px; }
+
+	/* Shop iç boşluk */
+	#sutre-content .woocommerce { padding: 48px 40px 96px; }
 }
 
-@media (max-width: 781px) {
-	.sv-products ul.products { grid-template-columns: 1fr; }
-	.sv-header { flex-direction: row; padding: 12px 16px; }
-	.sv-header__logo img { height: 38px; }
-	.sv-hero__overlay { min-height: 380px; padding: 32px 20px; }
-	.sv-hero__lockup { max-width: 300px; }
-}
-
+/* ═══ ERİŞİLEBİLİRLİK: hareket azaltma — tüm animasyon kapalı ═══ */
 @media (prefers-reduced-motion: reduce) {
-	* { transition: none !important; animation: none !important; }
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+	.sv-hero__bg { transform: none; }
+	.sv-reveal { opacity: 1; transform: none; }
+	ul.products li.product .button,
+	ul.products li.product .added_to_cart {
+		transform: none; opacity: 1; position: static;
+	}
 }
-
-:focus-visible { outline: 2px solid var(--silk); outline-offset: 2px; }

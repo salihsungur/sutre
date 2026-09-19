@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 <header class="sv-header">
 	<a class="sv-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo/sutre-logo-header.png' ); ?>" alt="Sutre">
+		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo/sutre-logo-header.png' ); ?>" alt="Sutre — ana sayfa" decoding="async">
 	</a>
 	<nav class="sv-header__nav" aria-label="Ana menü">
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
