@@ -1,0 +1,30 @@
+=== 2026-09-12 18:16:33 UTC ===
+--- git rev-parse HEAD ---
+e83eb04be48db8a5f6b1e841848d80cdc4048686
+--- git rev-parse origin/main ---
+e83eb04be48db8a5f6b1e841848d80cdc4048686
+--- git ls-remote origin main staging dev ---
+10f261ef3c5f0771db560286bfd5d54649308003	refs/heads/dev
+e83eb04be48db8a5f6b1e841848d80cdc4048686	refs/heads/main
+10f261ef3c5f0771db560286bfd5d54649308003	refs/heads/staging
+--- git branch -vv ---
+  dev     10f261e [origin/dev] chore: dispatch altyapısı ve git kuralları
+* main    e83eb04 [origin/main] chore: paket 9 rapor ve kanıt dosyaları (compose iskeleti)
+  staging 10f261e [origin/staging] chore: dispatch altyapısı ve git kuralları
+--- git log --oneline -5 (main) ---
+e83eb04 chore: paket 9 rapor ve kanıt dosyaları (compose iskeleti)
+e655732 feat(local): Faz 1 compose iskeleti (local-only, ADR-001 B kapsamında şablon)
+3a88d70 docs: ADR'ye sürüm kilidi bağlantısı (tutarlılık)
+6d24a9a docs(adr): kurulum stratejisi taslağı ve ortam planı (P7, @architect)
+2c0d9bc docs(faz1): sürüm kilit belgesi (P6, @researcher)
+--- git status -sb ---
+## main...origin/main
+?? dispatch/out/evidence-10-ssh-pub.txt
+?? dispatch/out/evidence-10-ssh.txt
+?? dispatch/out/evidence-11-push.txt
+?? dispatch/out/evidence-8-commits.txt
+?? dispatch/out/out-10-ssh-remote.md
+?? dispatch/out/out-8-docs-commit.md
+?? dispatch/pack-10-ssh-remote.md
+?? dispatch/pack-11-push.md
+?? dispatch/pack-8-docs-commit.md

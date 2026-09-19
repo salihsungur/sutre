@@ -1,0 +1,43 @@
+=== PAKET 13 — SSH bağlantı kanıtı ===
+Tarih: 2026-09-12 19:01:14 UTC  Makina: c96fa9d1dd26
+
+--- Anahtar parmak izi (ssh-keygen -lf) ---
+256 SHA256:wYI8pi23RvK961zOFjOH2N9/rM0ma1fn+X4kjqxA3UU hermes-hosting sutre cpanel (ED25519)
+
+--- DNS: mt-charon.guzelhosting.com ---
+89.252.180.242  mt-charon.guzelhosting.com
+
+--- Port 22 (varsayılan) ---
+$ ssh -i ~/.ssh/sutre_cpanel -o BatchMode=yes -o ConnectTimeout=10 spokenla@mt-charon.guzelhosting.com "whoami; hostname; uname -a"
+ssh: connect to host mt-charon.guzelhosting.com port 22: Connection refused
+
+--- Port 2222 (alternatif) ---
+$ ssh ... -p 2222 spokenla@mt-charon.guzelhosting.com
+ssh: connect to host mt-charon.guzelhosting.com port 2222: Connection timed out
+
+--- Port taraması (89.252.180.242) ---
+closed/filtered: 22
+closed/filtered: 2222
+closed/filtered: 23
+closed/filtered: 2200
+closed/filtered: 2083
+closed/filtered: 2087
+closed/filtered: 10000
+closed/filtered: 2100
+closed/filtered: 2223
+closed/filtered: 2020
+OPEN: 443
+closed/filtered: 21098
+
+--- SSH denemesi açık portlarda (2083/2087/443) ---
+port 2083: Connection closed by 89.252.180.242 port 2083 (SSH banner yok — HTTPS servisi)
+port 2087: Connection closed by 89.252.180.242 port 2087 (SSH banner yok — HTTPS servisi)
+port 443:  Connection closed by 89.252.180.242 port 443  (SSH banner yok — HTTPS servisi)
+
+SONUÇ: SSH erişimi HİÇBİR portta sağlanamadı. Uzak envanter (whoami/docroot/PHP/MySQL/cron/DNS-remote) yapılamadı.
+=== Port teyit taraması (3. koşu, 19:01:59 UTC) ===
+closed/filtered: 22
+closed/filtered: 2222
+OPEN: 2083
+OPEN: 2087
+OPEN: 443

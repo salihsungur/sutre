@@ -1,0 +1,14 @@
+3a88d70 docs: ADR'ye sürüm kilidi bağlantısı (tutarlılık)
+6d24a9a docs(adr): kurulum stratejisi taslağı ve ortam planı (P7, @architect)
+2c0d9bc docs(faz1): sürüm kilit belgesi (P6, @researcher)
+b36fd57 chore: paket 5 rapor ve kanıt dosyaları (git kurulumu)
+10f261e chore: dispatch altyapısı ve git kuralları
+01c0e6b docs: proje anayasası ve Faz 0 girdi/envanter dosyaları
+
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	dispatch/out/evidence-8-commits.txt
+	dispatch/pack-8-docs-commit.md
+
+nothing added to commit but untracked files present (use "git add" to track)

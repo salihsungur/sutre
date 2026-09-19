@@ -1,0 +1,39 @@
+=== PAKET 13b — cPanel Terminal üzerinden envanter (sahibin çalıştırdığı komutlar) ===
+Tarih: 2026-09-12 · Kaynak: sahibin kopyaladığı canlı terminal çıktısı (mt-charon.guzelhosting.com, user spokenla)
+
+--- PHP ---
+/opt/cpanel/ea-php83/root/usr/bin/php      (MultiPHP: 8.3 paketi mevcut)
+php -v  → PHP 8.5.9 (cli) built Aug 6 2026, NTS     (aktif CLI sürümü 8.5!)
+
+--- MySQL/MariaDB ---
+MariaDB 11.8.8 client 15.2 (server: 11.8.8-MariaDB — cPanel panel bilgisiyle uyumlu)
+
+--- Docroot ---
+BİRİNCİL ALAN ADI: spokenlab.com.tr → ~/public_html DOLU (mevcut statik site!)
+  içerik örnekleri: admin/ dizini, aydinlatma.html, blog.html, blog-detay.html,
+  cerez-politikasi.html, admin_api_fetch_output.json (Feb 2026, 666 izinli render dosyaları)
+~/domains yok (addon alanlar farklı dizin şemasında — cPanel 'Alan Adları' listesiyle teyit)
+
+--- WP ---
+wp-config.php BULUNAMADI (find ~/public_html ~/domains) → WordPress kurulu DEĞİL
+
+--- Araçlar ---
+git: /usr/local/cpanel/3rdparty/lib/path-bin/git ✓
+wp-cli: YOK · sudo: YOK (root beklentisi yok — paylaşımlı hosting normal)
+
+--- Cron ---
+crontab boş ✓
+
+--- SSH servisi (kullanıcıdan görünen) ---
+ss -tln boş çıktı (fonksiyon baypaslı), sshd_config erişilemez (root-dosyası)
+→ SSH dış bağlantı dOKI doğrulanamadı; port bilgisi yalnız sağlayıcıdan veya panel 'SSH Access' sayfasından
+
+=== KARŞILAŞTIRMA (version-lock.md) ===
+PHP: aktif CLI 8.5.9 (version-lock seçim 8.4'ten yeni — WP 7.1 'öneri PHP 8.3+',
+     8.4 aktif destek testi 8.5 için resmi WP beyanında yok → 'Sürüm planı uyarı' notu  ·
+     8.3 MultiPHP paketi mevcut, fallback mümkün)
+     → version-lock'taki 'kurulumda tekrar doğrula' kapısı: WP 7.1'in PHP 8.5 beyan durumu araştırılacak (P6 §6 kuralı)
+MariaDB: 11.8.8 — WP gereksinimi (10.11+/8.0+) ÜSTÜNDE ✓
+Disc: ~/public_html'IÇINDE mevcut spokenlab.com.tr sitesi VAR — production docroot ÇAKIŞMAZ,
+      sutre.store ayrı docroot'a bağlanmalı (~/sutre.store) — anayasa §0.6 'kullanıcının mevcut
+      değişiklikleri ezilmemeli' doğrudan bağlayıcı.

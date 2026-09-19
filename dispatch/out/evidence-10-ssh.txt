@@ -1,0 +1,36 @@
+# PAKET 10 KANIT — Git remote + SSH deploy key (2026-09-12)
+
+## git remote -v
+origin	git@github-sutre:salihsungur/sutre.git (fetch)
+origin	git@github-sutre:salihsungur/sutre.git (push)
+
+## ls -la ~/.ssh/ (/opt/data/home/.ssh)
+total 12
+drwx------ 5 hermes hermes 160 Sep 12 18:12 .
+drwxr-xr-x 5 hermes hermes 160 Sep 12 18:12 ..
+-rw------- 1 hermes hermes 115 Sep 12 18:12 config
+-rw------- 1 hermes hermes 419 Sep 12 18:12 sutre_deploy
+-rw------- 1 hermes hermes 107 Sep 12 18:12 sutre_deploy.pub
+
+## ~/.ssh/config içeriği
+Host github-sutre
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/sutre_deploy
+    IdentitiesOnly yes
+
+## ssh-keygen -lf ~/.ssh/sutre_deploy.pub
+256 SHA256:Q6ypqsEs2K3r2iVYqJlwgoBdU0LVZwv/N3K/bMG5Q/8 hermes-brand sutre deploy (ED25519)
+
+## git status -sb
+## main
+?? dispatch/out/evidence-8-commits.txt
+?? dispatch/out/out-8-docs-commit.md
+?? dispatch/pack-10-ssh-remote.md
+?? dispatch/pack-8-docs-commit.md
+(HEAD: main @ e83eb04; commit sonrası paket-10 dosyaları eklenecek)
+
+## Not
+- PRIVATE key (sutre_deploy) içeriği hiçbir rapora/log'a yazılmadı (§15).
+- `ssh -T git@github-sutre` denemesi ATLANDI — key henüz GitHub deploy key olarak eklenmedi (paket talimatı md.6).
+- PUSH YAPILMADI — kimlik doğrulama sahibin deploy key eklemesine bağlı.

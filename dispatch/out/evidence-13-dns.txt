@@ -1,0 +1,23 @@
+
+=== PAKET 13 — DNS kanıtı (LOKAL fallback: uzak SSH kapalı olduğundan remote getent YAPILAMADI) ===
+Tarih: 2026-09-12 19:02:03 UTC
+
+--- sutre.store ---
+kayıt-yok (getent boş döndü)
+
+--- staging.sutre.store ---
+kayıt-yok (getent boş döndü)
+
+--- NS kayıtları (dig +short NS sutre.store) ---
+dig yok/başarısız
+
+--- SOA (zone var mı?) ---
+=== Python socket teyidi (19:02:12 UTC) ===
+sutre.store -> HATA: [Errno -2] Name or service not known
+staging.sutre.store -> HATA: [Errno -2] Name or service not known
+mt-charon.guzelhosting.com -> ('mt-charon.guzelhosting.com', [], ['89.252.180.242'])
+
+NOT: sutre.store ve staging.sutre.store için A kaydı ÇÖZÜMLENMİYOR (NXDOMAIN/nodata).
+NS/SOA sorgusu bu makinede dig/nslookup bulunmadığından yapılamadı; zone REFUSED vs. kayıt-yok ayrımı
+uzak suncudan (remote getent/dig) yapılacaktı — SSH erişimi olmadığından o kanal da kapalı.
+Orkestratörün önceki REFUSED bulgusuyla uyumlu: zone sorgulanamıyor / A kaydı yok.
