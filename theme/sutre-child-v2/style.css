@@ -620,7 +620,7 @@ ul.products li.product .added_to_cart:hover {
 	gap: 24px;
 }
 .sv-footer__brand { display: inline-flex; align-items: center; }
-.sv-footer__logo { height: 40px; width: auto; }
+
 .sv-footer__legal {
 	display: flex;
 	flex-wrap: wrap;
