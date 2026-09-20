@@ -16,13 +16,6 @@ style.css'ten SONRA yüklenir — baskın stiller burada.
 	background: #111111;
 	color: var(--bone);
 }
-.sv-footer__logo {
-	height: 64px;
-	width: auto;
-	max-width: 380px;
-	display: block;
-	margin: 0 auto 18px;
-}
 .sv-footer__legal {
 	display: flex;
 	flex-wrap: wrap;
@@ -69,4 +62,11 @@ style.css'ten SONRA yüklenir — baskın stiller burada.
 	height: 4px;
 	background: var(--ink);
 	width: 100%;
+}
+
+.sv-footer__logo {
+	width: min(420px, 60%);
+	height: auto;
+	display: block;
+	margin: 0 auto 18px;
 }
