@@ -665,16 +665,6 @@ ul.products li.product .added_to_cart:hover {
 	text-transform: uppercase;
 }
 
-/* ═══ FOOTER — 3 satır, Ink zemin ═══ */
-.sv-footer {
-	background: var(--ink);
-	color: var(--bone);
-}
-.sv-footer__inner {
-	max-width: 1240px;
-	margin: 0 auto;
-	padding: 48px 24px;           /* mobil */
-}
 /* Satır 1: logo solda + hukuki linkler sağda */
 .sv-footer__top {
 	display: flex;
@@ -833,31 +823,6 @@ ul.products li.product .added_to_cart:hover {
 	display: block;
 }
 
-/* ═══ FOOTER — siyah zemin, makul logo ═══ */
-.sv-footer {
-	background: #111111;
-	color: var(--bone);
-}
-.sv-footer__legal {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 8px 24px;
-	margin-bottom: 16px;
-}
-.sv-footer__legal a {
-	color: rgba(245,242,236,.85);
-	font-size: 14px;
-	min-height: 44px;
-	display: inline-flex;
-	align-items: center;
-}
-.sv-footer__legal a:hover { color: var(--silk); }
-.sv-footer__copyright {
-	font-size: 12px;
-	color: rgba(245,242,236,.55);
-	margin: 0;
-}
 
 /* ═══ SHOP BANNER ═══ */
 .sv-shop-banner {
@@ -888,4 +853,84 @@ ul.products li.product .added_to_cart:hover {
 	height: auto;
 	display: block;
 	margin: 0 auto 18px;
+}
+
+/* ═══ FOOTER v3 — yeniden tasarım (grid + premium) ═══ */
+.sv-footer {
+	background: #111111;
+	color: var(--bone);
+	padding: 72px 48px 0;
+}
+.sv-footer__grid {
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr 1fr;
+	gap: 48px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+.sv-footer__logo {
+	height: 44px;
+	width: auto;
+	margin-bottom: 20px;
+}
+.sv-footer__desc {
+	font-size: 14px;
+	font-weight: 300;
+	line-height: 1.8;
+	color: rgba(245,242,236,.6);
+	max-width: 280px;
+	margin: 0;
+}
+.sv-footer__heading {
+	font-family: var(--font-sans);
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	color: rgba(245,242,236,.45);
+	margin: 0 0 20px;
+}
+.sv-footer__col {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+.sv-footer__col a {
+	font-size: 14px;
+	font-weight: 300;
+	color: rgba(245,242,236,.8);
+	padding: 7px 0;
+	transition: color 250ms;
+}
+.sv-footer__col a:hover, .sv-footer__col a:focus-visible { color: var(--silk); }
+
+.sv-footer__bottom {
+	max-width: 1200px;
+	margin: 56px auto 0;
+	padding: 24px 0 28px;
+	border-top: 1px solid rgba(245,242,236,.12);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+.sv-footer__copyright {
+	font-size: 12px;
+	letter-spacing: .04em;
+	color: rgba(245,242,236,.5);
+	margin: 0;
+}
+.sv-footer__origin {
+	font-family: var(--font-serif);
+	font-size: 15px;
+	letter-spacing: .06em;
+	color: var(--silk);
+	margin: 0;
+}
+
+/* mobil */
+@media (max-width: 781px) {
+	.sv-footer { padding: 56px 24px 0; }
+	.sv-footer__grid { grid-template-columns: 1fr; gap: 36px; }
+	.sv-footer__bottom { flex-direction: column; gap: 8px; padding: 24px 0; margin-top: 40px; }
 }
