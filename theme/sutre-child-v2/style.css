@@ -713,14 +713,6 @@ h3, .sv-h3 {
 	width: auto;
 	margin-bottom: 20px;
 }
-.sv-footer__desc {
-	font-size: 14px;
-	font-weight: 300;
-	line-height: 1.8;
-	color: rgba(245,242,236,.6);
-	max-width: 280px;
-	margin: 0;
-}
 .sv-footer__heading {
 	font-family: var(--font-sans);
 	font-size: 12px;
@@ -811,6 +803,13 @@ h3, .sv-h3 {
 	align-items: baseline;
 	justify-content: space-between;
 	margin-bottom: 20px;
+}
+
+/* P38: shop grid'i ana sayfa ölçeğiyle eşitle — kart boyutu site geneli birebir aynı
+   (home: .sv-products 1080px − 48px pad = 1032px grid; shop aynı hedef) */
+#sutre-content .woocommerce ul.products {
+	max-width: 1032px;
+	margin: 0 auto;
 }
 
 /* ── KART: görsel tam kaplar, bilgi görsel ÜSTÜNE biner ── */

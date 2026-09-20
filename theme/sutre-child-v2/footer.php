@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 		<div class="sv-footer__brand">
 			<img class="sv-footer__logo" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo/sutre-logo-footer.png' ); ?>" alt="Sutre">
-			<p class="sv-footer__desc"><?php esc_html_e( 'El dokuması ipek, pamuk ve bambu şallar. İstanbul.', 'sutre' ); ?></p>
 		</div>
 
 		<div class="sv-footer__col">

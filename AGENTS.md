@@ -42,6 +42,54 @@ sutre/
 - `theme/sutre-child/` (v1) eski sürümdür; DOKUNULMAZ, silinmez ama kullanılmaz.
 - Anayasa §15 "asla yapılmayacaklar" listesi tüm işlerde bağlayıcıdır.
 
+### 1.1 Site Haritası (canlı durum — 20-09-2026)
+
+| URL | Sayfa / İçerik | Ne yapılabilir / Davranış | Şablon kaynağı |
+| :--- | :--- | :--- | :--- |
+| `/` | Ana sayfa: hero (transparan lockup + "Koleksiyonu Keşfet"), Ürünler bölümü (2 kart), Kategoriler (Giyim kartı) | Statik vitrin; Ürünler bölümü Woo shortcode ile çekilir (kart tasarımı global'den gelir) | `page-templates/home.php` (WP'de "Sutre Ana Sayfa" şablonu atanmış) |
+| `/shop/` | Koleksiyon: shop banner ("KOLEKSİYON"), sıralama select'i, ürün grid'i (2 ürün) | Ürün listesi Woo archive; banner `functions.php` hook; sayfa başlığı gizli | `woocommerce/archive-product.php` |
+| `/product/jakarli-sal/` | Jakarlı Şal — değişken ürün (9 renk varyasyonu, ₺449,90 indirimli) | Varyasyon seçimi, sepete ekleme | `woocommerce/single-product.php` + Woo blok markup |
+| `/product/iman-nour-sal/` | İman Nour Şal — değişken ürün (6 renk; görseller geçici Siyah Jakarlı) | Aynı | Aynı |
+| `/cart/` | Sepet sayfası | Sepet düzenleme; hesapsız gezilebilir | `woocommerce/cart.php` ailesi |
+| `/checkout/` | Ödeme (şu an Woo varsayılan; PayTR yok) | 302 → login/register ZORUNLU (bilinçli kural); Everyone-can-register AÇIK | `woocommerce/checkout.php` ailesi |
+| `/my-account/` | Hesabım (giriş/kayıt + hesap panosu) | Giriş, kayıt, siparişler | `woocommerce/myaccount.php` ailesi |
+| `/mesafeli-satis-sozlesmesi/`, `/iade-ve-cayma/`, `/gizlilik-politikasi/` | Hukuki sayfalar | **404 — henüz oluşturulmadı** (footer linkleri ölü; Blok A NEEDS_OWNER_INPUT) | Oluşturulunca `page.php` |
+| `imunify-bot-check` | Hosting bot koruması ara sayfası | Sistem davranışı; hata değil | — |
+
+- Kategori yapısı: Giyim → Kadın → Şal (tek kategori; shop = tüm ürünler).
+- Sayfa oluşturma kuralı: yeni bir WP sayfası açıldığında header/footer/style.css otomatik gelir — o sayfaya AYRI CSS/markup yazılmaz (§5.1).
+
+### 1.2 WordPress + FTP Etki Haritası (değişiklik → yayılma alanı)
+
+**Sunucu docroot:** `/home/spokenla/staging.sutre.store/` (FTP kanalı B veya kullanıcının `git pull` + `cp -a` zinciriyle).
+
+```text
+staging.sutre.store/
+├── wp-config.php                    DB bağlantısı + HPOS; DEĞİŞTİRİLMEZ (secret — okunmaz, rapora yazılmaz)
+├── wp-content/
+│   ├── mu-plugins/wc-rich-register.php  kayıt alanı zenginleştirme (site geneli etkiler)
+│   ├── plugins/woocommerce/         ÇEKİRDEK — ASLA düzenlenmez (güncelleme siler)
+│   ├── themes/sutre-child/          AKTİF TEMA (repo: theme/sutre-child-v2/) ← tüm tasarım işleri burada
+│   │   ├── style.css                TEK CSS → TÜM sayfaları etkiler (header, footer, kartlar, banner, hero)
+│   │   ├── header.php               TEK header kaynağı → TÜM sayfalar (ana sayfa + shop + ürün + cart + checkout + my-account + statik sayfalar)
+│   │   ├── footer.php               TEK footer kaynağı → TÜM sayfalar (aynı)
+│   │   ├── functions.php            Woo davranış kuralları → tüm Woo sayfaları (banner hook, başlık gizleme, sidebar yok, placeholder fix, block template kapama)
+│   │   ├── page-templates/home.php  yalnız ana sayfa (WP admin şablon ataması gerekir)
+│   │   ├── woocommerce/*.php        Woo şablon override'ları → ilgili Woo sayfası (archive-product → /shop/; single-product → /product/*; cart/checkout/myaccount aileleri)
+│   │   └── assets/img/              logo/ (header+footer+lockup PNG) + site/ (hero, kategori kartı, shop banner) → hangi sayfada kullanılıyorsa oraya etki eder
+│   └── uploads/                     medya kütüphanesi (ürün görselleri Woo'dan atanır; tema görselleri BURADA DEĞİL — tema assets/img)
+└── refs/                            üretim referans görselleri (fal.media public URL için) — siteye etkisi yok
+```
+
+**Etki kuralları (ajan bunları bilecek):**
+1. `style.css`'teki bir değişiklik sitede HER sayfayı etkiler → selector scoped yazılmalı (global selector yalnız bilinçli, site geneli istenen kurallar için — örn. kart).
+2. `header.php` / `footer.php` değişikliği TÜM sayfalara aynı anda yansır — bu istenen davranıştır (tek kaynak).
+3. `functions.php`'deki Woo hook'ları tüm mağaza yüzeylerini etkiler (shop + ürün + cart + checkout + hesap).
+4. `woocommerce/` altındaki şablon sadece kendi sayfa tipini etkiler; orada header/footer çağrısı (get_header/get_footer) ASLA kaldırılmaz.
+5. `uploads/`'a konan ürün görselleri WP admin'den ürüne atanır; tema görselleri `assets/img/`'ta tutulur ve FTP ile konur.
+6. WP Admin (staging.sutre.store/wp-admin) — kullanıcı yönetir; ajan admin şifresi İSTEMEZ, admin panel işi kullanıcıya tek mini adımla anlatılır.
+
+
 ## 2. Kullanıcıyla Çalışma ve Güvenlik
 
 1. Kullanıcı (Salih) adım adım ilerler: her turda TEK mini talimat; uzun toplu paket verilmez.
