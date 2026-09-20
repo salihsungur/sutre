@@ -964,3 +964,12 @@ h3, .sv-h3 {
 	grid-auto-rows: 1fr !important;
 	align-items: stretch !important;
 }
+
+/* ═══ P36c — WOO pseudo-element fix: ::before/::after grid item olmasın
+   (Woo layout CSS'i content:" " display:table veriyor → grid'de 2 boş
+   hücre açıp ürünleri çapraz diziyordu — staggered'ın GERÇEK kökü) ═══ */
+.sv-products ul.products::before,
+.sv-products ul.products::after {
+	display: none !important;
+	content: none !important;
+}
