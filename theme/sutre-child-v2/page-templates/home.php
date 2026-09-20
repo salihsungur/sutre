@@ -34,7 +34,7 @@ get_header();
 				<?php esc_html_e( 'Tümünü Gör', 'sutre' ); ?> <span aria-hidden="true">&rarr;</span>
 			</a>
 		</div>
-		<?php echo do_shortcode( '[products limit="6" columns="3" paginate="false"]' ); ?>
+		<?php echo do_shortcode( '[products limit="2" columns="2" paginate="false"]' ); ?>
 	</section>
 
 	<section class="sv-section sv-cats sv-reveal">

@@ -934,3 +934,91 @@ ul.products li.product .added_to_cart:hover {
 	.sv-footer__grid { grid-template-columns: 1fr; gap: 36px; }
 	.sv-footer__bottom { flex-direction: column; gap: 8px; padding: 24px 0; margin-top: 40px; }
 }
+
+/* ═══ P35 — ÜRÜNLER BÖLÜMÜ RAFİNESİ ═══ */
+
+/* Grid hizalama — solda boşluk kalmasın, kartlar konteyneri doldursun */
+.sv-products ul.products {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 28px;
+	max-width: 100%;
+}
+
+/* Başlık-grid arası boşluğu sıkılaştır */
+.sv-products .sv-section-head { margin-bottom: 28px; }
+
+/* Kart iç padding — ad/fiyat kenara yapışmasın */
+.sv-products ul.products li.product .woocommerce-loop-product__title {
+	padding: 18px 20px 6px;
+	font-size: 16px;
+	letter-spacing: .03em;
+}
+.sv-products ul.products li.product .price {
+	padding: 0 20px 18px;
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+}
+
+/* İNDİRİM rozeti → zarif yüzde stili */
+.sv-products ul.products li.product .onsale {
+	top: 14px; left: 14px;
+	background: var(--ink);
+	color: var(--bone);
+	font-family: var(--font-sans);
+	font-size: 10px;
+	letter-spacing: .14em;
+	padding: 5px 12px;
+	border-radius: 0;
+	text-transform: uppercase;
+}
+
+/* Kart hover: görsel zoom + ad altında silk çizgi */
+.sv-products ul.products li.product a img {
+	transition: transform 700ms cubic-bezier(.4,0,.2,1);
+}
+.sv-products ul.products li.product:hover a img {
+	transform: scale(1.04);
+}
+.sv-products ul.products li.product .woocommerce-loop-product__title::after {
+	content: '';
+	display: block;
+	width: 0; height: 1px;
+	background: var(--silk);
+	margin-top: 8px;
+	transition: width 400ms cubic-bezier(.4,0,.2,1);
+}
+.sv-products ul.products li.product:hover .woocommerce-loop-product__title::after {
+	width: 100%;
+}
+
+/* Seçenekler butonu — desktop hover slide-up, mobil hep görünür */
+.sv-products ul.products li.product .button {
+	margin: 0 20px 20px;
+	width: calc(100% - 40px);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	background: transparent;
+	border: 1px solid var(--ink);
+	color: var(--ink);
+	font-size: 12px;
+	letter-spacing: .16em;
+	text-transform: uppercase;
+	transition: background 350ms, color 350ms;
+}
+.sv-products ul.products li.product .button:hover {
+	background: var(--ink);
+	color: var(--bone);
+}
+
+/* Ürün adı üstü kategori etiketi hissi (title öncesi boşluk dengesi) */
+.sv-products ul.products li.product {
+	padding-bottom: 4px;
+}
+
+/* Mobil: tek kolon + dolu */
+@media (max-width: 781px) {
+	.sv-products ul.products { grid-template-columns: 1fr; gap: 24px; }
+}
