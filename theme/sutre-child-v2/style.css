@@ -1108,3 +1108,19 @@ ul.products li.product .added_to_cart:hover {
 	.sv-products ul.products li.product img,
 	.sv-products ul.products li.product .button { transition: none; }
 }
+
+/* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
+.sv-products ul.products li.product {
+	grid-column: auto !important;
+	grid-row: auto !important;
+	clear: none !important;
+	float: none !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+}
+.sv-products ul.products {
+	grid-auto-flow: row !important;
+	grid-auto-rows: 1fr !important;
+	align-items: stretch !important;
+}
