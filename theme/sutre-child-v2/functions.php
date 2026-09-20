@@ -16,6 +16,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 	wp_enqueue_style( 'sutre-style', get_stylesheet_uri(), [ 'sutre-fonts' ], SUTRE_VERSION );
+	wp_enqueue_style( 'sutre-override', $uri . '/parts/override.css', [ 'sutre-style' ], SUTRE_VERSION );
 } );
 
 /* ── Font preconnect (performans) ── */
