@@ -468,7 +468,22 @@ ul.products li.product .added_to_cart:hover {
 #sutre-content .woocommerce {
 	max-width: 1240px;
 	margin: 0 auto;
-	padding: 48px 20px 64px;
+	padding: 64px 20px;   /* section ölçeğiyle tutarlı (G5) */
+}
+.woocommerce .woocommerce-breadcrumb {
+	margin: 0 0 24px;
+	color: var(--whisper);
+	font-family: var(--font-sans);
+	font-weight: 300;
+	font-size: 12px;
+	letter-spacing: .04em;
+}
+.woocommerce .woocommerce-breadcrumb a {
+	color: var(--whisper);
+}
+.woocommerce .woocommerce-breadcrumb a:hover,
+.woocommerce .woocommerce-breadcrumb a:focus-visible {
+	color: var(--ink);
 }
 .woocommerce .woocommerce-result-count {
 	color: var(--charcoal);
@@ -697,8 +712,8 @@ ul.products li.product .added_to_cart:hover {
 	}
 	.sv-footer__legal a { min-height: 40px; }
 
-	/* Shop iç boşluk */
-	#sutre-content .woocommerce { padding: 48px 40px 96px; }
+	/* Shop iç boşluk (section ölçeğiyle tutarlı, G5) */
+	#sutre-content .woocommerce { padding: 96px 40px; }
 }
 
 /* ═══ ERİŞİLEBİLİRLİK: hareket azaltma — tüm animasyon kapalı ═══ */

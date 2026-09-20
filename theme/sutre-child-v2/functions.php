@@ -1,7 +1,7 @@
 <?php
 /**
  * Sutre v3 — functions.php (quiet luxury tasarım sistemi)
- * Asset enqueue + WooCommerce klasik şablon/arka plan ayarları + shop banner + scroll reveal.
+ * Asset enqueue + WooCommerce (block template kapalı, klasik şablonlar, wrapper, sidebar yok) + shop banner + scroll reveal.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -27,13 +27,47 @@ add_filter( 'wp_resource_hints', function ( $urls, $relation ) {
 	return $urls;
 }, 10, 2 );
 
-/* ── WooCommerce: block template'leri kapalı — klasik şablonlar ── */
-add_filter( 'woocommerce_has_block_template', '__return_false', 999 );
+/* ── WooCommerce tema desteği (v1 beyanı restore) — klasik 'desteklenen tema' yolu sabit ── */
+add_action( 'after_setup_theme', function () {
+	add_theme_support( 'woocommerce', array(
+		'thumbnail_image_width' => 350,
+		'single_image_width'    => 800,
+		'product_grid'          => array(
+			'default_columns' => 3,   /* v3 grid: desktop 3 sütun (style.css ile tutarlı) */
+			'default_rows'    => 6,
+			'min_columns'     => 2,
+			'max_columns'     => 4,
+		),
+	) );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
+}, 20 );
 
-/* ── WooCommerce: sidebar YOK (shop archive) ── */
+/* ── Block template'ler KAPALI (G1) ──
+ * TT5 parent FSE; bu tema klasik PHP mimarisi. Not: Woo'nun woocommerce_has_block_template
+ * filtresi yalnızca WP_Block_Templates_Registry::is_registered() sonucunu filtreler
+ * (class-wc-template-loader.php L132-148) — WP çekirdeğinin locate_block_template()
+ * kapısına dokunmaz; eski filtre bu yüzden işlevsizdi. Doğru kapı theme support kaldırmaktır. */
+add_action( 'after_setup_theme', function () {
+	remove_theme_support( 'block-templates' );
+}, 20 );
+
+/* ── WooCommerce: sidebar YOK + content wrapper override (G3) ──
+ * Şablon dosyaları verbatim kalır (§3.1); hook katmanında: sidebar kalkar, Woo'nun
+ * default <main id="main"> wrapper'ı yerine .woocommerce container gelir
+ * (G5'teki #sutre-content .woocommerce padding kuralının hedefi). */
 add_action( 'init', function () {
 	remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+	remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
 } );
+add_action( 'woocommerce_before_main_content', function () {
+	echo '<div class="woocommerce">';
+}, 10 );
+add_action( 'woocommerce_after_main_content', function () {
+	echo '</div>';
+}, 10 );
 
 /* ── WooCommerce: shop sayfa başlığı kaldır (banner'daki "Koleksiyon" h1 yerine geçer) ── */
 add_filter( 'woocommerce_show_page_title', '__return_false' );
@@ -51,7 +85,7 @@ add_action( 'woocommerce_before_main_content', function () {
 		</div>
 	</section>
 	<?php
-}, 20 );
+}, 5 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
