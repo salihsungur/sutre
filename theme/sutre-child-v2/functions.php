@@ -5,13 +5,13 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.1.0' );
+define( 'SUTRE_VERSION', '3.2.0' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style(
 		'sutre-fonts',
-		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap',
+		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap',
 		[],
 		null
 	);

@@ -1,7 +1,7 @@
 /*
 Theme Name: Sutre
 Description: Sutre şal markası — quiet luxury tasarım sistemi v3. Klasik PHP, tek mimari.
-Version: 3.0.0
+Version: 3.2.0
 Text Domain: sutre
 */
 
@@ -25,6 +25,7 @@ Text Domain: sutre
 	--font-sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
 	--touch: 44px;
 	--ease: cubic-bezier(.25, .46, .45, .94);
+	--ease-io: cubic-bezier(.4, 0, .2, 1);   /* P33: standart hız eğrisi (CTA/kart) */
 }
 
 /* ── Reset ── */
@@ -38,9 +39,17 @@ body {
 	font-family: var(--font-sans);
 	font-weight: 300;
 	font-size: 16px;
-	line-height: 1.7;
+	line-height: 1.75;
+	letter-spacing: .01em;
 	-webkit-font-smoothing: antialiased;
 	overflow-x: clip;
+	animation: sv-page-in 400ms var(--ease) 1 both;
+}
+
+/* P33 P6 — sayfa geçişi: ilk yükleme fade-in, preload flash engelleme (CSS, JS yok) */
+@keyframes sv-page-in {
+	from { opacity: 0; }
+	to   { opacity: 1; }
 }
 
 a { color: inherit; text-decoration: none; transition: color .3s var(--ease); }
@@ -108,17 +117,20 @@ h3, .sv-h3 {
 	letter-spacing: .08em;
 	text-transform: uppercase;
 	color: var(--ink);
+	transition: color 250ms var(--ease);   /* P33 P1 */
 }
 .sv-header__nav a::after {
 	content: '';
 	position: absolute;
 	left: 0; bottom: 12px;
-	width: 0; height: 1px;
+	width: 100%; height: 1px;
 	background: var(--silk);
-	transition: width .3s var(--ease);
+	transform: scaleX(0);              /* P33 P1: width yerine scaleX 0→1 */
+	transform-origin: left center;
+	transition: transform 250ms var(--ease);
 }
 .sv-header__nav a:hover, .sv-header__nav a:focus-visible { color: var(--ink); }
-.sv-header__nav a:hover::after, .sv-header__nav a:focus-visible::after { width: 100%; }
+.sv-header__nav a:hover::after, .sv-header__nav a:focus-visible::after { transform: scaleX(1); }
 
 /* ═══ HERO — tam ekran premium ═══ */
 .sv-hero {
@@ -141,16 +153,15 @@ h3, .sv-h3 {
 	from { transform: scale(1.05); }
 	to   { transform: scale(1); }
 }
-/* Okunabilirlik overlay: sol yarısı Bone → transparan (tek izinli gradient) */
+/* Okunabilirlik overlay: Bone %95 → %0, düz soldan sağa (tek izinli gradient) — P33 P2 */
 .sv-hero::before {
 	content: '';
 	position: absolute;
 	inset: 0;
 	z-index: 1;
 	background: linear-gradient(to right,
-		rgba(245, 242, 236, .94) 0%,
-		rgba(245, 242, 236, .55) 34%,
-		rgba(245, 242, 236, 0) 62%);
+		rgba(245, 242, 236, .95) 0%,
+		rgba(245, 242, 236, 0) 100%);
 	pointer-events: none;
 }
 .sv-hero__content {
@@ -164,7 +175,16 @@ h3, .sv-h3 {
 	gap: 40px;
 	padding: 0 20px;
 }
-.sv-hero__lockup { width: 100%; max-width: 280px; height: auto; }
+.sv-hero__lockup {
+	width: 100%;
+	max-width: 280px;
+	height: auto;
+	animation: sv-lockup-in 800ms ease-out 1 both;   /* P33 P2: drop-in */
+}
+@keyframes sv-lockup-in {
+	from { opacity: 0; transform: translateY(-10px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
 .sv-hero__cta {
 	display: inline-flex;
 	align-items: center;
@@ -179,12 +199,21 @@ h3, .sv-h3 {
 	font-size: 13px;
 	letter-spacing: .18em;
 	text-transform: uppercase;
-	transition: background .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease);
+	transition: background 350ms var(--ease-io), color 350ms var(--ease-io), border-color 350ms var(--ease-io);   /* P33 P2 */
 }
 .sv-hero__cta:hover, .sv-hero__cta:focus-visible {
 	background: var(--silk);
 	color: var(--bone);
 	border-color: var(--silk);
+}
+
+/* P33 P2 — hero parallax keyframes: scroll-driven CSS (uygulama desktop bloğunda,
+   @supports kapısının ardından — hero <img> mimarisinde background-attachment: fixed
+   uygulanamaz; JS'siz yol animation-timeline: view(). Desteklemeyen tarayıcıda
+   2s giriş animasyonu kalır (statik hero). */
+@keyframes sv-hero-parallax {
+	from { transform: translateY(-3%) scale(1.06); }
+	to   { transform: translateY(3%) scale(1.06); }
 }
 
 /* ═══ SECTION KABU ═══ */
@@ -200,13 +229,18 @@ h3, .sv-h3 {
 	gap: 16px;
 	margin-bottom: 40px;
 }
-/* Section başlığı + ince Silk alt çizgi (40×1px) */
-.sv-section-title { position: relative; padding-bottom: 16px; }
+/* Section başlığı: Cormorant 500 + ince Silk alt çizgi (60×1px) — P33 P1 */
+.sv-section-title {
+	position: relative;
+	padding-bottom: 16px;
+	font-family: var(--font-serif);
+	font-weight: 500;
+}
 .sv-section-title::after {
 	content: '';
 	position: absolute;
 	left: 0; bottom: 0;
-	width: 40px; height: 1px;
+	width: 60px; height: 1px;
 	background: var(--silk);
 }
 .sv-shop-all {
@@ -280,10 +314,11 @@ ul.products li.product .onsale {
 	text-transform: uppercase;
 	line-height: 1.6;
 }
-/* Ürün adı: Jost 400 15px */
+/* Ürün adı: Jost 400 15px + hover'da ince Silk çizgi (P33 P3) */
 ul.products li.product .woocommerce-loop-product__title {
-	padding: 16px 16px 4px;
+	padding: 16px 16px 12px;
 	margin: 0;
+	position: relative;
 	font-family: var(--font-sans);
 	font-weight: 400;
 	font-size: 15px;
@@ -292,8 +327,26 @@ ul.products li.product .woocommerce-loop-product__title {
 	color: var(--ink);
 }
 ul.products li.product .woocommerce-loop-product__title:hover { color: var(--ink); }
-/* Fiyat: regular whisper üstü çizili 13px · sale Ink 15px 500 */
+ul.products li.product .woocommerce-loop-product__title::after {
+	content: '';
+	position: absolute;
+	left: 16px; bottom: 4px;
+	width: 24px; height: 1px;
+	background: var(--silk);
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 400ms var(--ease);
+}
+ul.products li.product:hover .woocommerce-loop-product__title::after,
+ul.products li.product:focus-within .woocommerce-loop-product__title::after {
+	transform: scaleX(1);
+}
+/* Fiyat: del solda küçük, ins sağda büyük — flex row (P33 P3) */
 ul.products li.product .price {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
 	padding: 0 16px 16px;
 	margin: 0;
 	color: var(--ink);
@@ -450,8 +503,9 @@ ul.products li.product .added_to_cart:hover {
 }
 .sv-shop-banner__title {
 	font-family: var(--font-serif);
+	font-style: italic;          /* P33 P7: Cormorant 400 italic */
 	font-weight: 400;
-	font-size: 36px;
+	font-size: 42px;             /* P33 P7: 36 → 42px */
 	letter-spacing: .04em;
 	line-height: 1.15;
 	color: var(--white);
@@ -495,16 +549,25 @@ ul.products li.product .added_to_cart:hover {
 	margin-bottom: 24px;
 }
 .woocommerce .woocommerce-ordering select {
-	padding: 10px 16px;
-	background: var(--white);
-	border: 1px solid rgba(26, 26, 26, .15);
+	padding: 10px 24px 10px 0;
+	background-color: transparent;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231A1A1A' stroke-width='1.5'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 2px center;
+	border: none;
+	border-bottom: 1px solid rgba(26, 26, 26, .25);   /* P33 P7: alt çizgi seçici */
 	border-radius: 0;
+	appearance: none;
+	-webkit-appearance: none;
 	color: var(--ink);
 	font-family: var(--font-sans);
 	font-size: 13px;
 	letter-spacing: .04em;
 	min-height: var(--touch);
+	cursor: pointer;
+	transition: border-color 250ms var(--ease);
 }
+.woocommerce .woocommerce-ordering select:hover { border-bottom-color: var(--ink); }
 .woocommerce .woocommerce-pagination ul {
 	display: flex;
 	justify-content: center;
@@ -625,6 +688,9 @@ ul.products li.product .added_to_cart:hover {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px 24px;
+	border-top: 1px solid rgba(245, 242, 236, .12);   /* P33 P5: logo–link ayraç */
+	padding-top: 24px;
+	align-self: stretch;           /* ayraç tam genişlik */
 }
 .sv-footer__legal a {
 	display: inline-flex;
@@ -635,6 +701,7 @@ ul.products li.product .added_to_cart:hover {
 	font-size: 13px;
 	letter-spacing: .08em;
 	color: var(--bone);
+	transition: color 250ms var(--ease);   /* P33 P5 */
 }
 .sv-footer__legal a:hover, .sv-footer__legal a:focus-visible { color: var(--silk); }
 /* Satır 2: 32px boşluk → Satır 3: telif */
@@ -642,21 +709,33 @@ ul.products li.product .added_to_cart:hover {
 	margin-top: 32px;
 	font-family: var(--font-sans);
 	font-weight: 300;
-	font-size: 12px;
-	letter-spacing: .04em;
+	font-size: 11px;                /* P33 P5: 12 → 11px */
+	letter-spacing: .08em;          /* P33 P5: .04 → .08em */
 	color: var(--whisper);
 }
 
-/* ═══ SCROLL REVEAL ═══ */
+/* ═══ SCROLL REVEAL — P33 P4: 700ms, 24px kalkış + kart stagger ═══ */
 .sv-reveal {
 	opacity: 0;
-	transform: translateY(20px);
-	transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+	transform: translateY(24px);
+	transition: opacity 700ms var(--ease), transform 700ms var(--ease);
 }
 .sv-reveal.is-visible {
 	opacity: 1;
 	transform: translateY(0);
 }
+/* Stagger: bölüm belirirken ürün kartları sıralı gelir (0/100/200ms, satır başına yinelenir) */
+.sv-reveal ul.products li.product {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+}
+.sv-reveal.is-visible ul.products li.product {
+	opacity: 1;
+	transform: translateY(0);
+}
+.sv-reveal ul.products li.product:nth-child(3n+2) { transition-delay: 100ms; }
+.sv-reveal ul.products li.product:nth-child(3n+3) { transition-delay: 200ms; }
 
 /* ═══ DESKTOP (≥782px) ═══ */
 @media (min-width: 782px) {
@@ -674,10 +753,19 @@ ul.products li.product .added_to_cart:hover {
 		padding: 0 40px;
 	}
 	.sv-hero__lockup { max-width: 480px; }
+	/* P33 P2 — hero parallax: yalnız scroll-driven animation destekleyen tarayıcılarda
+	   (Chrome 115+, Safari 26+, Firefox 159+ — caniuse); aksi halde giriş animasyonu kalır */
+	@supports (animation-timeline: view()) {
+		.sv-hero__bg {
+			animation: sv-hero-parallax linear both;
+			animation-timeline: view();
+			animation-range: exit 0% exit 100%;
+		}
+	}
 
 	/* Section ölçeği */
 	.sv-section { padding: 96px 40px; }
-	ul.products { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+	ul.products { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }  /* P33 P3 */
 
 	/* "Seçenekler": hover'da alttan slide-up (desktop only) */
 	ul.products li.product .button,
@@ -689,8 +777,8 @@ ul.products li.product .added_to_cart:hover {
 		background: var(--bone);
 		border: none;
 		border-top: 1px solid rgba(26, 26, 26, .08);
-		transition: transform .3s var(--ease), opacity .3s var(--ease),
-			background .3s var(--ease), color .3s var(--ease);
+		transition: transform 350ms var(--ease-io), opacity 350ms var(--ease-io),
+			background .3s var(--ease), color .3s var(--ease);   /* P33 P3: slide-up 350ms */
 	}
 	ul.products li.product:hover .button,
 	ul.products li.product:focus-within .button,
@@ -709,7 +797,10 @@ ul.products li.product .added_to_cart:hover {
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
+		border-bottom: 1px solid rgba(245, 242, 236, .12);   /* P33 P5: logo–link ayraç, tam genişlik */
+		padding-bottom: 24px;
 	}
+	.sv-footer__legal { border-top: none; padding-top: 0; }   /* P33 P5: mobil kural geri al */
 	.sv-footer__legal a { min-height: 40px; }
 
 	/* Shop iç boşluk (section ölçeğiyle tutarlı, G5) */
@@ -725,6 +816,7 @@ ul.products li.product .added_to_cart:hover {
 	}
 	.sv-hero__bg { transform: none; }
 	.sv-reveal { opacity: 1; transform: none; }
+	.sv-reveal ul.products li.product { opacity: 1; transform: none; }
 	ul.products li.product .button,
 	ul.products li.product .added_to_cart {
 		transform: none; opacity: 1; position: static;
