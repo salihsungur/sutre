@@ -814,7 +814,7 @@ h3, .sv-h3 {
 }
 
 /* ── KART: görsel tam kaplar, bilgi görsel ÜSTÜNE biner ── */
-.sv-products ul.products {
+ul.products {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 24px;
@@ -823,7 +823,7 @@ h3, .sv-h3 {
 	list-style: none;
 }
 
-.sv-products ul.products li.product {
+ul.products li.product {
 	position: relative;
 	margin: 0;
 	width: auto;
@@ -833,24 +833,24 @@ h3, .sv-h3 {
 }
 
 /* görsel: kartın tamamı — 3:4 */
-.sv-products ul.products li.product a.woocommerce-LoopProduct-link,
-.sv-products ul.products li.product > a:first-of-type {
+ul.products li.product a.woocommerce-LoopProduct-link,
+ul.products li.product > a:first-of-type {
 	display: block;
 	position: relative;
 }
-.sv-products ul.products li.product img {
+ul.products li.product img {
 	width: 100%;
 	aspect-ratio: 3 / 4;
 	object-fit: cover;
 	display: block;
 	transition: transform 800ms cubic-bezier(.25,.46,.45,.94);
 }
-.sv-products ul.products li.product:hover img {
+ul.products li.product:hover img {
 	transform: scale(1.05);
 }
 
 /* alt bilgi bandı: görselin ÜSTÜNE, alttan gradient ile okunur */
-.sv-products ul.products li.product .woocommerce-loop-product__title {
+ul.products li.product .woocommerce-loop-product__title {
 	position: absolute;
 	bottom: 0; left: 0; right: 0;
 	margin: 0;
@@ -866,7 +866,7 @@ h3, .sv-h3 {
 }
 
 /* fiyat: başlık bandının içinde, sağda */
-.sv-products ul.products li.product .price {
+ul.products li.product .price {
 	position: absolute;
 	bottom: 18px; right: 20px;
 	margin: 0;
@@ -875,19 +875,19 @@ h3, .sv-h3 {
 	font-weight: 500;
 	letter-spacing: .04em;
 }
-.sv-products ul.products li.product .price del {
+ul.products li.product .price del {
 	color: rgba(255,255,255,.55);
 	font-size: 12px;
 	font-weight: 300;
 	margin-right: 8px;
 }
-.sv-products ul.products li.product .price ins {
+ul.products li.product .price ins {
 	text-decoration: none;
 	color: #fff;
 }
 
 /* İNDİRİM rozet: zarif — küçük, harf aralıklı, sol üst */
-.sv-products ul.products li.product .onsale {
+ul.products li.product .onsale {
 	position: absolute;
 	top: 16px; left: 16px;
 	z-index: 2;
@@ -904,7 +904,7 @@ h3, .sv-h3 {
 }
 
 /* SEÇENEKLER: bandın altında değil — hover'da görselin ortasında ortalanmış */
-.sv-products ul.products li.product .button {
+ul.products li.product .button {
 	position: absolute;
 	top: 50%; left: 50%;
 	transform: translate(-50%, -50%) translateY(12px);
@@ -926,19 +926,19 @@ h3, .sv-h3 {
 	justify-content: center;
 	min-height: 48px;
 }
-.sv-products ul.products li.product:hover .button {
+ul.products li.product:hover .button {
 	opacity: 1;
 	transform: translate(-50%, -50%);
 }
-.sv-products ul.products li.product .button:hover {
+ul.products li.product .button:hover {
 	background: var(--silk);
 }
 
 /* mobil: tek kolon + buton hep görünür (hover yok mobilde) */
 @media (max-width: 781px) {
 	.sv-products { padding: 48px 20px; }
-	.sv-products ul.products { grid-template-columns: 1fr; gap: 20px; }
-	.sv-products ul.products li.product .button {
+	ul.products { grid-template-columns: 1fr; gap: 20px; }
+	ul.products li.product .button {
 		opacity: 1;
 		transform: translate(-50%, -50%);
 	}
@@ -946,11 +946,11 @@ h3, .sv-h3 {
 
 @media (prefers-reduced-motion: reduce) {
 	.sv-products ul.products li.product img,
-	.sv-products ul.products li.product .button { transition: none; }
+	ul.products li.product .button { transition: none; }
 }
 
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
-.sv-products ul.products li.product {
+ul.products li.product {
 	grid-column: auto !important;
 	grid-row: auto !important;
 	clear: none !important;
@@ -959,7 +959,7 @@ h3, .sv-h3 {
 	max-width: 100% !important;
 	margin: 0 !important;
 }
-.sv-products ul.products {
+ul.products {
 	grid-auto-flow: row !important;
 	grid-auto-rows: 1fr !important;
 	align-items: stretch !important;
@@ -968,8 +968,8 @@ h3, .sv-h3 {
 /* ═══ P36c — WOO pseudo-element fix: ::before/::after grid item olmasın
    (Woo layout CSS'i content:" " display:table veriyor → grid'de 2 boş
    hücre açıp ürünleri çapraz diziyordu — staggered'ın GERÇEK kökü) ═══ */
-.sv-products ul.products::before,
-.sv-products ul.products::after {
+ul.products::before,
+ul.products::after {
 	display: none !important;
 	content: none !important;
 }
