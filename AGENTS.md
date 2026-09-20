@@ -1,41 +1,124 @@
-# AGENTS.md — WooCommerce + PayTR Marka Operasyonu (Hermes-Brand)
+# Sutre — Ajan Çalışma Dosyası (bağlayıcı)
 
-## 1. Proje Kimliği
-- Stack: self-hosted WordPress + WooCommerce + PayTR (birincil ödeme, değiştirilebilir adapter).
-- Pazar: Türkiye. TRY, Europe/Istanbul, tr_TR.
-- Teknik sözleşme: `WOOCOMMERCE_PAYTR_AI_PROJE_ANAYASASI.md` (bu repo kökünde) — HER ajan işe başlamadan önce TAMAMINI okur.
-- Öncelik sırası: Hukuki güvenlik > ödeme ve veri bütünlüğü > güvenlik > sürdürülebilirlik > performans > özellik sayısı.
+Bu dosya `sutre` deposunun (sutre.store) güncel ve bağlayıcı çalışma kaynağıdır.
+Ürün dili Türkçedir; tüm metin ve kaynak dosyalar UTF-8 olmalıdır.
+Git remote: `git@github.com:salihsungur/sutre.git` (deploy key: konteyner `/opt/data/home/.ssh/sutre_deploy`).
+Teknik sözleşme: `attachments/WOOCOMMERCE_PAYTR_AI_PROJE_ANAYASASI.md` — HER ajan işe başlamadan önce TAMAMINI okur. Öncelik sırası: Hukuki güvenlik > ödeme ve veri bütünlüğü > güvenlik > sürdürülebilirlik > performans > özellik sayısı.
 
-## 2. Çalışma Modeli
-- Hermes = orkestratör; üretim YAPMAZ. Tüm iş kalıcı Bot profillerine `hermes -p <bot> chat -Q --yolo --query-file <mutlak-yol>` ile gider.
-- Dispatch paketleri bu workspace'te `dispatch/pack-N-<slug>.md`; bot çıktıları `dispatch/out/` altına.
-- Her paket anayasa §16 AI ÇIKTI SÖZLEŞMESİ formatını zorunlu kılar.
-- Provider/model override yasak — Salih'in manuel yetkisi.
-- Bot profilleri: opencode-go / glm-5.3-flash, reasoning_effort=high (2026-09-12, Salih'in tek seferlik yetkisiyle yapılandırıldı).
+> **Son Doğrulama (20-09-2026):** Staging (`https://staging.sutre.store`) kararlı durumdadır. Aktif tema `theme/sutre-child-v2/` (sunucuda `wp-content/themes/sutre-child/`); TEK MİMARİ = klasik PHP (`header.php` + `footer.php` tek kaynak, tüm sayfalar aynı). Ürün kartı tasarımı **site geneli global** (P37 commit; `.sv-products` scoping'i kaldırıldı → `ul.products` global selector). Woo pseudo-element grid-item tuzağı fix'li (P36c). Header/footer sorunları KÖKTEN kapandı (P29). WP 7.x + Woo 11.1.0 + PHP 8.5.9 + MariaDB 11.8.8 + HPOS Enabled. PayTR başvurusu YAPILMADI (bilinçli gate: önce site görsel düzeni). Canlı üretim (production) YOK — her şey staging'de.
 
-## 3. Profil Haritası
-- Yazılım: product, architect, researcher, coder, debugger, data, devops, designer, docs, reviewer, tester.
-- İşletme: legal (hukuk/uyum — hukuki danışman değil), finance (mali model — mali müşavir değil), marketing (kanal/büyüme — izinsiz pazarlama yasak), ops (sipariş/stok/iade operasyonu).
-- Açık kapı etiketleri: NEEDS_OWNER_INPUT / OWNER_APPROVAL_REQUIRED / LEGAL_REVIEW_REQUIRED.
+---
 
-## 4. Faz Planı (anayasa §13)
-Faz 0 keşif/girdiler → Faz 1 temel altyapı → Faz 2 mağaza çekirdeği → Faz 3 PayTR → Faz 4 hukuk/mali → Faz 5 sosyal/SEO/analitik → Faz 6 canlıya geçiş → Faz 7 büyüme.
-Durum: Faz 0 dokümantasyon kapalı (sahip girdileri hariç) — Faz 1 başladı (Git repo).
-Her fazın kabul kapısı anayasa §14'tür; açık güvenlik/ödeme/hukuk kapısı varsa canlıya geçiş DURUR.
+## 0. DEĞİŞMEZ KURAL — Her ajan yaptığı işi bu dosyaya işler
 
-## 5. Ortam Durumu (2026-09-12 itibarıyla)
-- Faz 0 teslimleri (tamamı anayasa §16 formatlı raporlarla `dispatch/out/` altında):
-  - `PROJECT_INPUTS.md` — BOŞ ŞABLON: 23 NEEDS_OWNER_INPUT, 8 OWNER_APPROVAL_REQUIRED, 12 LEGAL_REVIEW_REQUIRED, 2 SECRET_REFERENCE_ONLY.
-  - `PRIVACY-DATA-MAP.md` — KVKK veri haritası skeleton (tüm hücreler TBD — LEGAL_REVIEW_REQUIRED).
-  - `SECURITY.md` — STRIDE tehdit modeli (8 tehdit) + anayasa §8 kontrol listesi (tümü PLANLANDI).
-  - `docs/legal-placeholders/README.md` — §6.1'in 10 zorunlu sayfa envanteri.
-  - `docs/architecture/hosting-requirements.md` — hosting/SSL/HPOS/yedek gereksinim listesi (satın alma yok).
-  - `docs/integrations/paytr-readiness.md` — PayTR readiness checklist (Faz 3 öncesi kanıt kapıları).
-- Bekleyen kapılar: Salih'in PROJECT_INPUTS.md doldurması; PayTR üyelik/sandbox durumu; hosting/domain seçimi.
-- Repo/çalışma dizini: `/opt/data/workspace/proje/` — Faz 1'de Git deposu kurulacak.
-- PayTR hesabı/sandbox: duruma göre.
-- Hosting/domain: henüz yok.
-- API key'ler: kurulum wizard'ı ile girilecek.
+1. Her session başında bu dosyanın tamamını oku ve mevcut durumla çelişki olup olmadığını kontrol et.
+2. Kod/görsel/içerik/deploy değişikliklerini ilgili güncel bölüme ve §9 kayıt defterine işle.
+3. Doğrulanmayan işi "tamamlandı" YAZMA. Tamamlanan iş `ZATEN YAPILDI`, bekleyen iş `YAPILACAK` veya `ONAY BEKLİYOR` olarak, tarih ve commit ile kaydedilir.
+4. Her çalışma turunun sonunda AGENTS.md dahil değişiklikleri test et, commit et ve `main`e push et. Kullanıcının ilgisiz değişikliklerini koru.
+5. Yeni dağınık durum/plan `.md` dosyası OLUŞTURMA; tek kaynak bu dosyadır. (Dispatch paketleri ve bot raporları hariç — `dispatch/` orkestrasyon kanıtıdır, plan dosyası değil.)
+6. **Görsel değişiklik kuralı (bağlayıcı):** Hermes/botlar görsel değişiklikleri KENDİ onaylamaz; her görsel değişiklikten sonra Salih'e gösterilir, revize isterse uygulanır. Bot/ajan raporlarında "başarılı/güzel görünüyor" İFADESİ KULLANILMAZ — sadece ne yapıldığı listelenir.
 
-## 6. Bağımsız Doğrulama
-Specialist raporu kabul kanıtı değildir; Hermes kanıtı diskten doğrular (dosya, test çıktısı, log). Testin bilinen defekte RED üretebildiği aranır.
+---
+
+## 1. Depo Haritası
+
+```text
+sutre/
+├── theme/sutre-child-v2/            AKTİF TEMA KAYNAĞI (sunucuda sutre-child)
+│   ├── style.css                    TEK CSS dosyası — site geneli tüm stil burada
+│   ├── functions.php                enqueue + Woo kuralları + shop banner + placeholder fix
+│   ├── header.php / footer.php      TEK HEADER/FOOTER KAYNAĞI (klasik PHP, tüm sayfalar)
+│   ├── page-templates/home.php      ana sayfa şablonu (get_header/get_footer kullanır)
+│   ├── woocommerce/                 Woo klasik şablon override'ları (archive-product vb.)
+│   └── assets/img/                  logo/ (transparan crop) + site/ (hero, kategori, banner)
+├── docs/
+│   ├── visual-prompts/              hijab-stil-rehberi.md, site-icerik-gorsel-plani.md
+│   └── MATER-PLAN-PREMIUM.md        master plan (bloklar A-G)
+├── dispatch/                        pack-*.md (bot paketleri) + out/ (bot raporları)
+├── AGENTS.md                        BU DOSYA — tek durum kaynağı
+└── WOOCOMMERCE_PAYTR_AI_PROJE_ANAYASASI.md (attachments/ içinde; bağlayıcı sözleşme)
+```
+
+- `theme/sutre-child/` (v1) eski sürümdür; DOKUNULMAZ, silinmez ama kullanılmaz.
+- Anayasa §15 "asla yapılmayacaklar" listesi tüm işlerde bağlayıcıdır.
+
+## 2. Kullanıcıyla Çalışma ve Güvenlik
+
+1. Kullanıcı (Salih) adım adım ilerler: her turda TEK mini talimat; uzun toplu paket verilmez.
+2. Secret, şifre, token, API key repoya, log'a, bu dosyaya, rapora ASLA yazılmaz. FTP bilgileri `/host/desktop/ftpinfo.txt`'den okunur (değerler ekrana basılmaz). PayTR merchant ID/key/salt hiçbir yere yazılmaz.
+3. Kart/CVV verisi hiçbir koşulda saklanmaz/loglanmaz. Canlı müşteri verisi anonimleştirilmeden staging'e taşınmaz.
+4. KDV/fiyat/vergi değişikliği staging'de doğrulanmadan ve Salih onayı alınmadan production'a taşınmaz (§5.1: KDV ASLA varsayılan girilmez — LEGAL_REVIEW_REQUIRED).
+5. Canlı ödeme/iade/fatura işlemleri OWNER_APPROVAL_REQUIRED.
+6. Bilinmeyen işletme verisi tahmin edilmez; `PROJECT_INPUTS.md`'e NEEDS_OWNER_INPUT olarak yazılır.
+7. Güvenli, geri döndürülebilir teknik kararlar otonom verilir; ürün yönü/görsel kararları kullanıcıya sorulur (§0.6).
+
+## 3. Ortam ve Deploy Kanalları
+
+- **Hosting:** paylaşımlı cPanel (`mt-charon.guzelhosting.com`); staging docroot `/home/spokenla/staging.sutre.store/`. SSH YOK.
+- **Deploy kanal A (ana):** ajan git push → kullanıcı cPanel Terminal'de `git pull` + `cp -a` ile themes/ altına kopyalar. (rsync yok → `cp -a`, önce `.bak` yedek.)
+- **Deploy kanal B (ajan doğrudan):** ftplib ile FTP (`sutredeploy@spokenlab.com.tr`, 89.252.180.243; bilgiler `/host/desktop/ftpinfo.txt`), upload sonrası SHA-256/MD5 karşılaştırma ZORUNLU; ardından canlı doğrulama:
+  `curl -skL "https://staging.sutre.store/?v=$(date +%s)" | grep -c '<kanıt-marker>'` (self-signed → `-k` şart).
+- **Cache:** deploy sonrası kullanıcıya LiteSpeed Purge All hatırlatılır; doğrulama her zaman `?v=` cache-buster ile.
+- **cPanel UAPI Fileman:** exists çıktıları güvenilmez (bug'lı) — kritik doğrulama FTP/curl ile ÇAPRAZ yapılır.
+- **Deploy kanalları:** (a) git push → kullanıcı cPanel Terminal `git pull` + `cp -a`; (b) doğrudan FTP (ftplib, `ftpinfo.txt`'den) → `wp-content/themes/` altına.
+
+## 4. Ürün, Marka ve Ticaret Kuralları
+
+- Kategori: Giyim → Kadın → Şal (yalnız bu; Erkek ileride). Ürünler: Jakarlı Şal (9 renk), İman Nour Şal (6 renk, görseller geçici Siyah Jakarlı).
+- SKU şeması `SUTRE-SKU-<KOD>-<4hane>` (onaylı; SKU = ürün kodu, asla değişmez).
+- Checkout: sepet hesapsız gezilir, checkout'ta login/register ZORUNLU (Everyone-can-register AÇIK).
+- Marka kimliği: yalnız **SUTRE** wordmark (slogan/alt yazı YASAK). Tipografi: Cormorant Garamond (logo/H1) + Jost (UI/CTA). Palet: Bone `#F5F2EC` · Ink `#1A1A1A` · Silk `#C9A66B` · Marine `#1B3A4B` · Whisper `#B8B4AC`. His: modern lüks, minimal site, CANLI+dolu fotoğraflar.
+- Görsel üretim kuralları: insanlı görsellerde SAÇ ASLA görünmez; portre tipi yakında model kameraya bakar; dolu sahne serbest; 190cm × 70cm ürün prompt'a yazılır; paketleme/açık alan fotoğrafı İPTAL. Üretim: Hermes prompt paketi yazar → Salih Higgsfield'de üretir → `/host/desktop/SUTRE/Ürün Fotoğrafları/<Tür>/<Renk>/` arşivine.
+
+## 5. Tasarım ve Mimari Kuralları ( lessons-learned gömülü)
+
+1. **Tasarım bütünlüğü herşeyden önce** (sahibin bağlayıcı kuralı): ürün kartı tasarımı, header, footer SİTE GENELİnde aynı. Sayfa başına ayrı CSS/markup YASAK — tek CSS = `style.css`, tek header/footer = `header.php`/`footer.php`.
+2. **Ürün kartı (P37, global):** `ul.products` global selector — görsel odaklı kart, alt gradient bandı, zarif İNDİRİM rozeti, hover'da ortalanmış Seçenekler (desktop). Yeni herhangi bir sayfaya ürün listesi eklenirse bu tasarımı otomatik alır; ayrı CSS YAZILMAZ.
+3. **Bilinen tuzak — Woo pseudo-element:** `ul.products::before/::after {content:" "; display:table}` grid konteynerde grid item olur → boş hücre/çapraz dizilim. Fix style.css'te: `display:none !important; content:none !important`. Bu reset kaldırılmaz.
+4. **Bilinen tuzak — Woo blok tema:** Woo 11 klasik şablonlara dönüşü resmen desteklemez ama child `woocommerce/*.php` template hierarchy override'ı çalışır (P29 kanıtlı). Block template-parts ile karışık mimari KURULMAZ.
+5. **Bilinen tuzak — PHP 8.5:** `esc_url(wc_get_page_permalink(...))` array döndürebilir; `ltrim(array)` fatal. Tolerant helper + `is_array` guard'lar mevcut; kaldırılmaz.
+6. Override.css / parts/ içindeki eski CSS parçaları kullanılmaz; her stil değişikliği `style.css`'e işlenir.
+7. Mobil önceliklidir (anayasa §9 — Instagram/WhatsApp trafiği mobil varsayılır); WCAG 2.2 AA hedef.
+8. Genel yerleşim/konum korunur; yalnız görsel/UX iyileştirilir (anayasa §9 UI politikası).
+
+## 6. Hızlı Komut Özeti
+
+```bash
+# Depo (konteyner)
+cd /opt/data/workspace/proje
+git add <kapsam> && git commit -m "..." && git push origin main
+
+# Doğrudan deploy (kanal B) — ftplib + SHA doğrulama; ftpinfo.txt'den oku
+# Canlı doğrulama
+curl -skL "https://staging.sutre.store/?v=$(date +%s)" | grep -c '<marker>'
+curl -skL "https://staging.sutre.store/shop/?v=$(date +%s)" | grep -c 'Fatal'   # 0 OLMALI
+
+# Kullanıcı tarafı (cPanel Terminal)
+cd ~/repositories/sutre && git pull origin main
+cp -a ~/repositories/sutre/theme/sutre-child-v2 ~/staging.sutre.store/wp-content/themes/  # .bak önce!
+# → LiteSpeed Cache → Purge All
+```
+
+## 7. Güncel Açık İşler ve Onay Bekleyenler
+
+- [x] **P37 — Ürün kartı tasarımının shop'a aktarımı — `ZATEN YAPILDI` (20-09-2026):** `.sv-products` scoping kaldırıldı → kart CSS'i global `ul.products`; SHA doğrulamalı FTP deploy + canlı grep kanıtı (header 3, banner 4, phperr 0). Kullanıcı görsel onayı BEKLİYOR.
+- [ ] **AGENTS.md Sutre sürümü — `ZATEN YAPILDI` (bu commit):** Geleceğin Bilimi referans yapısından türetildi (§0 değişmez kural + durum etiketleri + kayıt defteri).
+- [ ] **Blok A — hukuki sayfalar (Gizlilik, mesafeli satış, iade, cayma) — `NEEDS_OWNER_INPUT`:** İşletme bilgileri (unvan, vergi no, adres) kullanıcıdan bekliyor; metinler `docs/legal-placeholders/` şablonlarından doldurulacak; final doğrulama dış uzman (avukat) + kullanıcı onayı.
+- [ ] **KDV/vergi kurulumu — `LEGAL_REVIEW_REQUIRED`:** §5.1 gereği hiçbir varsayılan girilmez; mali müşavir doğrulaması beklenir.
+- [ ] **İman Nour (Pamuk) ürün görselleri — `YAPILACAK`:** Referans yok; geçici Siyah Jakarlı temsili. Referans gelince pamuk prompt adaptasyonu (mat, satin parlaklık YOK) ile 6 renk × 3 görsel üretilecek.
+- [ ] **PayTR başvurusu — `ONAY BEKLİYOR` (kullanıcı):** Site görsel tamamlanması sonrası production domain (sutre.store) ile başvuru. Merchant bilgileri yalnız kurulum wizard'ına girilir.
+- [ ] **Production'a geçiş — `ONAY BEKLİYOR`:** Anayasa §0.6: staging test → yedek → sahip onayı → production. Açık hukuk/ödeme kapısı varken DURUR.
+- [ ] **Sonraki görsel tur — `YAPILACAK`:** Site içerik görselleri (`docs/visual-prompts/site-icerik-gorsel-plani.md` ADIM 3-4) + kullanıcı revizeleri.
+
+## 8. Tarihsel Kayıt Defteri (özet zincir)
+
+- **Faz 0 (12-09):** Anayasa okundu/onaylandı; PROJECT_INPUTS / PRIVACY-DATA-MAP / SECURITY iskeletleri `dispatch/out/` raporlarıyla kapandı.
+- **Altyapı (13-16/09):** GitHub repo + deploy key; DNS/zone fix (IP 89.252.180.243); WP staging kurulumu; Woo 11.1.0 hash-verified; HPOS; Türkçe çeviriler; wc-rich-register mu-plugin; ürün-1 ₺100.
+- **Tema görünürlük krizi (17-09):** cPanel Fileman "exists" yalanları → repo klonu boş çıktı → re-clone → ilk deploy. **Ders: Fileman tek başına güvenilmez; FTP/curl çapraz doğrula.**
+- **P22b (17-09):** TT5 block theme footer pattern kök nedeni; commit 2fbbdc6 blok tek kaynak denemesi (sonra terk edildi).
+- **PHP 8.5 fatals (18-09):** ltrim(array) + placeholder array → a3c9760 tolerant fix'ler.
+- **Görsel üretim dönemi (18-19/09):** fal.media referans oturumu → Higgsfield renk serisi modeli (Jakarlı 9 renk × 3 görsel TAMAM); hijab-stil-rehberi.md; site-icerik-gorsel-plani.md; logo L1-L4 transparan crop.
+- **P28 (19-09):** E1-E7 defekt fix'leri; P28b vision 6/6 PASS.
+- **P29 (20-09):** Kullanıcı kökten çözüm talebi → klasik PHP TEK KAYNAK (header.php/footer.php + Woo template override'ları) → tüm sayfalarda aynı header/footer; kullanıcı editleri (düz siyah strip, footer düzeni, KOLEKSİYON hizası).
+- **P36c (20-09):** Staggered grid kök nedeni = Woo `ul.products::before/::after` grid item → pseudo reset; kullanıcı onayı: "tammadır sorun düzeldi!"
+- **P37 (20-09):** Kart tasarımı global (scoping kaldırma) — shop dahil site geneli tek kart; deploy SHA-doğrulamalı.
