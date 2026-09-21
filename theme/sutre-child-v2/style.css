@@ -1095,11 +1095,11 @@ ul.products li.product h2.woocommerce-loop-product__title {
 	pointer-events: auto;
 }
 
-/* fiyat: beyaz bandın ikinci satırı */
+/* fiyat: meta satırının ikinci öğesi (padding'i .sv-card__meta taşır) */
 ul.products li.product .price {
 	position: static;
 	margin: 0;
-	padding: 8px 26px 22px;
+	padding: 0;
 	color: var(--ink);
 	font-size: 14px;
 	font-weight: 500;
@@ -1120,11 +1120,15 @@ ul.products li.product .price ins {
 	color: var(--ink);
 }
 
-/* P42: İNDİRİM rozeti — Woo oval varsayılanı kökten kapatılır; cam-siyah kare, harf aralıklı */
+/* P44: İNDİRİM rozeti beyaz bantta fiyatın SOLUNA taşındı (.sv-card__meta flex satırı) */
+ul.products li.product .sv-card__meta {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 26px 22px;
+}
 ul.products li.product .onsale {
-	position: absolute;
-	top: 28px; left: 28px;
-	z-index: 2;
+	position: static;
 	margin: 0;
 	min-width: 0; min-height: 0;
 	background: rgba(26,26,26,.85);
@@ -1139,15 +1143,16 @@ ul.products li.product .onsale {
 	text-transform: uppercase;
 	padding: 8px 15px;
 	line-height: 1;
-	pointer-events: none;
+	flex: 0 0 auto;
+	pointer-events: auto;
 }
 ul.products li.product .onsale::before,
 ul.products li.product .onsale::after { content: none; }
 
-/* SEÇENEKLER: hover'da GÖRSELİN ortasında (beyaz bant hariç — üst %90 alanın merkezi) */
+/* SEÇENEKLER: hover'da GÖRSEL alanının TAM ortasında (beyaz bant yüksekliği kadar yukarı) */
 ul.products li.product .button {
 	position: absolute;
-	top: 45%; left: 50%;
+	top: calc(50% - 46px); left: 50%;
 	transform: translate(-50%, -50%) translateY(12px);
 	opacity: 0;
 	z-index: 3;
