@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.9' );
+define( 'SUTRE_VERSION', '3.4.10' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -387,7 +387,7 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 			$new[ $key ] = 'Hesap bilgileri';   // P49: Pano + Hesap detayları birleşimi
 			continue;
 		}
-		if ( 'account-details' === $key ) { continue; }   // P50: Hesap detayları kaldırıldı
+		if ( 'edit-account' === $key ) { continue; }   // P50-fix: menü key'i 'edit-account' (account-details DEĞİL — P50'de yanlış anahtar elenmişti)
 		$new[ $key ] = $label;
 		if ( 'orders' === $key && ! isset( $new[ $pref_key ] ) ) {
 			$new[ $pref_key ] = 'İletişim Tercihleri';
