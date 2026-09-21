@@ -378,8 +378,12 @@ function sv41_handle_account_forms() {
 			break;
 
 		case 'prefs':
-			/* Tercih formu yalnız kendi endpoint'inden işlenir (ekstra yetki sınırı). */
-			if ( ! ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'iletisim-tercihleri' ) ) ) { return; }
+			/* Tercih formu yalnız kendi endpoint'inden işlenir (ekstra yetki sınırı).
+			 * P57 FIX: is_wc_endpoint_url('iletisim-tercihleri') özel endpoint'te daima
+			 * false dönerdi (Bug 1 ile AYNI kök — kanıt: sv56_handle_account_address_forms
+			 * üstündeki not) → tercih formu hiç kaydetmiyordu. query_vars kontrolü. */
+			global $wp;
+			if ( ! isset( $wp->query_vars ) || ! is_array( $wp->query_vars ) || ! array_key_exists( 'iletisim-tercihleri', $wp->query_vars ) ) { return; }
 			foreach ( array( 'email', 'sms', 'call' ) as $channel ) {
 				update_user_meta( $user_id, 'sv_contact_pref_' . $channel, isset( $_POST[ 'sv_contact_pref_' . $channel ] ) ? 'yes' : 'no' );
 			}
@@ -834,7 +838,18 @@ add_action( 'template_redirect', 'sv56_handle_account_address_forms' );
 function sv56_handle_account_address_forms() {
 	if ( 'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : '' ) ) { return; }
 	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() || ! current_user_can( 'read' ) ) { return; }
-	if ( ! ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'adreslerim' ) ) ) { return; }
+	/* P57 FIX: guard is_wc_endpoint_url('adreslerim') yerine query_vars kontrolü.
+	 * KÖK NEDEN (Woo 11.1.0 kaynak kanıtı): is_wc_endpoint_url() (wc-conditional-functions.php:166-175)
+	 * endpoint adını ÖNCE WC()->query->get_query_vars()'ta arar; orada yoksa DAİMA false döner.
+	 * add_rewrite_endpoint() ile kaydedilen özel endpoint'ler ('adreslerim', 'iletisim-tercihleri')
+	 * Woo'nun o listesinde YOKTUR → bu işleyici hiç çalışmıyordu: POST sessizce düşüyordu
+	 * (kayıt YOK, redirect YOK, notice YOK — sahibin raporuyla birebir).
+	 * Sayfanın GÖRÜNMESİ kandırmaz: içerik basımı farklı kapıdır — woocommerce_account_content()
+	 * (wc-template-functions.php:3795-3808) $wp->query_vars + has_action('..._endpoint') ile
+	 * özel endpoint'leri de basar. Doğru guard, çekirdeğin kendi dispatch mekanizmasıyla
+	 * birebir aynıdır: query_vars'ta key var mı? */
+	global $wp;
+	if ( ! isset( $wp->query_vars ) || ! is_array( $wp->query_vars ) || ! array_key_exists( 'adreslerim', $wp->query_vars ) ) { return; }
 
 	$nonce_map = array(
 		'address_save'    => 'sv_address_save',
