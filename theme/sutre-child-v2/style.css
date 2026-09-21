@@ -1065,8 +1065,9 @@ ul.products li.product {
 	background: var(--white);
 }
 
-ul.products li.product .woocommerce-loop-product__title {
-	position: static;
+/* h2 element seçicisiyle özgülük Woo çekirdeğinin üstüne çıkar (padding .5em 0 ezilmesi) */
+ul.products li.product h2.woocommerce-loop-product__title {
+	position: static !important;
 	margin: 0;
 	padding: 20px 26px 0;
 	color: var(--ink);
