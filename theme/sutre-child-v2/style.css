@@ -1065,7 +1065,22 @@ ul.products li.product {
 	background: var(--white);
 }
 
-/* h2 element seçicisiyle özgülük Woo çekirdeğinin üstüne çıkar (padding .5em 0 ezilmesi) */
+/* ═══ P43 — KÖK NEDEN (canlı kanıtlı, tahmin değil):
+   Woo core `assets/css/woocommerce.css?ver=11.1.0` içindeki kural:
+     .woocommerce ul.products li.product .woocommerce-loop-product__title
+     → padding: .5em 0  (padding-left: 0 = başlık sol kenara yapışıyor)
+   Özgülük (0,4,2) — 4 class (.woocommerce .products .product .__title) + 2 element.
+   P42.4 seçicisi "ul.products li.product h2.woocommerce-loop-product__title" (0,3,3):
+   CSS özgülükte CLASS sayısı (b) ELEMENT sayısından (c) ÖNCE karşılaştırılır →
+   b=4 > b=3 → Woo kazandı, h2 eklemek yetmedi (P42.4'ün başarısızlık nedeni).
+   Fiyatın hareket edip başlığın etmemesi: Woo'nun price'a padding kuralı YOK,
+   bant padding'i fiyatı kaydırıyor; başlıkta ise padding-left:0 üstün kalıyor.
+   KİLİT: Woo ile aynı .woocommerce prefix'i → (0,4,3): b eşit, c üstün → biz kazanır.
+   İkinci garanti: style.css, woocommerce.css'ten SONRA yüklenir (head link sırası:
+   woo-layout → woo-small → woo-general → sutre-style; curl kanıtlı).
+   Not: Woo kuralı .woocommerce ancestor istediği için wrapper yoksa Woo kuralı da
+   uygulanamaz → prefixesiz eski seçici yedek olarak korunur. ═══ */
+.woocommerce ul.products li.product h2.woocommerce-loop-product__title,
 ul.products li.product h2.woocommerce-loop-product__title {
 	position: static !important;
 	margin: 0;
