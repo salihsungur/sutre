@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.4' );
+define( 'SUTRE_VERSION', '3.4.5' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -144,9 +144,9 @@ add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
 	return $fragments;
 } );
 
-/* ── P47: sepet sayfası İngilizce stringler Türkçe (gettext — blok şablondan gelenler dahil) ── */
+/* ── P47: sepet sayfası İngilizce stringler Türkçe (gettext — blok şablondan gelenler dahil;
+ * domain farketmez: woo blocks kendi domain'ini kullanabiliyor) ── */
 add_filter( 'gettext', function ( $translated, $text, $domain ) {
-	if ( 'woocommerce' !== $domain ) { return $translated; }
 	$map = array(
 		'Your cart is currently empty!'       => 'Sepetin şu an boş.',
 		'New in store'                        => 'Mağazada yeni',
