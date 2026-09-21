@@ -1195,6 +1195,144 @@ ul.products li.product .button:hover {
 	ul.products li.product .button { transition: none; }
 }
 
+/* ═══ TEK ÜRÜN SAYFASI (P45) — galeri / özet / varyasyon / sekmeler / ilgili ürünler ═══ */
+
+/* Galeri + özet: Woo float yerleşimi korunur; görsel çerçevesiz, nefes paylı */
+.single-product #sutre-content .woocommerce { padding: 48px 20px 80px; }
+.single-product div.product { margin: 0; }
+.single-product div.product .woocommerce-product-gallery { margin: 0 0 8px; }
+.single-product div.product .woocommerce-product-gallery img { border: 0; }
+.single-product .woocommerce-product-gallery__trigger {
+	font-size: 0; width: 40px; height: 40px; line-height: 40px; text-align: center;
+	background: rgba(26,26,26,.85); color: var(--bone); border-radius: 0; text-indent: 0;
+}
+.single-product .woocommerce-product-gallery__trigger::before { content: "⤢"; font-size: 16px; }
+.single-product span.onsale {
+	min-width: 0; min-height: 0; margin: 12px;
+	background: rgba(26,26,26,.85); color: var(--bone);
+	border: 0; border-radius: 0; box-shadow: none;
+	font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+	letter-spacing: .22em; text-transform: uppercase;
+	padding: 8px 15px; line-height: 1; z-index: 2;
+}
+
+/* Özet: başlık serif, fiyat tek satır temiz */
+.single-product .summary { margin: 0; padding-top: 4px; }
+.single-product div.product .product_title {
+	font-family: var(--font-serif); font-weight: 400;
+	font-size: 38px; letter-spacing: .02em; line-height: 1.15;
+	color: var(--ink); margin: 0 0 14px;
+}
+.single-product div.product .price {
+	color: var(--ink); font-size: 22px; font-weight: 500; letter-spacing: .04em;
+	display: flex; align-items: baseline; gap: 12px; margin: 0 0 26px;
+}
+.single-product div.product .price del { color: var(--whisper); font-size: 15px; font-weight: 300; text-decoration-thickness: 1px; }
+.single-product div.product .price ins { text-decoration: none; }
+.single-product div.product p.price + form.cart { margin-top: 4px; }
+
+/* Varyasyon seçimi: temiz tablo, select input dili */
+.single-product table.variations,
+.single-product div.product form.variations_form table.variations {
+	border: 0; background: transparent; margin: 0 0 6px; border-spacing: 0;
+}
+.single-product table.variations td { padding: 8px 0; border: 0; }
+.single-product table.variations th, .single-product table.variations td.label {
+	border: 0; background: transparent; padding: 8px 24px 8px 0;
+	font-family: var(--font-sans); font-size: 12px; letter-spacing: .14em;
+	text-transform: uppercase; color: var(--charcoal);
+}
+.single-product table.variations select {
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 16px; min-height: var(--touch); color: var(--ink);
+	font-family: var(--font-sans); font-size: 15px; min-width: 220px;
+}
+.single-product .reset_variations {
+	font-family: var(--font-sans); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+	color: var(--charcoal); border-bottom: 1px solid var(--silk); text-decoration: none;
+}
+
+/* Adet + Sepete Ekle: tek satır, buton geniş */
+.single-product div.product form.cart {
+	display: flex; align-items: center; gap: 16px; margin: 22px 0 0;
+}
+.single-product div.product form.cart .quantity .qty {
+	width: 72px; text-align: center;
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 8px; min-height: var(--touch); color: var(--ink); font-family: var(--font-sans); font-size: 15px;
+}
+.single-product div.product form.cart .button { flex: 1 1 auto; }
+
+/* Ürün meta: ince ayraç altında küçük tipografi */
+.single-product .product_meta {
+	border-top: 1px solid rgba(26,26,26,.08);
+	padding-top: 18px; margin-top: 30px;
+	font-family: var(--font-sans); font-size: 12px; letter-spacing: .06em; color: var(--whisper);
+}
+.single-product .product_meta a { color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--silk); }
+.single-product .product_meta a:hover { color: var(--ink); }
+
+/* Sekmeler: minimal alt çizgili sekmeler */
+.single-product div.product .woocommerce-tabs ul.tabs {
+	padding: 0; margin: 56px 0 0; border: 0; border-bottom: 1px solid rgba(26,26,26,.08);
+	display: flex; flex-wrap: wrap; gap: 0 32px; list-style: none;
+}
+.single-product div.product .woocommerce-tabs ul.tabs::before { content: none; }
+.single-product div.product .woocommerce-tabs ul.tabs li {
+	margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0;
+}
+.single-product div.product .woocommerce-tabs ul.tabs li::before,
+.single-product div.product .woocommerce-tabs ul.tabs li::after { content: none; }
+.single-product div.product .woocommerce-tabs ul.tabs li a {
+	display: block; padding: 14px 0; margin: 0;
+	background: transparent; border: 0; border-bottom: 1px solid transparent;
+	font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+	letter-spacing: .16em; text-transform: uppercase; color: var(--whisper);
+	transition: color .25s var(--ease), border-color .25s var(--ease);
+}
+.single-product div.product .woocommerce-tabs ul.tabs li.active a {
+	color: var(--ink); border-bottom-color: var(--silk);
+}
+.single-product div.product .woocommerce-tabs .panel {
+	margin: 28px 0 0; padding: 0; background: transparent; border: 0; border-radius: 0;
+	font-size: 15px; line-height: 1.85; color: var(--ink);
+}
+.single-product div.product .woocommerce-tabs .panel h2 { display: none; } /* sekme başlığı panel içinde tekrarını önler */
+.single-product div.product .woocommerce-tabs table.shop_attributes { border: 0; }
+.single-product div.product .woocommerce-tabs table.shop_attributes th,
+.single-product div.product .woocommerce-tabs table.shop_attributes td {
+	border: 0; border-bottom: 1px solid rgba(26,26,26,.06);
+	background: transparent; padding: 12px 4px;
+}
+
+/* İlgili ürünler: global kart düzeni otomatik gelir; bölüm ayracı */
+.single-product .related.products,
+.single-product .upsells.products {
+	clear: both; margin: 80px 0 0; padding-top: 48px;
+	border-top: 1px solid rgba(26,26,26,.08);
+}
+.single-product .related.products > h2,
+.single-product .upsells.products > h2 {
+	font-family: var(--font-serif); font-weight: 400; font-size: 28px;
+	letter-spacing: .02em; color: var(--ink); margin: 0 0 28px;
+}
+
+/* Değerlendirme formu: yıldız satırı sade */
+.single-product .comment-form-rating .stars a { color: var(--silk); }
+.single-product #review_form .comment-reply-title {
+	font-family: var(--font-serif); font-weight: 400; font-size: 22px; color: var(--ink);
+}
+
+/* Mobil */
+@media (max-width: 781px) {
+	.single-product div.product .product_title { font-size: 30px; }
+	.single-product div.product form.cart { flex-wrap: wrap; }
+	.single-product div.product form.cart .button { width: 100%; }
+	.single-product div.product form.cart .quantity .qty { width: 100%; }
+}
+
+/* ═══ /TEK ÜRÜN SAYFASI ═══ */
+
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
 ul.products li.product {
 	grid-column: auto !important;
