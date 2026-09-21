@@ -1593,7 +1593,7 @@ ul.products li.product .button:hover {
 	width: 100%; min-height: 52px; margin-top: 8px;
 }
 
-/* ═══ P55 — SEPET GÖNDERİM FORMU + HESAP ADRESLERİ SAYFASI ═══ */
+/* ═══ P55→P56 — SEPET GÖNDERİM FORMU + ADRES DEFTERİ ═══ */
 
 /* hesaplayıcı formu: beyaz kart, 2 sütunlu grid; Güncelle tam genişlik */
 .woocommerce .shipping-calculator-form {
@@ -1606,14 +1606,6 @@ ul.products li.product .button:hover {
 }
 .woocommerce .shipping-calculator-form button[type="submit"],
 .woocommerce .shipping-calculator-form .button { grid-column: 1 / -1; width: 100%; }
-.woocommerce .sv-save-address-row { grid-column: 1 / -1; margin: 0; }
-.woocommerce .sv-save-address-row label {
-	display: flex; align-items: center; gap: 9px;
-	font-family: var(--font-sans); font-size: 13px; color: var(--charcoal);
-}
-.woocommerce .sv-save-address-row input[type="checkbox"] {
-	width: auto; min-height: 0; margin: 0; accent-color: var(--ink);
-}
 @media (max-width: 781px) {
 	.woocommerce .shipping-calculator-form { grid-template-columns: 1fr; }
 }
@@ -1621,35 +1613,136 @@ ul.products li.product .button:hover {
 /* gönderim satırı: hedef adresi okunur göster */
 .woocommerce-cart table.shop_table td .shipping td { display: inline; }
 
-/* Hesabım → Adresler: iki adres kartı yan yana */
-.woocommerce-account .woocommerce-Addresses .col2-set {
-	display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-	width: 100%; float: none;
+/* ═══ P56 — SEPET: KAYITLI ADRES SEÇİCİ (hesaplayıcı üstü, görünür) ═══ */
+.sv56-ship-selector {
+	background: var(--white); border: 1px solid rgba(26,26,26,.08);
+	padding: 20px 22px 22px; margin: 0 0 18px;
 }
-.woocommerce-account .woocommerce-Addresses .col2-set .col-1,
-.woocommerce-account .woocommerce-Addresses .col2-set .col-2 {
-	float: none; width: auto; margin: 0;
+.sv56-ship-selector__title {
+	font-family: var(--font-serif); font-weight: 500; font-size: 19px;
+	letter-spacing: .02em; color: var(--ink); margin: 0 0 14px;
 }
-.woocommerce-account .woocommerce-Addresses address { font-style: normal; line-height: 1.8; margin: 0 0 14px; }
-@media (max-width: 781px) {
-	.woocommerce-account .woocommerce-Addresses .col2-set { grid-template-columns: 1fr; }
+.sv56-ship-selector__list { display: grid; gap: 10px; margin: 0 0 14px; }
+.sv56-ship-option {
+	display: flex; align-items: flex-start; gap: 12px;
+	border: 1px solid rgba(26,26,26,.15); padding: 13px 16px; cursor: pointer;
+	transition: border-color .3s var(--ease), background .3s var(--ease);
 }
+.sv56-ship-option:hover { border-color: var(--ink); }
+.sv56-ship-option:has(input:checked) { border-color: var(--silk); background: rgba(201,166,107,.06); }
+.sv56-ship-option input[type="radio"] {
+	width: auto; min-height: 0; margin: 3px 0 0; accent-color: var(--ink);
+}
+.sv56-ship-option__body { display: grid; gap: 3px; }
+.sv56-ship-option__label {
+	font-family: var(--font-sans); font-size: 14px; font-weight: 500; color: var(--ink);
+}
+.sv56-ship-option__summary {
+	font-family: var(--font-sans); font-size: 12.5px; color: var(--charcoal); line-height: 1.6;
+}
+.woocommerce button.sv56-ship-apply {
+	width: 100%; min-height: var(--touch); padding: 12px 26px;
+}
+/* hesaplayıcı içi kaydet alanları (P56 şablon override'ı — formun içinde) */
+.woocommerce .sv56-save-row { grid-column: 1 / -1; margin: 0; }
+.woocommerce .sv56-save-row label.checkbox {
+	display: flex; align-items: center; gap: 9px;
+	font-family: var(--font-sans); font-size: 13px; color: var(--charcoal);
+}
+.woocommerce .sv56-save-row input[type="checkbox"] {
+	width: auto; min-height: 0; margin: 0; accent-color: var(--ink);
+}
+.woocommerce .sv56-save-row .sv-req { color: var(--silk); }
 
-/* adres düzenleme formu: input dilini form-edit-account ile ortaklaştır */
-.woocommerce-address-fields .form-row input.input-text,
-.woocommerce-address-fields .form-row select,
-.woocommerce-address-fields .form-row .select2-selection--single {
+/* ═══ P56 — HESABIM: ADRESLERİM (kartlar + form + silme onayı) ═══ */
+.woocommerce-MyAccount-content .sv56-addr-new {
+	width: auto; min-height: var(--touch); padding: 12px 26px; text-decoration: none;
+}
+.sv56-addr-empty {
+	font-family: var(--font-sans); font-size: 14px; color: var(--charcoal); margin: 22px 0;
+}
+.sv56-addr-cards {
+	display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 20px; width: 100%; margin: 24px 0 0;
+}
+.sv56-addr-card {
+	background: var(--white); border: 1px solid rgba(26,26,26,.08);
+	padding: 22px 24px 18px; display: flex; flex-direction: column; gap: 12px;
+}
+.sv56-addr-card.is-default { border-color: rgba(201,166,107,.55); }
+.sv56-addr-card__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sv56-addr-card__label {
+	font-family: var(--font-serif); font-weight: 500; font-size: 19px;
+	letter-spacing: .02em; color: var(--ink);
+}
+.sv56-addr-badge {
+	font-family: var(--font-sans); font-size: 9.5px; letter-spacing: .16em;
+	text-transform: uppercase; color: var(--ink); border: 1px solid var(--silk);
+	padding: 4px 9px; white-space: nowrap;
+}
+.sv56-addr-card__body { display: grid; gap: 4px; }
+.sv56-addr-card__name {
+	margin: 0; font-family: var(--font-sans); font-size: 13.5px; font-weight: 500; color: var(--ink);
+}
+.sv56-addr-card__summary {
+	margin: 0; font-family: var(--font-sans); font-size: 13px; color: var(--charcoal); line-height: 1.7;
+}
+.sv56-addr-card__tc {
+	margin: 0; font-family: var(--font-sans); font-size: 12px; color: var(--whisper); letter-spacing: .04em;
+}
+.sv56-addr-card__actions {
+	display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+	margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(26,26,26,.07);
+}
+.sv56-addr-action-form { display: inline-flex; margin: 0; }
+.sv56-addr-action {
+	background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+	font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+	letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-decoration: none;
+}
+.sv56-addr-action:hover, .sv56-addr-action:focus-visible { color: var(--silk); }
+.sv56-addr-action--danger:hover, .sv56-addr-action--danger:focus-visible { color: #7a2c2c; }
+
+/* adres formu: hesaplayıcı kartı dili — 2 sütun grid */
+.sv56-addr-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.sv56-addr-form .form-row { margin: 0; float: none; width: auto; }
+.sv56-addr-form .form-row label {
+	display: block; font-family: var(--font-sans); font-size: 12px;
+	letter-spacing: .14em; text-transform: uppercase; color: var(--charcoal); margin-bottom: 8px;
+}
+.sv56-addr-form .form-row label .sv-req { color: var(--silk); }
+.sv56-addr-form .form-row label .sv-account-field__opt {
+	letter-spacing: .1em; color: var(--whisper); text-transform: uppercase;
+}
+.woocommerce .sv56-addr-form .input-text {
 	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
-	padding: 12px 16px; min-height: var(--touch); color: var(--ink);
+	padding: 12px 16px; min-height: var(--touch); width: 100%; color: var(--ink);
 	font-family: var(--font-sans); font-size: 15px;
 }
-.woocommerce-address-fields .form-row label {
-	font-family: var(--font-sans); font-size: 12px; letter-spacing: .14em;
-	text-transform: uppercase; color: var(--charcoal);
+.woocommerce .sv56-addr-form .input-text[readonly] {
+	color: var(--whisper); background: rgba(26,26,26,.03);
 }
-.woocommerce-address-fields__field-wrapper { display: block; }
-.woocommerce-address-fields button[type="submit"] {
-	width: 100%; min-height: 52px; margin-top: 10px;
+.sv56-addr-row--country { grid-column: 1 / -1; }
+.woocommerce .sv56-addr-form .sv-account-form__submit {
+	grid-column: 1 / -1; width: 100%; min-height: 52px; margin: 6px 0 0;
+}
+.sv56-addr-cancel {
+	grid-column: 1 / -1; justify-self: center;
+	font-family: var(--font-sans); font-size: 11px; letter-spacing: .16em;
+	text-transform: uppercase; color: var(--charcoal); text-decoration: none;
+}
+.sv56-addr-cancel:hover, .sv56-addr-cancel:focus-visible { color: var(--ink); }
+
+/* silme onayı kartı */
+.woocommerce-MyAccount-content .sv56-addr-confirm { border-color: rgba(122,44,44,.35); }
+.sv56-addr-confirm__summary {
+	font-family: var(--font-sans); font-size: 13.5px; color: var(--charcoal); margin: 0 0 14px;
+}
+.sv56-addr-confirm__actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 0; }
+.sv56-addr-confirm__actions .sv-btn-outline { background: transparent; }
+@media (max-width: 781px) {
+	.sv56-addr-form { grid-template-columns: 1fr; }
+	.sv56-addr-cards { grid-template-columns: 1fr; }
 }
 
 /* ═══ /SEPET SAYFASI ═══ */
