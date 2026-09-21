@@ -151,6 +151,7 @@ cp -a ~/repositories/sutre/theme/sutre-child-v2 ~/staging.sutre.store/wp-content
 
 - [x] **P37 — Ürün kartı tasarımının shop'a aktarımı — `ZATEN YAPILDI` (20-09-2026):** `.sv-products` scoping kaldırıldı → kart CSS'i global `ul.products`; SHA doğrulamalı FTP deploy + canlı grep kanıtı (header 3, banner 4, phperr 0). Kullanıcı görsel onayı BEKLİYOR.
 - [ ] **AGENTS.md Sutre sürümü — `ZATEN YAPILDI` (bu commit):** Geleceğin Bilimi referans yapısından türetildi (§0 değişmez kural + durum etiketleri + kayıt defteri).
+- [x] **P39 — Kart görsel çözünürlüğü — `ZATEN YAPILDI` (20-09-2026):** Kök neden: Woo `thumbnail_image_width=350` → 504px kart 350px görseli büyütüyordu. Fix: `single_product_archive_thumbnail_size → 'large'` (mevcut yüklemelerde 'large' zaten üretilmiş → yeniden boyutlandırma gerekmez). Canlı kanıt: kart src 764×1024. Kullanıcı görsel onayı BEKLİYOR.
 - [ ] **Blok A — hukuki sayfalar (Gizlilik, mesafeli satış, iade, cayma) — `NEEDS_OWNER_INPUT`:** İşletme bilgileri (unvan, vergi no, adres) kullanıcıdan bekliyor; metinler `docs/legal-placeholders/` şablonlarından doldurulacak; final doğrulama dış uzman (avukat) + kullanıcı onayı.
 - [ ] **KDV/vergi kurulumu — `LEGAL_REVIEW_REQUIRED`:** §5.1 gereği hiçbir varsayılan girilmez; mali müşavir doğrulaması beklenir.
 - [ ] **İman Nour (Pamuk) ürün görselleri — `YAPILACAK`:** Referans yok; geçici Siyah Jakarlı temsili. Referans gelince pamuk prompt adaptasyonu (mat, satin parlaklık YOK) ile 6 renk × 3 görsel üretilecek.

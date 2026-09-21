@@ -87,6 +87,11 @@ add_action( 'woocommerce_before_main_content', function () {
 	<?php
 }, 5 );
 
+/* ── P39: kart/arşiv görselleri keskin — 350px thumbnail yerine 'large' (1024px).
+ * 350px'lik woocommerce_thumbnail 504px kartı doldurmak için büyütülüyordu → bulanıklık.
+ * 'large' tüm mevcut yüklemelerde zaten üretilmiş durumda → yeniden boyutlandırma GEREKMEZ. ── */
+add_filter( 'single_product_archive_thumbnail_size', function () { return 'large'; } );
+
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
 	$src = is_array( $src ) ? (string) reset( $src ) : (string) $src;
