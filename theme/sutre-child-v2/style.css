@@ -696,6 +696,44 @@ h3, .sv-h3 {
 .sv-pref-toggle__label strong { display: block; font-weight: 400; font-size: 15px; letter-spacing: .04em; color: var(--ink); }
 .sv-pref-toggle__label em { font-style: normal; font-size: 13px; color: var(--whisper); }
 
+/* ── P41 — Siparişlerim: arama + dönem + sıralama barı ── */
+.sv-orders-filter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 24px;
+}
+.sv-orders-filter input[type="search"],
+.sv-orders-filter select {
+	background: var(--white);
+	border: 1px solid rgba(26, 26, 26, .15);
+	border-radius: 0;
+	padding: 12px 16px;
+	min-height: var(--touch);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 14px;
+	letter-spacing: .02em;
+}
+.sv-orders-filter input[type="search"] { flex: 1 1 100%; }
+.sv-orders-filter input[type="search"]::placeholder { color: var(--whisper); }
+.sv-orders-filter select { flex: 0 0 auto; min-width: 140px; }
+.sv-orders-filter .button { flex: 0 0 auto; }
+.sv-orders-filter__clear {
+	font-family: var(--font-sans);
+	font-size: 11px;
+	letter-spacing: .16em;
+	text-transform: uppercase;
+	color: var(--charcoal);
+	border-bottom: 1px solid var(--silk);
+	padding-bottom: 2px;
+}
+.sv-orders-no-result a { border-bottom: 1px solid var(--silk); }
+@media (min-width: 782px) {
+	.sv-orders-filter input[type="search"] { flex: 1 1 280px; }
+}
+
 /* Satır 1: logo solda + hukuki linkler sağda */
 .sv-footer__top {
 	display: flex;

@@ -390,3 +390,102 @@ function sv41_contact_prefs_content() {
 	</section>
 	<?php
 }
+
+/* ═══════════════════════════════════════════════════════════
+   P41 — HESABIM İÇERİK YENİLEMESİ (C: Siparişlerim arama/filtre)
+   GET: sv_q (sipariş no / ürün adı), sv_period (3m/6m/1y/all),
+   sv_sort (date-desc/date-asc/price-asc/price-desc).
+   Strateji: müşterinin TÜM siparişleri tek sorguda (limit -1) çekilir;
+   dönem + arama (order item döngüsü) + sıralama + sayfalama PHP'de.
+   Tek müşteri / düşük sipariş sayısı → basit döngü kabul (pack P41).
+   Not: WC_Order_Query 'total' orderby'ı desteklemez → fiyat sıralaması
+   PHP usort'ta; filtrelenmiş sonuçta doğru sayfa sayısı için pagination
+   da PHP'de (per_page = woocommerce_account_orders_per_page, 15).
+   ═══════════════════════════════════════════════════════════ */
+
+/** Sipariş filtre GET parametreleri (whitelist dışı değerler varsayılana döner). */
+function sv41_orders_filters() {
+	$period = sv41_param( 'sv_period' );
+	if ( ! in_array( $period, array( '3m', '6m', '1y', 'all' ), true ) ) { $period = 'all'; }
+	$sort = sv41_param( 'sv_sort' );
+	if ( ! in_array( $sort, array( 'date-desc', 'date-asc', 'price-asc', 'price-desc' ), true ) ) { $sort = 'date-desc'; }
+	return array(
+		'q'      => sv41_param( 'sv_q' ),
+		'period' => $period,
+		'sort'   => $sort,
+	);
+}
+
+/* Woo sorgusu tüm adayları getirsin; filtreleme/sayfalama template hazırlığında (sv41_orders_prepare). */
+add_filter( 'woocommerce_my_account_my_orders_query', function ( $args ) {
+	$args['limit'] = -1;
+	$args['page']  = 1;
+	return $args;
+} );
+
+/** Siparişin tarih damgası (date_created null guard'lı). */
+function sv41_order_ts( $order ) {
+	$d = $order->get_date_created();
+	return $d ? $d->getTimestamp() : 0;
+}
+
+/**
+ * Dönem + arama + sıralama + sayfalama. $orders = WC_Order[] (paginate object orders).
+ * Döner: items (sayfalı WC_Order[]), total, max_pages, page, filters.
+ */
+function sv41_orders_prepare( $orders, $current_page ) {
+	$filters  = sv41_orders_filters();
+	$per_page = max( 1, (int) apply_filters( 'woocommerce_account_orders_per_page', 15 ) );
+	$items    = array();
+
+	foreach ( $orders as $order ) {
+		if ( ! $order instanceof WC_Order ) { continue; }
+
+		if ( 'all' !== $filters['period'] ) {
+			$months = array( '3m' => 3, '6m' => 6, '1y' => 12 );
+			$cutoff = ( new DateTimeImmutable( 'now', wp_timezone() ) )->modify( '-' . $months[ $filters['period'] ] . ' months' );
+			if ( sv41_order_ts( $order ) < $cutoff->getTimestamp() ) { continue; }
+		}
+
+		if ( '' !== $filters['q'] ) {
+			$needle    = mb_strtolower( $filters['q'], 'UTF-8' );
+			$haystacks = array( (string) $order->get_order_number() );
+			foreach ( $order->get_items() as $item ) {
+				$haystacks[] = (string) $item->get_name();
+			}
+			$match = false;
+			foreach ( $haystacks as $haystack ) {
+				if ( str_contains( mb_strtolower( $haystack, 'UTF-8' ), $needle ) ) { $match = true; break; }
+			}
+			if ( ! $match ) { continue; }
+		}
+
+		$items[] = $order;
+	}
+
+	switch ( $filters['sort'] ) {
+		case 'date-asc':
+			usort( $items, function ( $a, $b ) { return sv41_order_ts( $a ) <=> sv41_order_ts( $b ); } );
+			break;
+		case 'price-asc':
+			usort( $items, function ( $a, $b ) { return (float) $a->get_total() <=> (float) $b->get_total(); } );
+			break;
+		case 'price-desc':
+			usort( $items, function ( $a, $b ) { return (float) $b->get_total() <=> (float) $a->get_total(); } );
+			break;
+		default:
+			usort( $items, function ( $a, $b ) { return sv41_order_ts( $b ) <=> sv41_order_ts( $a ); } );
+	}
+
+	$total     = count( $items );
+	$max_pages = max( 1, (int) ceil( $total / $per_page ) );
+	$page      = min( max( 1, $current_page ), $max_pages );
+
+	return array(
+		'items'     => array_slice( $items, ( $page - 1 ) * $per_page, $per_page ),
+		'total'     => $total,
+		'max_pages' => $max_pages,
+		'page'      => $page,
+		'filters'   => $filters,
+	);
+}
