@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.2' );
+define( 'SUTRE_VERSION', '3.4.3' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -101,6 +101,39 @@ add_filter( 'woocommerce_get_privacy_policy_text', function ( $text, $type ) {
 	}
 	return $text;
 }, 10, 2 );
+
+/* ── P46: stok bilgisi gösterimi — "X adet stokta" müşteriye ASLA gösterilmez;
+ * yalnız eşik (varsayılan 3) altında aciliyet mesajı. Varyasyon seçiminde de çalışır.
+ * Eşiği değiştirmek için: sv_stock_low_threshold filtresi. ── */
+function sutre_stock_low_threshold() {
+	return (int) apply_filters( 'sv_stock_low_threshold', 3 );
+}
+function sutre_stock_low_html( $qty ) {
+	return '<p class="stock sv-stock-low">Acele et — stokta yalnızca ' . esc_html( $qty ) . ' adet kaldı!</p>';
+}
+add_filter( 'woocommerce_get_stock_html', function ( $html, $product ) {
+	if ( ! $product->managing_stock() || ! $product->is_in_stock() ) {
+		return $html; // Tükendi vb. varsayılan davranış korunur
+	}
+	$qty = $product->get_stock_quantity();
+	if ( $qty === null ) { return $html; }
+	$t = sutre_stock_low_threshold();
+	if ( $qty <= $t ) { return sutre_stock_low_html( $qty ); }
+	return ''; // normal stokta hiçbir şey gösterme
+}, 10, 2 );
+add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
+	$qty = $variation->get_stock_quantity();
+	if ( ! $variation->managing_stock() || $qty === null || ! $variation->is_in_stock() ) {
+		return $data;
+	}
+	$t = sutre_stock_low_threshold();
+	if ( $qty <= $t ) {
+		$data['availability_html'] = sutre_stock_low_html( $qty );
+	} else {
+		$data['availability_html'] = '';
+	}
+	return $data;
+}, 10, 3 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {

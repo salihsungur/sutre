@@ -1331,6 +1331,15 @@ ul.products li.product .button:hover {
 	.single-product div.product form.cart .quantity .qty { width: 100%; }
 }
 
+/* P46: düşük stok mesajı — silk vurgulu sade not */
+.single-product .stock.sv-stock-low {
+	margin: 14px 0 0; padding: 10px 14px;
+	background: rgba(201,166,107,.12);
+	border-left: 2px solid var(--silk);
+	font-family: var(--font-sans); font-size: 13px; letter-spacing: .02em;
+	color: var(--ink);
+}
+
 /* ═══ /TEK ÜRÜN SAYFASI ═══ */
 
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
