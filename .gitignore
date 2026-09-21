@@ -44,3 +44,6 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# --- P57 araştırma/kazıma dizinleri repoya girmesin ---
+.p57-woo-src/
