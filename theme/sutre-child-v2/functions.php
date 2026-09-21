@@ -92,6 +92,16 @@ add_action( 'woocommerce_before_main_content', function () {
  * 'large' tüm mevcut yüklemelerde zaten üretilmiş durumda → yeniden boyutlandırma GEREKMEZ. ── */
 add_filter( 'single_product_archive_thumbnail_size', function () { return 'large'; } );
 
+/* ── P40: Woo gizlilik metni Türkçe — RESMÎ filtre kapısı (Woo 11.1: metin option'dan gelir,
+ * 'woocommerce_registration_privacy_policy_text' bir filtre DEĞİL, option adı; doğrusu
+ * woocommerce_get_privacy_policy_text). [privacy_policy] placeholder'ı Woo link ile değiştirir. ── */
+add_filter( 'woocommerce_get_privacy_policy_text', function ( $text, $type ) {
+	if ( 'registration' === $type ) {
+		return 'Kişisel verileriniz, hesap deneyiminizi desteklemek, hesabınıza erişimi yönetmek ve [privacy_policy] metninde açıklanan diğer amaçlar doğrultusunda kullanılır.';
+	}
+	return $text;
+}, 10, 2 );
+
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
 	$src = is_array( $src ) ? (string) reset( $src ) : (string) $src;

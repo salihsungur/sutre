@@ -524,6 +524,100 @@ h3, .sv-h3 {
 	text-transform: uppercase;
 }
 
+/* ═══ HESABIM — giriş / üye ol / hesap içi yüzeyler (P40) ═══
+   Giriş + Üye Ol: desktop iki sütun + ince ayraç; mobil tek sütun */
+.woocommerce-account #customer_login {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 64px;
+	width: 100%;
+	float: none;
+}
+.woocommerce-account #customer_login .u-column1 { padding-right: 64px; border-right: 1px solid rgba(26,26,26,.08); }
+.woocommerce-account #customer_login .u-column2 { padding-left: 64px; }
+@media (max-width: 781px) {
+	.woocommerce-account #customer_login { grid-template-columns: 1fr; }
+	.woocommerce-account #customer_login .u-column1 { padding-right: 0; border-right: 0; }
+	.woocommerce-account #customer_login .u-column2 { padding-left: 0; margin-top: 48px; padding-top: 48px; border-top: 1px solid rgba(26,26,26,.08); }
+}
+
+/* Başlıklar: marka serif'i */
+.woocommerce-account #customer_login h2,
+.woocommerce-MyAccount-content h1,
+.woocommerce-MyAccount-content h2,
+.woocommerce-MyAccount-content h3 {
+	font-family: var(--font-serif);
+	font-weight: 400;
+	letter-spacing: .02em;
+	color: var(--ink);
+}
+.woocommerce-account #customer_login h2 { font-size: 34px; margin: 0 0 28px; }
+
+/* Etiketler: Jost küçük harf aralıklı */
+.woocommerce-account .form-row label {
+	font-family: var(--font-sans);
+	font-size: 12px;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+	color: var(--charcoal);
+}
+#customer_login .form-row { margin-bottom: 18px; }
+
+/* "Beni hatırla" + kayıp şifre linki */
+.woocommerce-account .woocommerce-form-login__rememberme { margin: 4px 0 22px; font-size: 14px; color: var(--charcoal); }
+.woocommerce-account .woocommerce-form-login__rememberme input { width: auto; min-height: 0; accent-color: var(--ink); margin-right: 8px; vertical-align: middle; }
+.woocommerce-account .woocommerce-LostPassword { margin: 22px 0 0; font-size: 13px; letter-spacing: .04em; }
+.woocommerce-account .woocommerce-LostPassword a {
+	color: var(--charcoal);
+	text-decoration: underline;
+	text-decoration-color: var(--silk);
+	text-underline-offset: 5px;
+	transition: color .25s var(--ease);
+}
+.woocommerce-account .woocommerce-LostPassword a:hover { color: var(--ink); }
+
+/* Giriş / Üye Ol butonları tam genişlik */
+.woocommerce-account #customer_login .woocommerce-form-login__submit,
+.woocommerce-account #customer_login button[name="register"] { width: 100%; }
+
+/* Hesap içi navigasyon: yatay chip dizilimi (sidebar kaldırıldığı için üstte) */
+.woocommerce-account .woocommerce-MyAccount { float: none; width: 100%; }
+.woocommerce-account .woocommerce-MyAccount-navigation { float: none; width: 100%; margin: 0 0 48px; }
+.woocommerce-account .woocommerce-MyAccount-navigation ul {
+	list-style: none; margin: 0; padding: 0;
+	display: flex; flex-wrap: wrap; gap: 2px 32px;
+	border-bottom: 1px solid rgba(26,26,26,.08);
+}
+.woocommerce-account .woocommerce-MyAccount-navigation li { margin: 0; }
+.woocommerce-account .woocommerce-MyAccount-navigation a {
+	display: block; padding: 14px 0;
+	font-family: var(--font-sans); font-size: 12px; font-weight: 400;
+	letter-spacing: .16em; text-transform: uppercase;
+	color: var(--whisper);
+	border-bottom: 1px solid transparent;
+	transition: color .25s var(--ease), border-color .25s var(--ease);
+}
+.woocommerce-account .woocommerce-MyAccount-navigation a:hover,
+.woocommerce-account .woocommerce-MyAccount-navigation a:focus-visible { color: var(--ink); }
+.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a {
+	color: var(--ink); border-bottom-color: var(--silk);
+}
+.woocommerce-account .woocommerce-MyAccount-content { float: none; width: 100%; font-size: 15px; line-height: 1.8; }
+
+/* Siparişler / adresler tablo ve kart yüzeyleri */
+.woocommerce-account table.shop_table td, .woocommerce-account table.shop_table th { padding: 14px 16px; font-size: 14px; }
+.woocommerce-Addresses .woocommerce-Address {
+	border: 1px solid rgba(26,26,26,.08);
+	background: var(--white);
+	padding: 24px 28px; margin: 0 0 24px;
+}
+.woocommerce-Address-title h3 { font-size: 20px; margin: 0 0 12px; }
+.woocommerce-Address-title a.edit, .woocommerce-MyAccount-content .edit {
+	font-family: var(--font-sans); font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+	color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--silk);
+}
+.woocommerce-MyAccount-content .woocommerce-message { margin-bottom: 24px; }
+
 /* Satır 1: logo solda + hukuki linkler sağda */
 .sv-footer__top {
 	display: flex;
