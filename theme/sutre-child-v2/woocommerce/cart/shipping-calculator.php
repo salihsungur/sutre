@@ -1,13 +1,20 @@
 <?php
 /**
- * Shipping Calculator — Sutre P56 override.
+ * Shipping Calculator — Sutre P56/P57 override.
  * Kaynak: WooCommerce 11.1.0 templates/cart/shipping-calculator.php (@version 9.7.0)
- * Değişiklik (yalnız GİRİŞLİ kullanıcıda; misafirde çekirdek çıktısıyla birebir aynı):
- * hesaplayıcı formunun İÇİNE adres defteri alanları (isim, telefon, adres satırları,
- * mahalle) + "Bu adresi hesabıma kaydet" (etiket zorunlu) + "Varsayılan adres yap"
- * eklenir. Neden override: Woo'nun before/after hook'ları <form> DIŞINA basar — alanlar
- * submit'e gidebilmek için form içinde olmak zorunda (P55'teki hook tabanlı checkbox
- * bu yüzden hiç gönderilmiyordu). İşleyici: sv56_handle_cart_save_address (functions.php).
+ *
+ * P56: Kayıtlı adres seçici hook'u (woocommerce_before_shipping_calculator) form DIŞINA
+ * basar; kaydet UI'i form İÇİNDE olmak zorunda → şablon override (P55'in sessiz çalışmama
+ * nedeni: hook tabanlı checkbox submit'e hiç gitmiyordu + nonce alan adı 9.7+ değişti).
+ *
+ * P57 değişiklikler (yalnız GİRİŞLİ kullanıcı; misafirde çekirdek çıktısıyla birebir):
+ * 1) Alan sırası sahibin şeması: İsim Soyisim → Telefon → Adres 1 → Adres 2 → Ülke →
+ *    Şehir(İl) → İlçe → Mahalle/Köy → Posta Kodu → TC → etiket/varsayılan/kaydet.
+ *    (Misafirde sv alanları render edilmediği için Woo sırası country→state→city→postcode
+ *    korunmaya devam eder.)
+ * 2) TC Kimlik No alanı eklendi (opsiyonel; ^\d{11}$ sanitize sv56_handle_cart_save_address'te).
+ * 3) Mahalle prefill: adres defterinde seansın gönderim adresiyle eşleşen kayıt > varsayılan.
+ * İşleyici: sv56_handle_cart_save_address (functions.php; wp_loaded:30).
  *
  * @see https://woocommerce.com/document/template-structure/
  * @version 9.7.0
@@ -22,6 +29,26 @@ do_action( 'woocommerce_before_shipping_calculator' ); ?>
 	<?php printf( '<a href="#" class="shipping-calculator-button" aria-expanded="false" aria-controls="shipping-calculator-form" role="button">%s</a>', esc_html( ! empty( $button_text ) ? $button_text : __( 'Calculate shipping', 'woocommerce' ) ) ); ?>
 
 	<section class="shipping-calculator-form" id="shipping-calculator-form" style="display:none;">
+
+		<?php if ( is_user_logged_in() ) : ?>
+			<?php /* ── P57: adres defteri alanları ÖNCE (sahibin şeması); misafirde render edilmez ── */ ?>
+			<p class="form-row form-row-wide" id="sv_addr_name_field">
+				<label for="sv_addr_name">İsim Soyisim</label>
+				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_first_name() . ' ' . WC()->customer->get_shipping_last_name() ); ?>" name="sv_addr_name" id="sv_addr_name" autocomplete="name" />
+			</p>
+			<p class="form-row form-row-wide" id="sv_addr_phone_field">
+				<label for="sv_addr_phone">Cep Telefonu</label>
+				<input type="tel" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_phone() ); ?>" name="sv_addr_phone" id="sv_addr_phone" placeholder="+90 5XX XXX XX XX" autocomplete="tel" />
+			</p>
+			<p class="form-row form-row-wide" id="sv_addr_address_1_field">
+				<label for="sv_addr_address_1">Adres Satırı 1</label>
+				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_address_1() ); ?>" name="sv_addr_address_1" id="sv_addr_address_1" autocomplete="address-line1" />
+			</p>
+			<p class="form-row form-row-wide" id="sv_addr_address_2_field">
+				<label for="sv_addr_address_2">Adres Satırı 2 <span class="sv-account-field__opt">(opsiyonel)</span></label>
+				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_address_2() ); ?>" name="sv_addr_address_2" id="sv_addr_address_2" autocomplete="address-line2" />
+			</p>
+		<?php endif; ?>
 
 		<?php if ( apply_filters( 'woocommerce_shipping_calculator_enable_country', true ) ) : ?>
 			<p class="form-row form-row-wide" id="calc_shipping_country_field">
@@ -79,6 +106,25 @@ do_action( 'woocommerce_before_shipping_calculator' ); ?>
 			</p>
 		<?php endif; ?>
 
+		<?php if ( is_user_logged_in() ) : ?>
+			<?php /* ── P57: Mahalle/Köy — İlçe'den hemen sonra; prefill defterden ── */
+			$sv_nb      = '';
+			$sv_nb_id   = '';
+			$sv_items   = function_exists( 'sv56_addresses' ) ? sv56_addresses( get_current_user_id() ) : array();
+			foreach ( $sv_items as $sv_item ) {
+				if ( function_exists( 'sv56_address_matches_customer' ) && sv56_address_matches_customer( $sv_item ) ) { $sv_nb_id = $sv_item['id']; break; }
+			}
+			if ( '' === $sv_nb_id && function_exists( 'sv56_default_address_id' ) ) { $sv_nb_id = sv56_default_address_id( get_current_user_id() ); }
+			foreach ( $sv_items as $sv_item ) {
+				if ( $sv_item['id'] === $sv_nb_id ) { $sv_nb = $sv_item['neighborhood']; break; }
+			}
+			?>
+			<p class="form-row form-row-wide" id="sv_addr_neighborhood_field">
+				<label for="sv_addr_neighborhood">Mahalle / Köy</label>
+				<input type="text" class="input-text" value="<?php echo esc_attr( $sv_nb ); ?>" name="sv_addr_neighborhood" id="sv_addr_neighborhood" autocomplete="address-level3" />
+			</p>
+		<?php endif; ?>
+
 		<?php if ( apply_filters( 'woocommerce_shipping_calculator_enable_postcode', true ) ) : ?>
 			<p class="form-row form-row-wide" id="calc_shipping_postcode_field">
 				<label for="calc_shipping_postcode"><?php esc_html_e( 'Postcode / ZIP:', 'woocommerce' ); ?></label>
@@ -87,32 +133,10 @@ do_action( 'woocommerce_before_shipping_calculator' ); ?>
 		<?php endif; ?>
 
 		<?php if ( is_user_logged_in() ) : ?>
-			<?php /* ── P56: adres defteri alanları (girişli kullanıcı; misafirde render edilmez) ── */ ?>
-			<p class="form-row form-row-wide" id="sv_addr_name_field">
-				<label for="sv_addr_name">İsim Soyisim</label>
-				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_first_name() . ' ' . WC()->customer->get_shipping_last_name() ); ?>" name="sv_addr_name" id="sv_addr_name" autocomplete="name" />
-			</p>
-			<p class="form-row form-row-wide" id="sv_addr_phone_field">
-				<label for="sv_addr_phone">Cep Telefonu</label>
-				<input type="tel" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_phone() ); ?>" name="sv_addr_phone" id="sv_addr_phone" placeholder="+90 5XX XXX XX XX" autocomplete="tel" />
-			</p>
-			<p class="form-row form-row-wide" id="sv_addr_address_1_field">
-				<label for="sv_addr_address_1">Adres Satırı 1</label>
-				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_address_1() ); ?>" name="sv_addr_address_1" id="sv_addr_address_1" autocomplete="address-line1" />
-			</p>
-			<p class="form-row form-row-wide" id="sv_addr_address_2_field">
-				<label for="sv_addr_address_2">Adres Satırı 2 <span class="sv-account-field__opt">(opsiyonel)</span></label>
-				<input type="text" class="input-text" value="<?php echo esc_attr( WC()->customer->get_shipping_address_2() ); ?>" name="sv_addr_address_2" id="sv_addr_address_2" autocomplete="address-line2" />
-			</p>
-			<p class="form-row form-row-wide" id="sv_addr_neighborhood_field">
-				<label for="sv_addr_neighborhood">Mahalle / Köy</label>
-				<input type="text" class="input-text" value="" name="sv_addr_neighborhood" id="sv_addr_neighborhood" />
-			</p>
-			<p class="form-row form-row-wide sv56-save-row">
-				<label class="checkbox">
-					<input type="checkbox" class="input-checkbox" name="sv_save_address" value="1" checked>
-					<span>Bu adresi hesabıma kaydet</span>
-				</label>
+			<?php /* ── P57: TC (opsiyonel) → etiket/varsayılan/kaydet ── */ ?>
+			<p class="form-row form-row-wide" id="sv_addr_tc_field">
+				<label for="sv_addr_tc">TC Kimlik No <span class="sv-account-field__opt">(opsiyonel)</span></label>
+				<input type="text" class="input-text" value="" name="sv_addr_tc" id="sv_addr_tc" inputmode="numeric" maxlength="11" autocomplete="off" />
 			</p>
 			<p class="form-row form-row-wide sv56-save-row">
 				<label for="sv_address_label">Adres Etiketi <span class="sv-req" aria-hidden="true">*</span></label>
@@ -122,6 +146,12 @@ do_action( 'woocommerce_before_shipping_calculator' ); ?>
 				<label class="checkbox">
 					<input type="checkbox" class="input-checkbox" name="sv_make_default" value="1">
 					<span>Varsayılan adres yap</span>
+				</label>
+			</p>
+			<p class="form-row form-row-wide sv56-save-row">
+				<label class="checkbox">
+					<input type="checkbox" class="input-checkbox" name="sv_save_address" value="1" checked>
+					<span>Bu adresi hesabıma kaydet</span>
 				</label>
 			</p>
 		<?php endif; ?>

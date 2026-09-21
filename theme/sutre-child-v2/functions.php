@@ -630,13 +630,13 @@ add_action( 'init', function () {
 } );
 
 /**
- * P56 adres alan şeması — SAHİBİN TANIMI, SIRAYLA.
- * Döner: key => array( etiket, zorunlu ). country sabit TR (dış satış yok);
- * tc opsiyonel ama verildiyse ^\d{11}$ zorunlu (sanitize'da).
+ * P56 adres alan şeması — SAHİBİN TANIMI. SIRA P57'de sahibin istediği akışa alındı:
+ * İsim Soyisim → Telefon → Adres 1 → Adres 2 → Ülke(TR kilit) → Şehir → İlçe →
+ * Mahalle/Köy → Posta Kodu → TC → etiket (→ varsayılan/kaydet yalnız sepet formunda).
+ * country sabit TR (dış satış yok); tc opsiyonel ama verildiyse ^\d{11}$ zorunlu (sanitize'da).
  */
 function sv56_address_fields() {
 	return array(
-		'label'        => array( 'Adres Etiketi', true ),
 		'name'         => array( 'İsim Soyisim', true ),
 		'phone'        => array( 'Cep Telefonu', true ),
 		'address_1'    => array( 'Adres Satırı 1', true ),
@@ -647,7 +647,41 @@ function sv56_address_fields() {
 		'neighborhood' => array( 'Mahalle / Köy', true ),
 		'postcode'     => array( 'Posta Kodu', true ),
 		'tc'           => array( 'TC Kimlik No', false ),
+		'label'        => array( 'Adres Etiketi', true ),
 	);
+}
+
+/**
+ * P57 — TR İl normalizasyonu. GERÇEKLİK (canlı kanıt): hesaplayıcı İl alanı seçimlidir ve
+ * post değeri KOD'dur ('TR01'..'TR81' — canlı /cart/ HTML'inde 82 seçenek; P56 raporundaki
+ * "TR state listesi YOK → text input" kanısı yanlıştı). İki yön için tek kaynak,
+ * çalışma anında WC()->countries->get_states('TR') (listeyi kimin eklediğinden bağımsız):
+ * DEFTER insan-okur İL ADI saklar ('İstanbul'); customer uygulamasında Woo'nun kanonik
+ * KOD'una döner ('TR34') — hesabım formunun serbest metniyle tutarlı, kod/ad karışımı olmaz.
+ */
+function sv56_state_list() {
+	if ( ! function_exists( 'WC' ) || ! WC()->countries ) { return array(); }
+	$states = WC()->countries->get_states( 'TR' );
+	return is_array( $states ) ? $states : array();
+}
+
+/** 'İstanbul' → 'TR34'; zaten kodsa / listede yoksa ham değer döner. */
+function sv56_state_name_to_code( $value ) {
+	$value  = trim( (string) $value );
+	$states = sv56_state_list();
+	$needle = mb_strtolower( $value, 'UTF-8' );
+	foreach ( $states as $code => $name ) {
+		if ( mb_strtolower( (string) $name, 'UTF-8' ) === $needle ) { return (string) $code; }
+	}
+	return $value;
+}
+
+/** 'TR34' → 'İstanbul'; zaten adsa / listede yoksa ham değer döner. */
+function sv56_state_code_to_name( $value ) {
+	$value  = trim( (string) $value );
+	$states = sv56_state_list();
+	if ( isset( $states[ $value ] ) ) { return (string) $states[ $value ]; }
+	return $value;
 }
 
 /** Adres defteri (user meta sv_address_book). Bozulmuş öğeler sessizce elenir. */
@@ -724,6 +758,10 @@ function sv56_sanitize_address_data( $values ) {
 		if ( 'phone' === $field ) {
 			$value = wp_check_invalid_utf8( preg_replace( '/[^0-9+\s()-]/', '', (string) $value ) );
 		}
+		if ( 'city' === $field ) {
+			/* P57: seçimden gelen İl KODU ('TR34') deftere insan-okur İL ADI olarak yazılır. */
+			$value = sv56_state_code_to_name( $value );
+		}
 		if ( 'tc' === $field ) {
 			$digits = preg_replace( '/\D/', '', (string) $value );
 			$value  = '';
@@ -792,7 +830,8 @@ function sv56_apply_address_to_customer( $address ) {
 	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
 	$c = WC()->customer;
 	$c->set_shipping_country( 'TR' );
-	$c->set_shipping_state( isset( $address['city'] ) ? (string) $address['city'] : '' );
+	/* P57: defterdeki İL ADI Woo'nun kanonik İl KODU'na döner (calc/checkout select'leri kod bekler). */
+	$c->set_shipping_state( isset( $address['city'] ) ? sv56_state_name_to_code( (string) $address['city'] ) : '' );
 	$c->set_shipping_city( isset( $address['district'] ) ? (string) $address['district'] : '' );
 	$c->set_shipping_postcode( isset( $address['postcode'] ) ? (string) $address['postcode'] : '' );
 	$c->set_shipping_address_1( isset( $address['address_1'] ) ? (string) $address['address_1'] : '' );
@@ -808,8 +847,9 @@ function sv56_apply_address_to_customer( $address ) {
 function sv56_address_matches_customer( $address ) {
 	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
 	$c     = WC()->customer;
+	/* P57: İl karşılaştırması iki tarafta da İL ADI üzerinden (customer'da kod saklanır → ada çevrilir). */
 	$pairs = array(
-		array( (string) $address['city'], (string) $c->get_shipping_state() ),
+		array( (string) $address['city'], sv56_state_code_to_name( (string) $c->get_shipping_state() ) ),
 		array( (string) $address['district'], (string) $c->get_shipping_city() ),
 		array( (string) $address['postcode'], (string) $c->get_shipping_postcode() ),
 		array( (string) $address['address_1'], (string) $c->get_shipping_address_1() ),
@@ -1111,17 +1151,33 @@ function sv56_handle_cart_apply() {
  * P55'in doğruladığı 'woocommerce-cart'/_wpnonce artık formda YOK. Woo'nun kendi fallback'iyle
  * aynı ikili kabul korunur. Çıkışta redirect YOK — Woo calc işleyicisi render anında çalışmaya
  * devam etsin diye (bildirimler sepet üstünde Woo oturum bildirimiyle basılır).
+ *
+ * P57 FIX'ler:
+ * (1) Nonce başarısızlığı ARTIK SESSİZ DEĞİL — bayat sekme/cache'li sayfada 'Güncelle'
+ *     hiçbir şey yapmıyordu (sahibin raporu; Woo'nun kendi calc kapısı da aynı POST'ta
+ *     sessizce atlıyor → hiçbir notice yok). Görünür hata bildirimi basılır.
+ * (2) İki checkbox da işaretsizse (yalnız hesaplama) görünür 'address_applied' bildirimi —
+ *     buton asla ölü hissettirmesin.
+ * (3) calc_shipping_state İl KODU post'lar → sanitize sv56_state_code_to_name ile deftere
+ *     İL ADI yazar (bkz. sv56_state_list kanıt notu).
+ * (4) TC Kimlik alanı hesaplayıcıya eklendi (sahip talebi; opsiyonel, ^\d{11}$ sanitize'da).
  */
 add_action( 'wp_loaded', 'sv56_handle_cart_save_address', 30 );
 function sv56_handle_cart_save_address() {
 	if ( empty( $_POST['calc_shipping'] ) || ! is_user_logged_in() || ! current_user_can( 'read' ) ) { return; }
 
 	$nonce_value = isset( $_REQUEST['woocommerce-shipping-calculator-nonce'] ) ? (string) wp_unslash( $_REQUEST['woocommerce-shipping-calculator-nonce'] ) : ( isset( $_REQUEST['_wpnonce'] ) ? (string) wp_unslash( $_REQUEST['_wpnonce'] ) : '' );
-	if ( ! wp_verify_nonce( $nonce_value, 'woocommerce-shipping-calculator' ) && ! wp_verify_nonce( $nonce_value, 'woocommerce-cart' ) ) { return; }
+	if ( ! wp_verify_nonce( $nonce_value, 'woocommerce-shipping-calculator' ) && ! wp_verify_nonce( $nonce_value, 'woocommerce-cart' ) ) {
+		wc_add_notice( sv41_notices()['error_nonce'], 'error' );
+		return;
+	}
 
 	$save_checked = isset( $_POST['sv_save_address'] );
 	$make_default = isset( $_POST['sv_make_default'] );
-	if ( ! $save_checked && ! $make_default ) { return; }
+	if ( ! $save_checked && ! $make_default ) {
+		wc_add_notice( sv41_notices()['address_applied'], 'success' );
+		return;
+	}
 
 	$label = wc_clean( isset( $_POST['sv_address_label'] ) ? $_POST['sv_address_label'] : '' );
 	if ( '' === trim( (string) $label ) ) {
@@ -1129,8 +1185,8 @@ function sv56_handle_cart_save_address() {
 		return;
 	}
 
-	/* Hesaplayıcıdaki eşleme (Woo TR locale): calc_shipping_state = İl → Şehir,
-	 * calc_shipping_city = İlçe → İlçe. Hesaplayıcıda TC toplanmaz (veri minimizasyonu). */
+	/* Hesaplayıcıdaki eşleme (Woo TR locale): calc_shipping_state = İl (POST'ta KOD),
+	 * calc_shipping_city = İlçe. */
 	$values = array(
 		'label'        => $label,
 		'name'         => isset( $_POST['sv_addr_name'] ) ? $_POST['sv_addr_name'] : '',
@@ -1141,7 +1197,7 @@ function sv56_handle_cart_save_address() {
 		'district'     => isset( $_POST['calc_shipping_city'] ) ? $_POST['calc_shipping_city'] : '',
 		'neighborhood' => isset( $_POST['sv_addr_neighborhood'] ) ? $_POST['sv_addr_neighborhood'] : '',
 		'postcode'     => isset( $_POST['calc_shipping_postcode'] ) ? $_POST['calc_shipping_postcode'] : '',
-		'tc'           => '',
+		'tc'           => isset( $_POST['sv_addr_tc'] ) ? $_POST['sv_addr_tc'] : '',
 	);
 	$parsed = sv56_sanitize_address_data( $values );
 	if ( ! empty( $parsed['errors'] ) ) {
