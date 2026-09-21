@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.7' );
+define( 'SUTRE_VERSION', '3.4.8' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -376,12 +376,18 @@ add_action( 'init', function () {
 	add_rewrite_endpoint( 'iletisim-tercihleri', EP_ROOT | EP_PAGES );
 } );
 
-/* Hesap nav: İletişim Tercihleri — Siparişlerim'den hemen sonra. */
+/* Hesap nav: Pano → "Hesap bilgileri" (Hesap detayları pano ile birleşti — P49);
+ * İletişim Tercihleri — Siparişlerim'den hemen sonra. */
 add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 	$pref_key = 'iletisim-tercihleri';
 	if ( isset( $items[ $pref_key ] ) ) { return $items; }
 	$new = array();
 	foreach ( $items as $key => $label ) {
+		if ( 'dashboard' === $key ) {
+			$new[ $key ] = 'Hesap bilgileri';   // P49: Pano + Hesap detayları birleşimi
+			continue;                            // 'account-details' nav'dan çıkar
+		}
+		if ( 'account-details' === $key ) { continue; }
 		$new[ $key ] = $label;
 		if ( 'orders' === $key ) {
 			$new[ $pref_key ] = 'İletişim Tercihleri';
@@ -392,6 +398,23 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 	}
 	return $new;
 } );
+
+/* P49: dashboard sayfa başlığı "Hesap bilgileri" (pano yerine) */
+add_action( 'woocommerce_account_dashboard', function () {
+	echo '<h1 class="sv-account-title">Hesap bilgileri</h1>';
+}, 1 );
+
+/* P49: şifre değiştirme — Hesap detayları kaldırıldığı için pano sonuna bağlantı */
+add_action( 'woocommerce_account_dashboard', function () {
+	$lost = function_exists( 'wc_lostpassword_url' ) ? wc_lostpassword_url() : wp_lostpassword_url();
+	?>
+	<section class="sv-account-section sv-account-section--password">
+		<h2>Şifre</h2>
+		<p class="sv-account-section__hint">Şifrenizi e-posta doğrulamasıyla güvenle değiştirebilirsiniz.</p>
+		<a class="sv-btn-outline" href="<?php echo esc_url( $lost ); ?>">Şifre değiştir</a>
+	</section>
+	<?php
+}, 99 );
 
 /**
  * İletişim Tercihleri içeriği: KVKK onay metni + üç kanal toggle'ı.
