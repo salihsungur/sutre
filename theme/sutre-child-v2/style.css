@@ -1059,13 +1059,13 @@ ul.products li.product:hover img {
 	transform: scale(1.05);
 }
 
-/* P42: alt bilgi bandı — başlık + fiyat SOLA hizalı iki satır, editoryal düzen */
+/* P42.1: kenar nefes payı — rozet ve bant kenarlardan içeri alınır, kontrast güçlenir */
 ul.products li.product .woocommerce-loop-product__title {
 	position: absolute;
 	bottom: 0; left: 0; right: 0;
 	margin: 0;
-	padding: 72px 22px 46px;
-	background: linear-gradient(to top, rgba(26,26,26,.88) 0%, rgba(26,26,26,.42) 55%, transparent 100%);
+	padding: 84px 28px 60px;
+	background: linear-gradient(to top, rgba(26,26,26,.92) 0%, rgba(26,26,26,.5) 55%, transparent 100%);
 	color: #fff;
 	font-family: var(--font-serif);
 	font-weight: 400;
@@ -1079,7 +1079,7 @@ ul.products li.product .woocommerce-loop-product__title {
 /* fiyat: başlığın ALTINDA, aynı sol hizada — tek blok */
 ul.products li.product .price {
 	position: absolute;
-	bottom: 18px; left: 22px; right: auto;
+	bottom: 24px; left: 28px; right: auto;
 	margin: 0;
 	color: #fff;
 	font-size: 14px;
@@ -1104,7 +1104,7 @@ ul.products li.product .price ins {
 /* P42: İNDİRİM rozeti — Woo oval varsayılanı kökten kapatılır; cam-siyah kare, harf aralıklı */
 ul.products li.product .onsale {
 	position: absolute;
-	top: 18px; left: 18px;
+	top: 24px; left: 24px;
 	z-index: 2;
 	margin: 0;
 	min-width: 0; min-height: 0;
