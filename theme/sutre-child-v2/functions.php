@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.12' );
+define( 'SUTRE_VERSION', '3.4.13' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -172,6 +172,43 @@ add_action( 'wp_loaded', function () {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
 	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 3 );
 }, 20 );
+
+/* ── P55: sepet gönderim hesaplayıcısı — "Bu adresi hesabıma kaydet" onay kutusu ── */
+add_action( 'woocommerce_after_shipping_calculator', function () {
+	if ( ! is_user_logged_in() ) { return; }
+	?>
+	<p class="form-row sv-save-address-row">
+		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+			<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox" name="sv_save_address" value="1" checked>
+			<span>Bu adresi hesabıma kaydet</span>
+		</label>
+	</p>
+	<?php
+} );
+
+/* ── P55: işaretliyse hesaplayıcıdaki adres gönderim+fatura adresi olarak hesaba yazılır ── */
+add_action( 'wp_loaded', function () {
+	if ( empty( $_POST['calc_shipping'] ) || ! is_user_logged_in() || ! isset( $_POST['sv_save_address'] ) ) { return; }
+	if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['_wpnonce'] ) ), 'woocommerce-cart' ) ) { return; }
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) { return; }
+
+	$c   = WC()->customer;
+	$map = array(
+		'calc_shipping_country'   => 'country',
+		'calc_shipping_state'     => 'state',
+		'calc_shipping_city'      => 'city',
+		'calc_shipping_postcode'  => 'postcode',
+		'calc_shipping_address_1' => 'address_1',
+		'calc_shipping_address_2' => 'address_2',
+	);
+	foreach ( $map as $post_key => $field ) {
+		if ( ! isset( $_POST[ $post_key ] ) ) { continue; }
+		$value = wc_clean( wp_unslash( $_POST[ $post_key ] ) );
+		$c->{"set_shipping_{$field}"}( $value );
+		update_user_meta( get_current_user_id(), 'shipping_' . $field, $value );
+	}
+	$c->save();
+}, 30 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {

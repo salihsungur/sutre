@@ -1593,6 +1593,65 @@ ul.products li.product .button:hover {
 	width: 100%; min-height: 52px; margin-top: 8px;
 }
 
+/* ═══ P55 — SEPET GÖNDERİM FORMU + HESAP ADRESLERİ SAYFASI ═══ */
+
+/* hesaplayıcı formu: beyaz kart, 2 sütunlu grid; Güncelle tam genişlik */
+.woocommerce .shipping-calculator-form {
+	display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px;
+	background: var(--white); border: 1px solid rgba(26,26,26,.08);
+	padding: 20px 22px 22px; margin: 16px 0 0;
+}
+.woocommerce .shipping-calculator-form p.form-row {
+	margin: 0; float: none; width: auto;
+}
+.woocommerce .shipping-calculator-form button[type="submit"],
+.woocommerce .shipping-calculator-form .button { grid-column: 1 / -1; width: 100%; }
+.woocommerce .sv-save-address-row { grid-column: 1 / -1; margin: 0; }
+.woocommerce .sv-save-address-row label {
+	display: flex; align-items: center; gap: 9px;
+	font-family: var(--font-sans); font-size: 13px; color: var(--charcoal);
+}
+.woocommerce .sv-save-address-row input[type="checkbox"] {
+	width: auto; min-height: 0; margin: 0; accent-color: var(--ink);
+}
+@media (max-width: 781px) {
+	.woocommerce .shipping-calculator-form { grid-template-columns: 1fr; }
+}
+
+/* gönderim satırı: hedef adresi okunur göster */
+.woocommerce-cart table.shop_table td .shipping td { display: inline; }
+
+/* Hesabım → Adresler: iki adres kartı yan yana */
+.woocommerce-account .woocommerce-Addresses .col2-set {
+	display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+	width: 100%; float: none;
+}
+.woocommerce-account .woocommerce-Addresses .col2-set .col-1,
+.woocommerce-account .woocommerce-Addresses .col2-set .col-2 {
+	float: none; width: auto; margin: 0;
+}
+.woocommerce-account .woocommerce-Addresses address { font-style: normal; line-height: 1.8; margin: 0 0 14px; }
+@media (max-width: 781px) {
+	.woocommerce-account .woocommerce-Addresses .col2-set { grid-template-columns: 1fr; }
+}
+
+/* adres düzenleme formu: input dilini form-edit-account ile ortaklaştır */
+.woocommerce-address-fields .form-row input.input-text,
+.woocommerce-address-fields .form-row select,
+.woocommerce-address-fields .form-row .select2-selection--single {
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 16px; min-height: var(--touch); color: var(--ink);
+	font-family: var(--font-sans); font-size: 15px;
+}
+.woocommerce-address-fields .form-row label {
+	font-family: var(--font-sans); font-size: 12px; letter-spacing: .14em;
+	text-transform: uppercase; color: var(--charcoal);
+}
+.woocommerce-address-fields__field-wrapper { display: block; }
+.woocommerce-address-fields button[type="submit"] {
+	width: 100%; min-height: 52px; margin-top: 10px;
+}
+
 /* ═══ /SEPET SAYFASI ═══ */
 
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
