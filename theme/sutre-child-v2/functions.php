@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.8' );
+define( 'SUTRE_VERSION', '3.4.9' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -376,20 +376,20 @@ add_action( 'init', function () {
 	add_rewrite_endpoint( 'iletisim-tercihleri', EP_ROOT | EP_PAGES );
 } );
 
-/* Hesap nav: Pano → "Hesap bilgileri" (Hesap detayları pano ile birleşti — P49);
- * İletişim Tercihleri — Siparişlerim'den hemen sonra. */
+/* Hesap nav: Pano → "Hesap bilgileri" (Hesap detayları pano ile birleşti — P49/P50);
+ * İletişim Tercihleri — Siparişlerim'den hemen sonra.
+ * NOT: erken-dönüş YOK — her uygulamada account-details çıkarılmalı (P50 bug fix). */
 add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 	$pref_key = 'iletisim-tercihleri';
-	if ( isset( $items[ $pref_key ] ) ) { return $items; }
 	$new = array();
 	foreach ( $items as $key => $label ) {
 		if ( 'dashboard' === $key ) {
 			$new[ $key ] = 'Hesap bilgileri';   // P49: Pano + Hesap detayları birleşimi
-			continue;                            // 'account-details' nav'dan çıkar
+			continue;
 		}
-		if ( 'account-details' === $key ) { continue; }
+		if ( 'account-details' === $key ) { continue; }   // P50: Hesap detayları kaldırıldı
 		$new[ $key ] = $label;
-		if ( 'orders' === $key ) {
+		if ( 'orders' === $key && ! isset( $new[ $pref_key ] ) ) {
 			$new[ $pref_key ] = 'İletişim Tercihleri';
 		}
 	}
@@ -404,17 +404,15 @@ add_action( 'woocommerce_account_dashboard', function () {
 	echo '<h1 class="sv-account-title">Hesap bilgileri</h1>';
 }, 1 );
 
-/* P49: şifre değiştirme — Hesap detayları kaldırıldığı için pano sonuna bağlantı */
-add_action( 'woocommerce_account_dashboard', function () {
-	$lost = function_exists( 'wc_lostpassword_url' ) ? wc_lostpassword_url() : wp_lostpassword_url();
-	?>
-	<section class="sv-account-section sv-account-section--password">
-		<h2>Şifre</h2>
-		<p class="sv-account-section__hint">Şifrenizi e-posta doğrulamasıyla güvenle değiştirebilirsiniz.</p>
-		<a class="sv-btn-outline" href="<?php echo esc_url( $lost ); ?>">Şifre değiştir</a>
-	</section>
-	<?php
-}, 99 );
+/* P50: edit-account endpoint'i kaldırıldı — doğrudan erişim Hesap bilgileri'ne yönlenir.
+ * (WC_Form_Handler save_account_details template_redirect:20'de çalışır → POST önce
+ * kaydedilir; buraya ancak kayıt sonrası/GET erişiminde düşülür.) */
+add_action( 'template_redirect', function () {
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'edit-account' ) ) {
+		wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+		exit;
+	}
+}, 30 );
 
 /**
  * İletişim Tercihleri içeriği: KVKK onay metni + üç kanal toggle'ı.

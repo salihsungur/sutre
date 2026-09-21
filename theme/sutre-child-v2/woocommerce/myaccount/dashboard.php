@@ -44,7 +44,7 @@ $sv_this_year = (int) current_time( 'Y' );
 	Merhaba <strong><?php echo esc_html( $sv_user->display_name ); ?></strong> (hesabınız değil mi? <a href="<?php echo esc_url( wc_logout_url() ); ?>">Çıkış yapın</a>)
 </p>
 <p class="sv-account-intro">
-	Hesap panonuzdan iletişim ve üyelik bilgilerinizi yönetebilir, <a href="<?php echo esc_url( sv41_myaccount_url( 'orders' ) ); ?>">siparişlerinizi</a>, <a href="<?php echo esc_url( sv41_myaccount_url( 'edit-address' ) ); ?>">adreslerinizi</a> ve <a href="<?php echo esc_url( sv41_myaccount_url( 'edit-account' ) ); ?>">şifre/hesap ayrıntılarınızı</a> görüntüleyebilirsiniz.
+	Hesap bilgilerinizi bu sayfadan yönetebilir, <a href="<?php echo esc_url( sv41_myaccount_url( 'orders' ) ); ?>">siparişlerinizi</a> ve <a href="<?php echo esc_url( sv41_myaccount_url( 'edit-address' ) ); ?>">adreslerinizi</a> görüntüleyebilirsiniz.
 </p>
 
 <?php
@@ -83,37 +83,19 @@ endif;
 		<?php wp_nonce_field( 'sv_account_phone_save', 'sv_nonce' ); ?>
 		<button type="submit" class="button sv-account-form__submit">Kaydet</button>
 	</form>
-
-	<form class="sv-account-form" method="post" action="<?php echo esc_url( sv41_myaccount_url() ); ?>">
-		<div class="form-row">
-			<label for="sv_email">E-Posta</label>
-			<input type="email" class="input-text" name="sv_email" id="sv_email" value="<?php echo esc_attr( $sv_user->user_email ); ?>" autocomplete="email">
-			<span class="sv-account-field__hint">Hesabınıza bu adresle giriş yapılır.</span>
-		</div>
-		<input type="hidden" name="sv_form" value="email">
-		<?php wp_nonce_field( 'sv_account_email_save', 'sv_nonce' ); ?>
-		<button type="submit" class="button sv-account-form__submit">Kaydet</button>
-	</form>
 </section>
 
 <section class="sv-account-section">
-	<h2>Üyelik Bilgilerim</h2>
-
-	<form class="sv-account-form" method="post" action="<?php echo esc_url( sv41_myaccount_url() ); ?>">
-		<div class="sv-account-form__grid">
-			<div class="form-row">
-				<label for="sv_first_name">Adı</label>
-				<input type="text" class="input-text" name="sv_first_name" id="sv_first_name" value="<?php echo esc_attr( $sv_user->first_name ); ?>" autocomplete="given-name">
-			</div>
-			<div class="form-row">
-				<label for="sv_last_name">Soyadı</label>
-				<input type="text" class="input-text" name="sv_last_name" id="sv_last_name" value="<?php echo esc_attr( $sv_user->last_name ); ?>" autocomplete="family-name">
-			</div>
-		</div>
-		<input type="hidden" name="sv_form" value="name">
-		<?php wp_nonce_field( 'sv_account_name_save', 'sv_nonce' ); ?>
-		<button type="submit" class="button sv-account-form__submit">Kaydet</button>
-	</form>
+	<h2>Üyelik Bilgileri</h2>
+	<p class="sv-account-section__hint">Ad, soyad, e-posta ve şifre bilgileriniz. Şifre alanlarını boş bırakırsanız şifreniz değişmez.</p>
+	<?php
+	// P50: Hesap detayları içeriği (form-edit-account) Hesap bilgileri'ne taşındı —
+	// native Woo formu: ad, soyad, e-posta, şifre; kayıt işleyicisi WC_Form_Handler.
+	wc_get_template(
+		'myaccount/form-edit-account.php',
+		array( 'user' => $sv_user )
+	);
+	?>
 </section>
 
 <!-- LEGAL_REVIEW_REQUIRED: KVKK aydınlatma metni PLACEHOLDER'dır;

@@ -1547,6 +1547,20 @@ ul.products li.product .button:hover {
 }
 .sv-btn-outline:hover, .sv-btn-outline:focus-visible { background: var(--ink); color: var(--bone); }
 
+/* P50: form-edit-account (Hesap bilgileri içindeki native form) — fieldset/legend dili */
+.woocommerce-account .woocommerce-EditAccountForm fieldset {
+	border: 1px solid rgba(26,26,26,.08); border-radius: 0;
+	margin: 26px 0 0; padding: 22px 26px 26px;
+}
+.woocommerce-account .woocommerce-EditAccountForm legend {
+	font-family: var(--font-serif); font-weight: 400; font-size: 19px;
+	color: var(--ink); padding: 0 10px; letter-spacing: .02em;
+}
+.woocommerce-account .woocommerce-EditAccountForm .form-row { margin-bottom: 18px; }
+.woocommerce-account .woocommerce-EditAccountForm button[type="submit"] {
+	width: 100%; min-height: 52px; margin-top: 8px;
+}
+
 /* ═══ /SEPET SAYFASI ═══ */
 
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
