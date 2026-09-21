@@ -13,8 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		<div class="sv-footer__col">
 			<h3 class="sv-footer__heading"><?php esc_html_e( 'Alışveriş', 'sutre' ); ?></h3>
 			<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>"><?php esc_html_e( 'Tüm Koleksiyon', 'sutre' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>"><?php esc_html_e( 'Jakarlı Şallar', 'sutre' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>"><?php esc_html_e( 'Pamuk Şallar', 'sutre' ); ?></a>
+			<?php
+			// P51: ürün linkleri Woo'dan dinamik çekilir — ürün adı değişirse footer değişir,
+			// ürün kaldırılırsa link kaybolur. Slug'lar kararlı kimlik olarak kullanılır.
+			foreach ( array( 'jakarli-sal', 'iman-nour-sal' ) as $sv_footer_slug ) {
+				$sv_footer_prod = get_page_by_path( $sv_footer_slug, OBJECT, 'product' );
+				if ( $sv_footer_prod && 'publish' === get_post_status( $sv_footer_prod ) ) {
+					echo '<a href="' . esc_url( get_permalink( $sv_footer_prod ) ) . '">' . esc_html( get_the_title( $sv_footer_prod ) ) . '</a>';
+				}
+			}
+			?>
 		</div>
 
 		<div class="sv-footer__col">
