@@ -173,42 +173,11 @@ add_action( 'wp_loaded', function () {
 	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 3 );
 }, 20 );
 
-/* ── P55: sepet gönderim hesaplayıcısı — "Bu adresi hesabıma kaydet" onay kutusu ── */
-add_action( 'woocommerce_after_shipping_calculator', function () {
-	if ( ! is_user_logged_in() ) { return; }
-	?>
-	<p class="form-row sv-save-address-row">
-		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
-			<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox" name="sv_save_address" value="1" checked>
-			<span>Bu adresi hesabıma kaydet</span>
-		</label>
-	</p>
-	<?php
-} );
-
-/* ── P55: işaretliyse hesaplayıcıdaki adres gönderim+fatura adresi olarak hesaba yazılır ── */
-add_action( 'wp_loaded', function () {
-	if ( empty( $_POST['calc_shipping'] ) || ! is_user_logged_in() || ! isset( $_POST['sv_save_address'] ) ) { return; }
-	if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['_wpnonce'] ) ), 'woocommerce-cart' ) ) { return; }
-	if ( ! function_exists( 'WC' ) || ! WC()->customer ) { return; }
-
-	$c   = WC()->customer;
-	$map = array(
-		'calc_shipping_country'   => 'country',
-		'calc_shipping_state'     => 'state',
-		'calc_shipping_city'      => 'city',
-		'calc_shipping_postcode'  => 'postcode',
-		'calc_shipping_address_1' => 'address_1',
-		'calc_shipping_address_2' => 'address_2',
-	);
-	foreach ( $map as $post_key => $field ) {
-		if ( ! isset( $_POST[ $post_key ] ) ) { continue; }
-		$value = wc_clean( wp_unslash( $_POST[ $post_key ] ) );
-		$c->{"set_shipping_{$field}"}( $value );
-		update_user_meta( get_current_user_id(), 'shipping_' . $field, $value );
-	}
-	$c->save();
-}, 30 );
+/* ── P55 sepet adres kaydetme akışı P56'da yeniden kuruldu (Adres Defteri tek kaynak):
+ * hesaplayıcı checkbox'ı artık şablon override'ında (woocommerce/cart/shipping-calculator.php)
+ * formun İÇİNDE render edilir ve wp_loaded işleyicisi sv56_handle_cart_save_address'tir.
+ * Eski hook + işleyici kaldırıldı — Woo 9.7+ nonce alan adı ve form yapısı değiştiği için
+ * eski akış zaten sessizce çalışmıyordu (nonce alan adı uyuşmuyordu + checkbox form dışındaydı). ── */
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
@@ -300,6 +269,16 @@ function sv41_notices() {
 		'error_email_taken' => 'Bu e-posta adresi başka bir hesapta kayıtlı.',
 		'error_name'        => 'Ad ve soyad alanları zorunludur.',
 		'error_optional'    => 'Doğum tarihi için gün, ay ve yıl birlikte seçilmelidir.',
+		/* P56 — Adres Defteri */
+		'address_saved'          => 'Adres kaydedildi.',
+		'address_updated'        => 'Adres güncellendi.',
+		'address_deleted'        => 'Adres silindi.',
+		'address_default'        => 'Varsayılan adres güncellendi.',
+		'address_applied'        => 'Teslimat adresi güncellendi.',
+		'error_address'          => 'Lütfen zorunlu adres alanlarını doldurun.',
+		'error_address_tc'       => 'TC Kimlik No 11 haneli bir sayı olmalıdır.',
+		'error_address_label'    => 'Lütfen adresinize bir isim (etiket) verin.',
+		'error_address_notfound' => 'Adres bulunamadı.',
 	);
 }
 
@@ -432,6 +411,10 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 			continue;
 		}
 		if ( 'edit-account' === $key ) { continue; }   // P50-fix: menü key'i 'edit-account' (account-details DEĞİL — P50'de yanlış anahtar elenmişti)
+		if ( 'edit-address' === $key && ! isset( $new['adreslerim'] ) ) {   // P56: Adresler → Adreslerim (key §5a-b: wc_get_account_menu_items kaynak kodundan doğrulandı)
+			$new['adreslerim'] = 'Adreslerim';
+			continue;
+		}
 		$new[ $key ] = $label;
 		if ( 'orders' === $key && ! isset( $new[ $pref_key ] ) ) {
 			$new[ $pref_key ] = 'İletişim Tercihleri';
@@ -617,4 +600,412 @@ function sv41_orders_prepare( $orders, $current_page ) {
 		'page'      => $page,
 		'filters'   => $filters,
 	);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   P56 — ADRES DEFTERİ (çoklu kayıtlı adres + varsayılan + sepet entegrasyonu)
+   Veri modeli (DB şeması YOK — user meta):
+   - sv_address_book    : dizi; her öğe = alan şeması (sv56_address_fields) + id + created
+   - sv_default_address : string id; saklanan değer geçersizse en eski kayıt otomatik
+                          varsayılan olur (ve kalıcılaşır). Defter boşsa meta silinir.
+   Hesap: /my-account/adreslerim/ endpoint'i (nav'da edit-address yerine; §5a-b key
+   listesi wc_get_account_menu_items kaynak kodundan doğrulandı). edit-address → 302
+   adreslerim (template_redirect:30 — WC_Form_Handler::save_address:10'un ARKASINDAN;
+   POST kayıtları kırılmaz, P50 edit-account deseni).
+   Sepet: kayıtlı adres seçici (woocommerce_before_shipping_calculator — form
+   DIŞINDA, görünür) + hesaplayıcıya kaydet UI'i (şablon override'ı:
+   woocommerce/cart/shipping-calculator.php — Woo 9.7.0 temelli; checkbox/alanlar
+   form İÇİNDE olmak zorunda: Woo'nun before/after hook'ları form dışına basar;
+   P55'teki checkbox bu yüzden submit'e hiç gitmiyordu, nonce alan adı da 9.7+
+   ile uyuşmuyordu — bkz. rapor).
+   NOT (KULLANICI ADIMI): rewrite flush — Ayarlar → Kalıcı Bağlantılar → Kaydet.
+   ═══════════════════════════════════════════════════════════ */
+
+add_action( 'init', function () {
+	add_rewrite_endpoint( 'adreslerim', EP_ROOT | EP_PAGES );
+} );
+
+/**
+ * P56 adres alan şeması — SAHİBİN TANIMI, SIRAYLA.
+ * Döner: key => array( etiket, zorunlu ). country sabit TR (dış satış yok);
+ * tc opsiyonel ama verildiyse ^\d{11}$ zorunlu (sanitize'da).
+ */
+function sv56_address_fields() {
+	return array(
+		'label'        => array( 'Adres Etiketi', true ),
+		'name'         => array( 'İsim Soyisim', true ),
+		'phone'        => array( 'Cep Telefonu', true ),
+		'address_1'    => array( 'Adres Satırı 1', true ),
+		'address_2'    => array( 'Adres Satırı 2', false ),
+		'country'      => array( 'Ülke', true ),
+		'city'         => array( 'Şehir', true ),
+		'district'     => array( 'İlçe', true ),
+		'neighborhood' => array( 'Mahalle / Köy', true ),
+		'postcode'     => array( 'Posta Kodu', true ),
+		'tc'           => array( 'TC Kimlik No', false ),
+	);
+}
+
+/** Adres defteri (user meta sv_address_book). Bozulmuş öğeler sessizce elenir. */
+function sv56_addresses( $user_id = 0 ) {
+	$user_id = $user_id ? (int) $user_id : get_current_user_id();
+	if ( $user_id <= 0 ) { return array(); }
+	$raw   = get_user_meta( $user_id, 'sv_address_book', true );
+	$items = is_array( $raw ) ? $raw : array();
+	$out   = array();
+	foreach ( $items as $item ) {
+		if ( ! is_array( $item ) || empty( $item['id'] ) || ! is_string( $item['id'] ) ) { continue; }
+		$clean = array( 'id' => $item['id'] );
+		foreach ( sv56_address_fields() as $field => $meta ) {
+			$clean[ $field ] = isset( $item[ $field ] ) ? (string) $item[ $field ] : '';
+		}
+		$clean['created'] = isset( $item['created'] ) ? (int) $item['created'] : 0;
+		$out[] = $clean;
+	}
+	return $out;
+}
+
+/** id ile tek kayıt; yoksa null. */
+function sv56_find_address( $user_id, $id ) {
+	foreach ( sv56_addresses( $user_id ) as $item ) {
+		if ( $item['id'] === (string) $id ) { return $item; }
+	}
+	return null;
+}
+
+/**
+ * Varsayılan adres id. Saklanan değer defterde yoksa en eski (ilk) kayıt
+ * otomatik varsayılan olur ve meta kalıcılaşır (paketteki kural).
+ */
+function sv56_default_address_id( $user_id = 0 ) {
+	$user_id = $user_id ? (int) $user_id : get_current_user_id();
+	if ( $user_id <= 0 ) { return ''; }
+	$items = sv56_addresses( $user_id );
+	if ( empty( $items ) ) {
+		if ( '' !== (string) get_user_meta( $user_id, 'sv_default_address', true ) ) {
+			delete_user_meta( $user_id, 'sv_default_address' );
+		}
+		return '';
+	}
+	$stored = (string) get_user_meta( $user_id, 'sv_default_address', true );
+	foreach ( $items as $item ) {
+		if ( $item['id'] === $stored ) { return $stored; }
+	}
+	update_user_meta( $user_id, 'sv_default_address', $items[0]['id'] );
+	return $items[0]['id'];
+}
+
+/** id defterde varsa varsayılan yapar; yoksa false (yetki/kayıt kontrolü). */
+function sv56_set_default_address( $user_id, $id ) {
+	foreach ( sv56_addresses( $user_id ) as $item ) {
+		if ( $item['id'] === (string) $id ) {
+			update_user_meta( $user_id, 'sv_default_address', $item['id'] );
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Girdi dizisini paket şemasına göre temizler. $values ham dizi (POST slash'li olabilir;
+ * wc_clean kendi içinde wp_unslash yapar). Döner: array( 'data' => öğe, 'errors' => alan=>true ).
+ * Ülke sabit TR; tc verildiyse 11 rakam zorunlu, değilse boş bırakılır (opsiyonel).
+ */
+function sv56_sanitize_address_data( $values ) {
+	$errors = array();
+	$data   = array();
+	foreach ( sv56_address_fields() as $field => $meta ) {
+		if ( 'country' === $field ) { $data['country'] = 'TR'; continue; }
+		$value = wc_clean( isset( $values[ $field ] ) ? $values[ $field ] : '' );
+		if ( 'phone' === $field ) {
+			$value = wp_check_invalid_utf8( preg_replace( '/[^0-9+\s()-]/', '', (string) $value ) );
+		}
+		if ( 'tc' === $field ) {
+			$digits = preg_replace( '/\D/', '', (string) $value );
+			$value  = '';
+			if ( '' !== $digits ) {
+				if ( preg_match( '/^\d{11}$/', $digits ) ) { $value = $digits; }
+				else { $errors['tc'] = true; }
+			}
+		}
+		if ( $meta[1] && '' === trim( (string) $value ) ) { $errors[ $field ] = true; }
+		$data[ $field ] = (string) $value;
+	}
+	return array( 'data' => $data, 'errors' => $errors );
+}
+
+/**
+ * Adresi deftere yazar (yeni veya id ile güncelleme). Güncellemede id defterde yoksa
+ * null (kayıt/yetki kontrolü — yalnız KENDİ adresleri yazılabilir). Döner: id.
+ */
+function sv56_save_address( $user_id, $data, $id = '' ) {
+	$items = sv56_addresses( $user_id );
+	$now   = time();
+	if ( '' === (string) $id ) {
+		$id      = 'sva_' . uniqid() . '_' . (string) wp_rand( 100, 999 );
+		$items[] = array_merge( $data, array( 'id' => $id, 'created' => $now ) );
+	} else {
+		$found = false;
+		foreach ( $items as $k => $item ) {
+			if ( $item['id'] === (string) $id ) {
+				$created     = $item['created'] ? (int) $item['created'] : $now;
+				$items[ $k ] = array_merge( $data, array( 'id' => $item['id'], 'created' => $created ) );
+				$found       = true;
+				break;
+			}
+		}
+		if ( ! $found ) { return null; }
+	}
+	update_user_meta( $user_id, 'sv_address_book', $items );
+	return $id;
+}
+
+/** Adresi siler; silinen varsayılanın yerine en eski kayıt otomatik varsayılan olur. */
+function sv56_delete_address( $user_id, $id ) {
+	$items = sv56_addresses( $user_id );
+	$out   = array();
+	foreach ( $items as $item ) {
+		if ( $item['id'] !== (string) $id ) { $out[] = $item; }
+	}
+	if ( count( $out ) === count( $items ) ) { return false; }
+	update_user_meta( $user_id, 'sv_address_book', $out );
+	if ( (string) get_user_meta( $user_id, 'sv_default_address', true ) === (string) $id ) {
+		if ( empty( $out ) ) {
+			delete_user_meta( $user_id, 'sv_default_address' );
+		} else {
+			update_user_meta( $user_id, 'sv_default_address', $out[0]['id'] );
+		}
+	}
+	return true;
+}
+
+/**
+ * Adresi WC()->customer gönderim alanlarına uygular (sepet/checkout anında doğru).
+ * TR eşlemesi (Woo TR locale — kaynak kodla doğrulandı): İl = shipping_state,
+ * İlçe = shipping_city. Telefon set_shipping_phone (Woo 5.6+; varsa yazılır).
+ */
+function sv56_apply_address_to_customer( $address ) {
+	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
+	$c = WC()->customer;
+	$c->set_shipping_country( 'TR' );
+	$c->set_shipping_state( isset( $address['city'] ) ? (string) $address['city'] : '' );
+	$c->set_shipping_city( isset( $address['district'] ) ? (string) $address['district'] : '' );
+	$c->set_shipping_postcode( isset( $address['postcode'] ) ? (string) $address['postcode'] : '' );
+	$c->set_shipping_address_1( isset( $address['address_1'] ) ? (string) $address['address_1'] : '' );
+	$c->set_shipping_address_2( isset( $address['address_2'] ) ? (string) $address['address_2'] : '' );
+	if ( method_exists( $c, 'set_shipping_phone' ) ) {
+		$c->set_shipping_phone( isset( $address['phone'] ) ? (string) $address['phone'] : '' );
+	}
+	$c->save();
+	return true;
+}
+
+/** Adresin müşterinin SEÇİLİ gönderim adresiyle birebir eşleşmesi (sepet seçici ön-seçim). */
+function sv56_address_matches_customer( $address ) {
+	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
+	$c     = WC()->customer;
+	$pairs = array(
+		array( (string) $address['city'], (string) $c->get_shipping_state() ),
+		array( (string) $address['district'], (string) $c->get_shipping_city() ),
+		array( (string) $address['postcode'], (string) $c->get_shipping_postcode() ),
+		array( (string) $address['address_1'], (string) $c->get_shipping_address_1() ),
+	);
+	foreach ( $pairs as $p ) {
+		if ( '' === $p[0] || $p[0] !== $p[1] ) { return false; }
+	}
+	return true;
+}
+
+/** Tek satır adres özeti (kart + sepet seçici). */
+function sv56_address_summary( $address ) {
+	$parts = array();
+	foreach ( array( 'address_1', 'address_2', 'neighborhood', 'district', 'city', 'postcode' ) as $field ) {
+		if ( isset( $address[ $field ] ) && '' !== (string) $address[ $field ] ) { $parts[] = (string) $address[ $field ]; }
+	}
+	return implode( ', ', $parts );
+}
+
+/**
+ * P56 hesap POST işleyicisi (Adreslerim: kaydet / varsayılan / sil).
+ * Yetkisiz / form'suz / nonce'suz istek sessizce bırakılır; yetki = giriş + current_user_can('read')
+ * + endpoint + kayıt sahipliği (id kullanıcının KENDİ defterinde olmak zorunda).
+ */
+add_action( 'template_redirect', 'sv56_handle_account_address_forms' );
+function sv56_handle_account_address_forms() {
+	if ( 'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : '' ) ) { return; }
+	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() || ! current_user_can( 'read' ) ) { return; }
+	if ( ! ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'adreslerim' ) ) ) { return; }
+
+	$nonce_map = array(
+		'address_save'    => 'sv_address_save',
+		'address_default' => 'sv_address_default',
+		'address_delete'  => 'sv_address_delete',
+	);
+	$form = sv41_param( 'sv_form', 'post' );
+	if ( ! isset( $nonce_map[ $form ] ) ) { return; }
+	if ( ! wp_verify_nonce( sv41_param( 'sv_nonce', 'post' ), $nonce_map[ $form ] ) ) {
+		sv41_redirect_notice( 'error_nonce', 'adreslerim' );
+	}
+
+	$user_id = get_current_user_id();
+
+	switch ( $form ) {
+		case 'address_save':
+			$edit_id = sv41_param( 'sv_address_id', 'post' );
+			$values  = array();
+			foreach ( sv56_address_fields() as $field => $meta ) {
+				$values[ $field ] = isset( $_POST[ 'sv_addr_' . $field ] ) ? $_POST[ 'sv_addr_' . $field ] : '';
+			}
+			$parsed = sv56_sanitize_address_data( $values );
+			if ( ! empty( $parsed['errors'] ) ) {
+				$only_tc = ( isset( $parsed['errors']['tc'] ) && 1 === count( $parsed['errors'] ) );
+				sv41_redirect_notice( $only_tc ? 'error_address_tc' : 'error_address', 'adreslerim' );
+			}
+			$new_id = sv56_save_address( $user_id, $parsed['data'], '' === $edit_id ? '' : $edit_id );
+			if ( null === $new_id ) { sv41_redirect_notice( 'error_address_notfound', 'adreslerim' ); }
+			/* Kaydedilen adres varsayılan ise sepet/checkout anında doğru olsun (paket şartı). */
+			if ( sv56_default_address_id( $user_id ) === $new_id ) {
+				sv56_apply_address_to_customer( sv56_find_address( $user_id, $new_id ) );
+			}
+			sv41_redirect_notice( '' === $edit_id ? 'address_saved' : 'address_updated', 'adreslerim' );
+			break;
+
+		case 'address_default':
+			$id = sv41_param( 'sv_address_id', 'post' );
+			if ( ! sv56_set_default_address( $user_id, $id ) ) { sv41_redirect_notice( 'error_address_notfound', 'adreslerim' ); }
+			sv56_apply_address_to_customer( sv56_find_address( $user_id, $id ) );
+			sv41_redirect_notice( 'address_default', 'adreslerim' );
+			break;
+
+		case 'address_delete':
+			$id = sv41_param( 'sv_address_id', 'post' );
+			if ( ! sv56_delete_address( $user_id, $id ) ) { sv41_redirect_notice( 'error_address_notfound', 'adreslerim' ); }
+			sv41_redirect_notice( 'address_deleted', 'adreslerim' );
+			break;
+	}
+}
+
+/* P56: edit-address endpoint'i kaldırıldı — doğrudan erişim Adreslerim'e yönlenir.
+ * template_redirect:30 → WC_Form_Handler::save_address (öncelik 10) POST'u ÖNCE işler
+ * (nonce: woocommerce-edit_address); kayıt kırılmaz. P50 edit-account deseni. */
+add_action( 'template_redirect', function () {
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'edit-address' ) ) {
+		wp_safe_redirect( sv41_myaccount_url( 'adreslerim' ) );
+		exit;
+	}
+}, 30 );
+
+/**
+ * Adreslerim sayfası içeriği: kart listesi + Yeni/Düzenle formu (?duzenle=id|yeni)
+ * + silme onayı (?sil=id — iki adımlı, JS'siz onay).
+ */
+add_action( 'woocommerce_account_adreslerim_endpoint', 'sv56_address_book_content' );
+function sv56_address_book_content() {
+	$user_id = get_current_user_id();
+	$items   = sv56_addresses( $user_id );
+	$def_id  = sv56_default_address_id( $user_id );
+	$notices = sv41_notices();
+	$notice  = sv41_current_notice();
+
+	$duzenle  = sv41_param( 'duzenle' );
+	$sil      = sv41_param( 'sil' );
+	$editing  = null;
+	$base_url = sv41_myaccount_url( 'adreslerim' );
+
+	if ( '' !== $duzenle && 'yeni' !== $duzenle ) {
+		$editing = sv56_find_address( $user_id, $duzenle );
+		if ( null === $editing ) { $duzenle = ''; }
+	}
+	$confirm_delete = ( '' !== $sil ) ? sv56_find_address( $user_id, $sil ) : null;
+	?>
+	<h1 class="sv-account-title">Adreslerim</h1>
+
+	<?php if ( '' !== $notice && isset( $notices[ $notice ] ) ) : ?>
+		<div class="sv-account-notice" role="status"><?php echo esc_html( $notices[ $notice ] ); ?></div>
+	<?php endif; ?>
+
+	<?php if ( $confirm_delete ) : ?>
+		<section class="sv-account-section sv56-addr-confirm">
+			<h2>&quot;<?php echo esc_html( $confirm_delete['label'] ); ?>&quot; adresi silinsin mi?</h2>
+			<p class="sv56-addr-confirm__summary"><?php echo esc_html( sv56_address_summary( $confirm_delete ) ); ?></p>
+			<form method="post" action="<?php echo esc_url( $base_url ); ?>" class="sv56-addr-confirm__actions">
+				<input type="hidden" name="sv_form" value="address_delete">
+				<input type="hidden" name="sv_address_id" value="<?php echo esc_attr( $confirm_delete['id'] ); ?>">
+				<?php wp_nonce_field( 'sv_address_delete', 'sv_nonce' ); ?>
+				<button type="submit" class="button sv56-addr-confirm__yes">Evet, sil</button>
+				<a class="sv-btn-outline" href="<?php echo esc_url( $base_url ); ?>">Vazgeç</a>
+			</form>
+		</section>
+	<?php endif; ?>
+
+	<?php if ( '' !== $duzenle ) : ?>
+		<section class="sv-account-section">
+			<h2><?php echo $editing ? 'Adresi Düzenle' : 'Yeni Adres Ekle'; ?></h2>
+			<p class="sv-account-section__hint">Teslimat adresiniz; sipariş gönderiminde kullanılır. * işaretli alanlar zorunludur.</p>
+			<form class="sv-account-form sv56-addr-form" method="post" action="<?php echo esc_url( $base_url ); ?>">
+				<?php foreach ( sv56_address_fields() as $field => $meta ) : ?>
+					<?php if ( 'country' === $field ) : ?>
+						<div class="form-row sv56-addr-row--country">
+							<label for="sv_addr_country">Ülke</label>
+							<input type="text" id="sv_addr_country" value="Türkiye" readonly class="input-text sv56-addr-country">
+							<input type="hidden" name="sv_addr_country" value="TR">
+							<span class="sv-account-field__hint">Dış satış yapmıyoruz; teslimat yalnızca Türkiye içindir.</span>
+						</div>
+					<?php else : ?>
+						<div class="form-row">
+							<label for="sv_addr_<?php echo esc_attr( $field ); ?>">
+								<?php echo esc_html( $meta[0] ); ?><?php echo $meta[1] ? ' <span class="sv-req" aria-hidden="true">*</span>' : ' <span class="sv-account-field__opt">(opsiyonel)</span>'; ?>
+							</label>
+							<input type="<?php echo esc_attr( 'phone' === $field ? 'tel' : 'text' ); ?>" class="input-text"
+								name="sv_addr_<?php echo esc_attr( $field ); ?>" id="sv_addr_<?php echo esc_attr( $field ); ?>"
+								value="<?php echo esc_attr( $editing ? $editing[ $field ] : '' ); ?>"
+								<?php echo 'phone' === $field ? 'placeholder="+90 5XX XXX XX XX" autocomplete="tel"' : ''; ?>
+								<?php echo 'name' === $field ? 'autocomplete="name"' : ''; ?>
+								<?php echo 'tc' === $field ? 'inputmode="numeric" maxlength="11" autocomplete="off"' : ''; ?>>
+						</div>
+					<?php endif; ?>
+				<?php endforeach; ?>
+				<input type="hidden" name="sv_address_id" value="<?php echo esc_attr( $editing ? $editing['id'] : '' ); ?>">
+				<input type="hidden" name="sv_form" value="address_save">
+				<?php wp_nonce_field( 'sv_address_save', 'sv_nonce' ); ?>
+				<button type="submit" class="button sv-account-form__submit">Kaydet</button>
+				<a class="sv56-addr-cancel" href="<?php echo esc_url( $base_url ); ?>">Vazgeç</a>
+			</form>
+		</section>
+	<?php else : ?>
+		<p class="sv-account-intro">Kayıtlı teslimat adresleriniz; sepet ve ödeme adımında seçmek üzere burada saklanır.</p>
+		<a class="sv56-addr-new button" href="<?php echo esc_url( add_query_arg( 'duzenle', 'yeni', $base_url ) ); ?>">Yeni Adres Ekle</a>
+
+		<?php if ( empty( $items ) ) : ?>
+			<p class="sv56-addr-empty">Henüz kayıtlı adresiniz yok. &quot;Yeni Adres Ekle&quot; ile ilk adresinizi kaydedin — ilk adresiniz varsayılan olarak atanır.</p>
+		<?php else : ?>
+			<div class="sv56-addr-cards">
+				<?php foreach ( $items as $item ) : ?>
+					<div class="sv56-addr-card<?php echo $item['id'] === $def_id ? ' is-default' : ''; ?>">
+						<div class="sv56-addr-card__head">
+							<span class="sv56-addr-card__label"><?php echo esc_html( $item['label'] ); ?></span>
+							<?php if ( $item['id'] === $def_id ) : ?><span class="sv56-addr-badge">Varsayılan</span><?php endif; ?>
+						</div>
+						<div class="sv56-addr-card__body">
+							<p class="sv56-addr-card__name"><?php echo esc_html( $item['name'] ); ?> · <?php echo esc_html( $item['phone'] ); ?></p>
+							<p class="sv56-addr-card__summary"><?php echo esc_html( sv56_address_summary( $item ) ); ?></p>
+							<?php if ( '' !== $item['tc'] ) : ?><p class="sv56-addr-card__tc">TC: <?php echo esc_html( $item['tc'] ); ?></p><?php endif; ?>
+						</div>
+						<div class="sv56-addr-card__actions">
+							<a class="sv56-addr-action" href="<?php echo esc_url( add_query_arg( 'duzenle', $item['id'], $base_url ) ); ?>">Düzenle</a>
+							<?php if ( $item['id'] !== $def_id ) : ?>
+								<form class="sv56-addr-action-form" method="post" action="<?php echo esc_url( $base_url ); ?>">
+									<input type="hidden" name="sv_form" value="address_default">
+									<input type="hidden" name="sv_address_id" value="<?php echo esc_attr( $item['id'] ); ?>">
+									<?php wp_nonce_field( 'sv_address_default', 'sv_nonce' ); ?>
+									<button type="submit" class="sv56-addr-action">Varsayılan Yap</button>
+								</form>
+							<?php endif; ?>
+							<a class="sv56-addr-action sv56-addr-action--danger" href="<?php echo esc_url( add_query_arg( 'sil', $item['id'], $base_url ) ); ?>">Sil</a>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	<?php endif;
 }

@@ -44,7 +44,7 @@ $sv_this_year = (int) current_time( 'Y' );
 	Merhaba <strong><?php echo esc_html( $sv_user->display_name ); ?></strong> (hesabınız değil mi? <a href="<?php echo esc_url( wc_logout_url() ); ?>">Çıkış yapın</a>)
 </p>
 <p class="sv-account-intro">
-	Hesap bilgilerinizi bu sayfadan yönetebilir, <a href="<?php echo esc_url( sv41_myaccount_url( 'orders' ) ); ?>">siparişlerinizi</a> ve <a href="<?php echo esc_url( sv41_myaccount_url( 'edit-address' ) ); ?>">adreslerinizi</a> görüntüleyebilirsiniz.
+	Hesap bilgilerinizi bu sayfadan yönetebilir, <a href="<?php echo esc_url( sv41_myaccount_url( 'orders' ) ); ?>">siparişlerinizi</a> ve <a href="<?php echo esc_url( sv41_myaccount_url( 'adreslerim' ) ); ?>">adreslerinizi</a> görüntüleyebilirsiniz.
 </p>
 
 <?php
