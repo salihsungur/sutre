@@ -125,6 +125,7 @@ staging.sutre.store/
 3. **Bilinen tuzak — Woo pseudo-element:** `ul.products::before/::after {content:" "; display:table}` grid konteynerde grid item olur → boş hücre/çapraz dizilim. Fix style.css'te: `display:none !important; content:none !important`. Bu reset kaldırılmaz.
 4. **Bilinen tuzak — Woo blok tema:** Woo 11 klasik şablonlara dönüşü resmen desteklemez ama child `woocommerce/*.php` template hierarchy override'ı çalışır (P29 kanıtlı). Block template-parts ile karışık mimari KURULMAZ.
 5. **Bilinen tuzak — PHP 8.5:** `esc_url(wc_get_page_permalink(...))` array döndürebilir; `ltrim(array)` fatal. Tolerant helper + `is_array` guard'lar mevcut; kaldırılmaz.
+5a. **Bilinen tuzak — Woo kart başlığı:** Woo çekirdek CSS `padding: .5em 0` kuralı tema başlık kuralını AYNI özgülükte ezebilir (yükleme sırası değişken) → başlık soldan yapışık görünür. Kalıcı kilidi: `ul.products li.product h2.woocommerce-loop-product__title` (h2 element seçicisi, özgülük üstün). P42.4 kanıtlı.
 6. Override.css / parts/ içindeki eski CSS parçaları kullanılmaz; her stil değişikliği `style.css`'e işlenir.
 7. Mobil önceliklidir (anayasa §9 — Instagram/WhatsApp trafiği mobil varsayılır); WCAG 2.2 AA hedef.
 8. Genel yerleşim/konum korunur; yalnız görsel/UX iyileştirilir (anayasa §9 UI politikası).
