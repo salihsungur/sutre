@@ -300,3 +300,93 @@ function sv41_handle_account_forms() {
 			break;
 	}
 }
+
+/* ═══════════════════════════════════════════════════════════
+   P41 — HESABIM İÇERİK YENİLEMESİ (B: İletişim Tercihleri)
+   Yeni hesap endpoint'i: /my-account/iletisim-tercihleri/
+   NOT (KULLANICI ADIMI): rewrite kuralları kendiliğinden yenilenmez;
+   WP Admin → Ayarlar → Kalıcı Bağlantılar → Kaydet (tek tık) gerekli.
+   ═══════════════════════════════════════════════════════════ */
+
+add_action( 'init', function () {
+	add_rewrite_endpoint( 'iletisim-tercihleri', EP_ROOT | EP_PAGES );
+} );
+
+/* Hesap nav: İletişim Tercihleri — Siparişlerim'den hemen sonra. */
+add_filter( 'woocommerce_account_menu_items', function ( $items ) {
+	$pref_key = 'iletisim-tercihleri';
+	if ( isset( $items[ $pref_key ] ) ) { return $items; }
+	$new = array();
+	foreach ( $items as $key => $label ) {
+		$new[ $key ] = $label;
+		if ( 'orders' === $key ) {
+			$new[ $pref_key ] = 'İletişim Tercihleri';
+		}
+	}
+	if ( ! isset( $new[ $pref_key ] ) ) {
+		$new[ $pref_key ] = 'İletişim Tercihleri';
+	}
+	return $new;
+} );
+
+/**
+ * İletişim Tercihleri içeriği: KVKK onay metni + üç kanal toggle'ı.
+ * KVKK metni PLACEHOLDER'dır — LEGAL_REVIEW_REQUIRED (anayasa §6.1/§6.2):
+ * docs/legal-placeholders/gizlilik-politikasi.md taslağıyla uyumludur;
+ * avukat onayı ve işletme verileri olmadan yayına alınmamalıdır.
+ */
+add_action( 'woocommerce_account_iletisim-tercihleri_endpoint', 'sv41_contact_prefs_content' );
+function sv41_contact_prefs_content() {
+	$sv_notices = sv41_notices();
+	$sv_notice  = sv41_current_notice();
+	?>
+	<p class="sv-account-intro">Ticari elektronik ileti onaylarınızı bu sayfadan dilediğiniz zaman güncelleyebilirsiniz.</p>
+
+	<?php if ( '' !== $sv_notice && isset( $sv_notices[ $sv_notice ] ) ) : ?>
+		<div class="sv-account-notice" role="status"><?php echo esc_html( $sv_notices[ $sv_notice ] ); ?></div>
+	<?php endif; ?>
+
+	<!-- LEGAL_REVIEW_REQUIRED: KVKK aydınlatma + pazarlama izni metni PLACEHOLDER'dır
+	     (hukuki onay bekliyor; [TBD] alanları Blok A işletme girdileriyle doldurulacak). -->
+	<div class="sv-account-notice sv-account-notice--legal" role="note">
+		<strong>KVKK Aydınlatma ve Ticari Elektronik İleti Onayı</strong>
+		Veri sorumlusu: [İŞLETME UNVANI TBD]. Kişisel verileriniz (ad, e-posta adresi, telefon numarası);
+		yalnızca açık rızanız (KVKK m. 5/1) doğrultusunda, ticari elektronik ileti (e-posta, SMS, çağrı merkezi)
+		yoluyla yapılacak pazarlama ve kampanya bilgilendirmeleri amacıyla işlenir. Onayınız isteğe bağlıdır ve
+		sipariş vermenin şartı değildir; sipariş işlemleri, teslimat ve faturalama bildirimleri bu onaydan bağımsız yürütülür.
+		Onayınızı bu sayfadan dilediğiniz zaman geri alabilirsiniz; çekim talebiniz pazarlama iletişimini sonlandırır.
+		Ticari elektronik ileti izinleriniz İYS (İleti Yönetim Sistemi) kayıtlarıyla da yönetilir.
+		Ayrıntılı bilgi: Gizlilik ve KVKK Aydınlatma Metni — [LİNK TBD: /gizlilik-politikasi sayfası hukuki onay bekliyor].
+		Başvuru kanalları: [E-POSTA TBD] / [TEBLİGAT ADRESİ TBD].
+	</div>
+
+	<section class="sv-account-section">
+		<h2>Pazarlama İletişimi</h2>
+		<p class="sv-account-section__hint">Bilgilendirme kanallarını tek tek açıp kapatabilirsiniz.</p>
+
+		<form class="sv-account-form sv-pref-form" method="post" action="<?php echo esc_url( sv41_myaccount_url( 'iletisim-tercihleri' ) ); ?>">
+			<?php
+			$sv_channels = array(
+				'email' => array( 'E-Posta', 'Kampanya ve yeni koleksiyon e-postaları' ),
+				'sms'   => array( 'SMS', 'Kampanya ve bilgilendirme SMS mesajları' ),
+				'call'  => array( 'Çağrı Merkezi', 'Çağrı merkezi yoluyla bilgilendirme' ),
+			);
+			foreach ( $sv_channels as $sv_channel => $sv_meta ) :
+				$sv_checked = 'yes' === (string) get_user_meta( get_current_user_id(), 'sv_contact_pref_' . $sv_channel, true );
+				?>
+				<label class="sv-pref-toggle">
+					<input type="checkbox" name="sv_contact_pref_<?php echo esc_attr( $sv_channel ); ?>" value="1" <?php checked( true, $sv_checked ); ?>>
+					<span class="sv-pref-toggle__track" aria-hidden="true"></span>
+					<span class="sv-pref-toggle__label">
+						<strong><?php echo esc_html( $sv_meta[0] ); ?></strong>
+						<em><?php echo esc_html( $sv_meta[1] ); ?></em>
+					</span>
+				</label>
+			<?php endforeach; ?>
+			<input type="hidden" name="sv_form" value="prefs">
+			<?php wp_nonce_field( 'sv_contact_prefs_save', 'sv_nonce' ); ?>
+			<button type="submit" class="button sv-account-form__submit">Kaydet</button>
+		</form>
+	</section>
+	<?php
+}
