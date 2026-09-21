@@ -1195,6 +1195,37 @@ ul.products li.product .button:hover {
 	ul.products li.product .button { transition: none; }
 }
 
+/* ═══ DUYURU ŞERİDİ (P54) — header üstü kayan yazı; siyah zemin beyaz metin ═══ */
+.sv-announce {
+	background: var(--ink);
+	color: #fff;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 11px 0;
+	border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sv-announce__track {
+	display: inline-flex;
+	align-items: center;
+	animation: sv-marquee 30s linear infinite;
+	will-change: transform;
+}
+.sv-announce__track span {
+	font-family: var(--font-sans);
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: .16em;
+	padding: 0 48px;
+}
+@keyframes sv-marquee {
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.sv-announce__track { animation: none; justify-content: center; }
+	.sv-announce__track span[aria-hidden="true"] { display: none; }
+}
+
 /* ═══ TEK ÜRÜN SAYFASI (P45) — galeri / özet / varyasyon / sekmeler / ilgili ürünler ═══ */
 
 /* Galeri + özet: Woo float yerleşimi korunur; görsel çerçevesiz, nefes paylı */

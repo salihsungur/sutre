@@ -12,6 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 <a class="skip-link screen-reader-text" href="#sutre-content">İçeriğe geç</a>
 
+<?php // P54: duyuru şeridi — tüm sitede, header'ın üstünde (CSS marquee) ?>
+<div class="sv-announce" role="note" aria-label="İlk siparişe %10 indirim — SUTRE10 kodu">
+	<div class="sv-announce__track">
+		<span>SUTRE'DE İLK SİPARİŞE ÖZEL %10 İNDİRİM İÇİN &ldquo;SUTRE10&rdquo; KODUNU KULLANABİLİRSİNİZ!</span>
+		<span aria-hidden="true">SUTRE'DE İLK SİPARİŞE ÖZEL %10 İNDİRİM İÇİN &ldquo;SUTRE10&rdquo; KODUNU KULLANABİLİRSİNİZ!</span>
+		<span aria-hidden="true">SUTRE'DE İLK SİPARİŞE ÖZEL %10 İNDİRİM İÇİN &ldquo;SUTRE10&rdquo; KODUNU KULLANABİLİRSİNİZ!</span>
+		<span aria-hidden="true">SUTRE'DE İLK SİPARİŞE ÖZEL %10 İNDİRİM İÇİN &ldquo;SUTRE10&rdquo; KODUNU KULLANABİLİRSİNİZ!</span>
+	</div>
+</div>
+
 <header class="sv-header">
 	<a class="sv-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo/sutre-logo-header.png' ); ?>" alt="Sutre — ana sayfa" decoding="async">
