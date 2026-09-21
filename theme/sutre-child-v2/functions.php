@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.10' );
+define( 'SUTRE_VERSION', '3.4.11' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -165,6 +165,12 @@ add_filter( 'the_content', function ( $content ) {
 		return do_shortcode( '[woocommerce_cart]' );
 	}
 	return $content;
+}, 20 );
+
+/* ── P53: ürün meta (Stok kodu/Kategoriler) sepete ekle altından alınıp ürün başlığının ÜSTÜNE taşınır ── */
+add_action( 'wp_loaded', function () {
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 3 );
 }, 20 );
 
 /* ── Placeholder görsel: Woo core'dan ── */

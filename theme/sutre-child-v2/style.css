@@ -1264,9 +1264,10 @@ ul.products li.product .button:hover {
 .single-product div.product form.cart .button { flex: 1 1 auto; }
 
 /* Ürün meta: ince ayraç altında küçük tipografi */
+/* P53: meta başlığın üstünde — ayraç altta (bant gibi), başlıktan ayrışır */
 .single-product .product_meta {
-	border-top: 1px solid rgba(26,26,26,.08);
-	padding-top: 18px; margin-top: 30px;
+	border-bottom: 1px solid rgba(26,26,26,.08);
+	padding: 0 0 16px; margin: 0 0 16px;
 	font-family: var(--font-sans); font-size: 12px; letter-spacing: .06em; color: var(--whisper);
 }
 .single-product .product_meta a { color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--silk); }
