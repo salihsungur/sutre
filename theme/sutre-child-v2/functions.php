@@ -141,3 +141,162 @@ add_action( 'wp_print_footer_scripts', function () {
 	</script>
 	<?php
 } );
+
+/* ═══════════════════════════════════════════════════════════
+   P41 — HESABIM İÇERİK YENİLEMESİ (A: Pano formları)
+   İletişim (telefon/e-posta) + Üyelik (ad-soyad) + Opsiyonel (cinsiyet/doğum).
+   Güvenlik: her form kendi nonce'u + is_account_page() + is_user_logged_in();
+   çıktılar escape'li, girişler beyaz-liste temizliği (anayasa §3.1/§8).
+   POST işleyicileri template_redirect'te: init'te is_account_page()
+   güvenilmez (WP query henüz kurulmamış); Woo çekirdek form handler'ları
+   (WC_Form_Handler::save_account_details) da aynı hook'u kullanır.
+   ═══════════════════════════════════════════════════════════ */
+
+/**
+ * Hesabım URL'i — PHP 8.5 permalink tuzağı guard'ı (AGENTS §5.5):
+ * wc_get_page_permalink() array döndürebilir; string'e indirilir.
+ */
+function sv41_myaccount_url( $endpoint = '' ) {
+	$base = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/my-account/' );
+	$base = is_array( $base ) ? (string) reset( $base ) : (string) $base;
+	if ( '' !== $endpoint && function_exists( 'wc_get_endpoint_url' ) ) {
+		return wc_get_endpoint_url( $endpoint, '', $base );
+	}
+	return $base;
+}
+
+/** Ham POST alanı (string, slash temizli). */
+function sv41_raw_post( $key ) {
+	return isset( $_POST[ $key ] ) ? (string) wp_unslash( $_POST[ $key ] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- değer okuyan her akış kendi nonce'unu doğrular
+}
+
+/** GET/POST parametresini metin temizliğinden geçirerek okur. */
+function sv41_param( $key, $source = 'get' ) {
+	$raw = 'post' === $source ? ( isset( $_POST[ $key ] ) ? (string) wp_unslash( $_POST[ $key ] ) : '' ) : ( isset( $_GET[ $key ] ) ? (string) wp_unslash( $_GET[ $key ] ) : '' );
+	return sanitize_text_field( $raw );
+}
+
+/**
+ * P41 durum mesajları (whitelist). Whitelist dışı sv_notice değeri hiçbir şey basmaz.
+ */
+function sv41_notices() {
+	return array(
+		'phone_saved'       => 'Cep telefonu numaranız güncellendi.',
+		'email_saved'       => 'E-posta adresiniz güncellendi.',
+		'name_saved'        => 'Üyelik bilgileriniz güncellendi.',
+		'optional_saved'    => 'Opsiyonel bilgileriniz kaydedildi.',
+		'prefs_saved'       => 'İletişim tercihleriniz kaydedildi.',
+		'error_nonce'       => 'Güvenlik doğrulaması başarısız. Lütfen sayfayı yenileyip tekrar deneyin.',
+		'error_phone'       => 'Lütfen geçerli bir cep telefonu numarası girin (örn. +90 5XX XXX XX XX).',
+		'error_email'       => 'Lütfen geçerli bir e-posta adresi girin.',
+		'error_email_taken' => 'Bu e-posta adresi başka bir hesapta kayıtlı.',
+		'error_name'        => 'Ad ve soyad alanları zorunludur.',
+		'error_optional'    => 'Doğum tarihi için gün, ay ve yıl birlikte seçilmelidir.',
+	);
+}
+
+/** Aktif durum mesajı anahtarı (whitelist dışıysa boş). */
+function sv41_current_notice() {
+	$key = sv41_param( 'sv_notice' );
+	if ( '' === $key ) { return ''; }
+	$notices = sv41_notices();
+	return isset( $notices[ $key ] ) ? $key : '';
+}
+
+/** PRG deseni: beyaz-listeli mesajla güvenli yeniden yönlendirme + exit. */
+function sv41_redirect_notice( $key, $endpoint = '' ) {
+	wp_safe_redirect( add_query_arg( 'sv_notice', $key, sv41_myaccount_url( $endpoint ) ) );
+	exit;
+}
+
+/**
+ * P41 hesap formları POST işleyicisi (Pano + İletişim Tercihleri).
+ * Yetkisiz / form'suz / nonce'suz istek sessizce bırakılır.
+ */
+add_action( 'template_redirect', 'sv41_handle_account_forms' );
+function sv41_handle_account_forms() {
+	if ( 'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : '' ) ) { return; }
+	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() ) { return; }
+
+	$nonce_map = array(
+		'phone'    => 'sv_account_phone_save',
+		'email'    => 'sv_account_email_save',
+		'name'     => 'sv_account_name_save',
+		'optional' => 'sv_account_optional_save',
+		'prefs'    => 'sv_contact_prefs_save',
+	);
+	$form = sv41_param( 'sv_form', 'post' );
+	if ( ! isset( $nonce_map[ $form ] ) ) { return; }
+	if ( ! wp_verify_nonce( sv41_param( 'sv_nonce', 'post' ), $nonce_map[ $form ] ) ) {
+		sv41_redirect_notice( 'error_nonce', 'prefs' === $form ? 'iletisim-tercihleri' : '' );
+	}
+
+	$user_id = get_current_user_id();
+
+	switch ( $form ) {
+		case 'phone':
+			/* wc-rich-register mu-plugin'iyle aynı beyaz liste; billing_phone
+			   siparişlerin iletişim telefonu olarak da kullanılır. */
+			$phone  = wp_check_invalid_utf8( preg_replace( '/[^0-9+\s()-]/', '', sv41_raw_post( 'sv_phone' ) ) );
+			$digits = preg_replace( '/[^0-9]/', '', $phone );
+			if ( strlen( (string) $digits ) < 10 ) { sv41_redirect_notice( 'error_phone' ); }
+			update_user_meta( $user_id, 'billing_phone', $phone );
+			sv41_redirect_notice( 'phone_saved' );
+			break;
+
+		case 'email':
+			$email = sanitize_email( sv41_raw_post( 'sv_email' ) );
+			if ( ! is_email( $email ) ) { sv41_redirect_notice( 'error_email' ); }
+			if ( email_exists( $email ) && $email !== (string) wp_get_current_user()->user_email ) {
+				sv41_redirect_notice( 'error_email_taken' );
+			}
+			wp_update_user( array( 'ID' => $user_id, 'user_email' => $email ) );
+			sv41_redirect_notice( 'email_saved' );
+			break;
+
+		case 'name':
+			$first = sanitize_text_field( sv41_raw_post( 'sv_first_name' ) );
+			$last  = sanitize_text_field( sv41_raw_post( 'sv_last_name' ) );
+			if ( '' === $first || '' === $last ) { sv41_redirect_notice( 'error_name' ); }
+			update_user_meta( $user_id, 'first_name', $first );
+			update_user_meta( $user_id, 'last_name', $last );
+			update_user_meta( $user_id, 'billing_first_name', $first );
+			update_user_meta( $user_id, 'billing_last_name', $last );
+			sv41_redirect_notice( 'name_saved' );
+			break;
+
+		case 'optional':
+			/* KVKK: opsiyonel veri — boş gönderim metaları siler (veri minimizasyonu). */
+			$gender = sanitize_key( sv41_raw_post( 'sv_gender' ) );
+			if ( ! in_array( $gender, array( '', 'female', 'male', 'prefer-not-to-say' ), true ) ) { $gender = ''; }
+			$day       = absint( sv41_raw_post( 'sv_birth_day' ) );
+			$month     = absint( sv41_raw_post( 'sv_birth_month' ) );
+			$year      = absint( sv41_raw_post( 'sv_birth_year' ) );
+			$chosen    = ( $day || $month || $year );
+			$this_year = (int) current_time( 'Y' );
+			if ( $chosen && ( ! $day || ! $month || ! $year || $day > 31 || $month > 12 || $year < 1900 || $year > $this_year ) ) {
+				sv41_redirect_notice( 'error_optional' );
+			}
+			if ( '' !== $gender ) { update_user_meta( $user_id, 'sv_gender', $gender ); } else { delete_user_meta( $user_id, 'sv_gender' ); }
+			if ( $chosen ) {
+				update_user_meta( $user_id, 'sv_birth_day', $day );
+				update_user_meta( $user_id, 'sv_birth_month', $month );
+				update_user_meta( $user_id, 'sv_birth_year', $year );
+			} else {
+				delete_user_meta( $user_id, 'sv_birth_day' );
+				delete_user_meta( $user_id, 'sv_birth_month' );
+				delete_user_meta( $user_id, 'sv_birth_year' );
+			}
+			sv41_redirect_notice( 'optional_saved' );
+			break;
+
+		case 'prefs':
+			/* Tercih formu yalnız kendi endpoint'inden işlenir (ekstra yetki sınırı). */
+			if ( ! ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'iletisim-tercihleri' ) ) ) { return; }
+			foreach ( array( 'email', 'sms', 'call' ) as $channel ) {
+				update_user_meta( $user_id, 'sv_contact_pref_' . $channel, isset( $_POST[ 'sv_contact_pref_' . $channel ] ) ? 'yes' : 'no' );
+			}
+			sv41_redirect_notice( 'prefs_saved', 'iletisim-tercihleri' );
+			break;
+	}
+}

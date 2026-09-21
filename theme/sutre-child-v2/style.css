@@ -618,6 +618,43 @@ h3, .sv-h3 {
 }
 .woocommerce-MyAccount-content .woocommerce-message { margin-bottom: 24px; }
 
+/* ── P41 — hesap panosu: bölüm kartları + bilgi formları ── */
+.sv-account-intro { margin: 0 0 10px; font-size: 15px; }
+.sv-account-intro strong { font-weight: 400; }
+.woocommerce-MyAccount-content .sv-account-section {
+	border: 1px solid rgba(26, 26, 26, .08);
+	background: var(--white);
+	padding: 32px 24px;
+	margin: 0 0 24px;
+}
+.woocommerce-MyAccount-content .sv-account-section h2 { font-size: 26px; margin: 0 0 6px; }
+.sv-account-section__opt { font-family: var(--font-sans); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--whisper); }
+.sv-account-section__hint { font-size: 13px; line-height: 1.7; color: var(--charcoal); margin: 0 0 20px; max-width: 640px; }
+.sv-account-form .form-row { margin-bottom: 16px; }
+.sv-account-form__grid { display: grid; grid-template-columns: 1fr; gap: 0 24px; }
+.sv-account-form__grid--date { gap: 12px 12px; }
+.sv-account-form__label { display: block; font-family: var(--font-sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--charcoal); margin-bottom: 6px; }
+.sv-account-field__opt { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--whisper); }
+.sv-account-field__hint { display: block; margin-top: 6px; font-size: 12px; color: var(--whisper); }
+.sv-account-form__submit { margin-top: 6px; }
+@media (min-width: 782px) {
+	.sv-account-form__grid { grid-template-columns: 1fr 1fr; }
+	.sv-account-form__grid--date { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 781px) {
+	.woocommerce-MyAccount-content .sv-account-section { padding: 24px 18px; }
+}
+
+/* P41 durum mesajı (nonce/doğrulama akışı beyaz-listeli notice) */
+.sv-account-notice {
+	border-left: 2px solid var(--silk);
+	background: var(--ivory);
+	padding: 14px 20px;
+	margin: 0 0 24px;
+	font-size: 14px;
+	color: var(--ink);
+}
+
 /* Satır 1: logo solda + hukuki linkler sağda */
 .sv-footer__top {
 	display: flex;
