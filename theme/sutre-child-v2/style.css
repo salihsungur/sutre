@@ -1068,7 +1068,7 @@ ul.products li.product {
 ul.products li.product .woocommerce-loop-product__title {
 	position: static;
 	margin: 0;
-	padding: 18px 20px 0;
+	padding: 20px 26px 0;
 	color: var(--ink);
 	font-family: var(--font-serif);
 	font-weight: 400;
@@ -1083,7 +1083,7 @@ ul.products li.product .woocommerce-loop-product__title {
 ul.products li.product .price {
 	position: static;
 	margin: 0;
-	padding: 8px 20px 20px;
+	padding: 8px 26px 22px;
 	color: var(--ink);
 	font-size: 14px;
 	font-weight: 500;
@@ -1107,7 +1107,7 @@ ul.products li.product .price ins {
 /* P42: İNDİRİM rozeti — Woo oval varsayılanı kökten kapatılır; cam-siyah kare, harf aralıklı */
 ul.products li.product .onsale {
 	position: absolute;
-	top: 24px; left: 24px;
+	top: 28px; left: 28px;
 	z-index: 2;
 	margin: 0;
 	min-width: 0; min-height: 0;
