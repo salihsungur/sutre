@@ -1009,3 +1009,137 @@ function sv56_address_book_content() {
 		<?php endif; ?>
 	<?php endif;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   P56 — SEPET ENTEGRASYONU
+   1) Kayıtlı adres seçici: woocommerce_before_shipping_calculator (Woo 9.7.0 şablonunda
+      bu hook <form> DIŞINA basar → görünür "hesaplayıcı üstü" konumu). Radio + Uygula
+      POST'u (nonce sv_address_apply) → seçilen adres WC()->customer shipping alanlarına
+      yazılır (İl→state, İlçe→city, postcode, adres satırları, telefon) + save().
+   2) Hesaplayıcıya kaydet UI'i şablon override'ındadır (alanlar form İÇİNDE olmak
+      zorunda). İşleyici: sv56_handle_cart_save_address (wp_loaded:30 — Woo kendi calc
+      işleyicisini render anında WC_Shortcode_Cart::output içinde çalıştırır; wp_loaded
+      POST'u okur, çıktıya karışmaz). P55'teki doğrudan shipping_* user-meta persist
+      KALDIRILDI — adres defteri tek kaynak.
+   Misafirlerde iki akış da hiç render edilmez/çalışmaz.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Sepette kayıtlı adres seçici (girişli + defter doluysa görünür). */
+add_action( 'woocommerce_before_shipping_calculator', 'sv56_cart_address_selector' );
+function sv56_cart_address_selector() {
+	if ( ! is_user_logged_in() ) { return; }
+	$user_id = get_current_user_id();
+	$items   = sv56_addresses( $user_id );
+	if ( empty( $items ) ) { return; }
+
+	/* Ön-seçim: seansın seçili gönderim adresiyle birebir eşleşen kayıt; yoksa varsayılan. */
+	$preselect = '';
+	foreach ( $items as $item ) {
+		if ( sv56_address_matches_customer( $item ) ) { $preselect = $item['id']; break; }
+	}
+	if ( '' === $preselect ) { $preselect = sv56_default_address_id( $user_id ); }
+	?>
+	<div class="sv56-ship-selector">
+		<h3 class="sv56-ship-selector__title">Kayıtlı Adresinize Gönder</h3>
+		<form class="sv56-ship-selector__form" method="post" action="<?php echo esc_url( function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' ) ); ?>">
+			<div class="sv56-ship-selector__list" role="radiogroup" aria-label="Teslimat adresi seçimi">
+				<?php foreach ( $items as $item ) : ?>
+					<label class="sv56-ship-option">
+						<input type="radio" name="sv_apply_address" value="<?php echo esc_attr( $item['id'] ); ?>" <?php checked( $item['id'], $preselect ); ?>>
+						<span class="sv56-ship-option__body">
+							<strong class="sv56-ship-option__label"><?php echo esc_html( $item['label'] ); ?></strong>
+							<span class="sv56-ship-option__summary"><?php echo esc_html( sv56_address_summary( $item ) ); ?></span>
+						</span>
+					</label>
+				<?php endforeach; ?>
+			</div>
+			<input type="hidden" name="sv_form" value="address_apply">
+			<?php wp_nonce_field( 'sv_address_apply', 'sv_nonce' ); ?>
+			<button type="submit" class="button sv56-ship-apply">Bu Adrese Gönder</button>
+		</form>
+	</div>
+	<?php
+}
+
+/** Sepet akışlarında Woo oturum bildirimi + cart URL'e dönüş (PRG). */
+function sv56_cart_notice_redirect( $key, $type = 'success' ) {
+	$texts = sv41_notices();
+	$msg   = isset( $texts[ $key ] ) ? $texts[ $key ] : '';
+	if ( '' !== $msg && function_exists( 'wc_add_notice' ) ) {
+		wc_add_notice( $msg, 'error' === $type ? 'error' : 'success' );
+	}
+	if ( function_exists( 'wc_get_cart_url' ) ) {
+		wp_safe_redirect( wc_get_cart_url() );
+	}
+	exit;
+}
+
+/* Seçilen kayıtlı adresi sepette uygula (Uygula POST'u). */
+add_action( 'template_redirect', 'sv56_handle_cart_apply' );
+function sv56_handle_cart_apply() {
+	if ( 'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : '' ) ) { return; }
+	if ( ! is_user_logged_in() || ! current_user_can( 'read' ) ) { return; }
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+	if ( 'address_apply' !== sv41_param( 'sv_form', 'post' ) ) { return; }
+	if ( ! wp_verify_nonce( sv41_param( 'sv_nonce', 'post' ), 'sv_address_apply' ) ) {
+		sv56_cart_notice_redirect( 'error_nonce', 'error' );
+	}
+	$address = sv56_find_address( get_current_user_id(), sv41_param( 'sv_apply_address', 'post' ) );
+	if ( null === $address ) { sv56_cart_notice_redirect( 'error_address_notfound', 'error' ); }
+	sv56_apply_address_to_customer( $address );
+	sv56_cart_notice_redirect( 'address_applied' );
+}
+
+/**
+ * Hesaplayıcıdaki adresi deftere kaydet ("Bu adresi hesabıma kaydet" + "Varsayılan yap").
+ * Woo 9.7+ hesaplayıcı nonce'u 'woocommerce-shipping-calculator' (alan: woocommerce-shipping-calculator-nonce);
+ * P55'in doğruladığı 'woocommerce-cart'/_wpnonce artık formda YOK. Woo'nun kendi fallback'iyle
+ * aynı ikili kabul korunur. Çıkışta redirect YOK — Woo calc işleyicisi render anında çalışmaya
+ * devam etsin diye (bildirimler sepet üstünde Woo oturum bildirimiyle basılır).
+ */
+add_action( 'wp_loaded', 'sv56_handle_cart_save_address', 30 );
+function sv56_handle_cart_save_address() {
+	if ( empty( $_POST['calc_shipping'] ) || ! is_user_logged_in() || ! current_user_can( 'read' ) ) { return; }
+
+	$nonce_value = isset( $_REQUEST['woocommerce-shipping-calculator-nonce'] ) ? (string) wp_unslash( $_REQUEST['woocommerce-shipping-calculator-nonce'] ) : ( isset( $_REQUEST['_wpnonce'] ) ? (string) wp_unslash( $_REQUEST['_wpnonce'] ) : '' );
+	if ( ! wp_verify_nonce( $nonce_value, 'woocommerce-shipping-calculator' ) && ! wp_verify_nonce( $nonce_value, 'woocommerce-cart' ) ) { return; }
+
+	$save_checked = isset( $_POST['sv_save_address'] );
+	$make_default = isset( $_POST['sv_make_default'] );
+	if ( ! $save_checked && ! $make_default ) { return; }
+
+	$label = wc_clean( isset( $_POST['sv_address_label'] ) ? $_POST['sv_address_label'] : '' );
+	if ( '' === trim( (string) $label ) ) {
+		wc_add_notice( sv41_notices()['error_address_label'], 'error' );
+		return;
+	}
+
+	/* Hesaplayıcıdaki eşleme (Woo TR locale): calc_shipping_state = İl → Şehir,
+	 * calc_shipping_city = İlçe → İlçe. Hesaplayıcıda TC toplanmaz (veri minimizasyonu). */
+	$values = array(
+		'label'        => $label,
+		'name'         => isset( $_POST['sv_addr_name'] ) ? $_POST['sv_addr_name'] : '',
+		'phone'        => isset( $_POST['sv_addr_phone'] ) ? $_POST['sv_addr_phone'] : '',
+		'address_1'    => isset( $_POST['sv_addr_address_1'] ) ? $_POST['sv_addr_address_1'] : '',
+		'address_2'    => isset( $_POST['sv_addr_address_2'] ) ? $_POST['sv_addr_address_2'] : '',
+		'city'         => isset( $_POST['calc_shipping_state'] ) ? $_POST['calc_shipping_state'] : '',
+		'district'     => isset( $_POST['calc_shipping_city'] ) ? $_POST['calc_shipping_city'] : '',
+		'neighborhood' => isset( $_POST['sv_addr_neighborhood'] ) ? $_POST['sv_addr_neighborhood'] : '',
+		'postcode'     => isset( $_POST['calc_shipping_postcode'] ) ? $_POST['calc_shipping_postcode'] : '',
+		'tc'           => '',
+	);
+	$parsed = sv56_sanitize_address_data( $values );
+	if ( ! empty( $parsed['errors'] ) ) {
+		$only_tc = ( isset( $parsed['errors']['tc'] ) && 1 === count( $parsed['errors'] ) );
+		wc_add_notice( sv41_notices()[ $only_tc ? 'error_address_tc' : 'error_address' ], 'error' );
+		return;
+	}
+
+	$new_id = sv56_save_address( get_current_user_id(), $parsed['data'] );
+	if ( $make_default ) {
+		sv56_set_default_address( get_current_user_id(), $new_id );
+		sv56_apply_address_to_customer( sv56_find_address( get_current_user_id(), $new_id ) );
+	}
+	wc_add_notice( sv41_notices()['address_saved'], 'success' );
+}
+
