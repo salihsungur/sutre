@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.5' );
+define( 'SUTRE_VERSION', '3.4.6' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -155,6 +155,16 @@ add_filter( 'gettext', function ( $translated, $text, $domain ) {
 	);
 	return $map[ $text ] ?? $translated;
 }, 10, 3 );
+
+/* ── P47: sepet sayfası klasik shortcode'a zorlanır — sepet BLOĞU (JS i18n'li İngilizce
+ * içerik + blok grid kartları) yerine klasik [woocommerce_cart]; TEK MİMARİ = klasik PHP
+ * doktriniyle uyumlu. gettext haritası klasik şablonun string'lerini Türkçeleştirir. ── */
+add_filter( 'the_content', function ( $content ) {
+	if ( function_exists( 'is_cart' ) && is_cart() && ! has_shortcode( $content, 'woocommerce_cart' ) ) {
+		return do_shortcode( '[woocommerce_cart]' );
+	}
+	return $content;
+}, 20 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
