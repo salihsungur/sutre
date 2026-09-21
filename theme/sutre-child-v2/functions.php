@@ -152,6 +152,7 @@ add_filter( 'gettext', function ( $translated, $text, $domain ) {
 		'New in store'                        => 'Mağazada yeni',
 		'Return to shop'                      => 'Alışverişe devam et',
 		'View my shopping cart'               => 'Sepeti görüntüle',
+		'Additional information'              => 'Ürün Bilgileri',
 	);
 	return $map[ $text ] ?? $translated;
 }, 10, 3 );
