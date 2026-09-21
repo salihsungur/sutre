@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.14' );
+define( 'SUTRE_VERSION', '3.4.15' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -145,16 +145,32 @@ add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
 } );
 
 /* ── P47: sepet sayfası İngilizce stringler Türkçe (gettext — blok şablondan gelenler dahil;
- * domain farketmez: woo blocks kendi domain'ini kullanabiliyor) ── */
+ * domain farketmez: woo blocks kendi domain'ini kullanabiliyor) ──
+ * P57: checkout klasikleştikçe ödeme sayfası stringleri de aynı kapıdan Türkçeleşir.
+ * 'Additional information' bağlam-duyarlıdır: ürün sekmesinde 'Ürün Bilgileri' (P52),
+ * checkout'ta aynı EN string sipariş notu bölümü başlığıdır → 'Sipariş Notu'. */
 add_filter( 'gettext', function ( $translated, $text, $domain ) {
 	$map = array(
-		'Your cart is currently empty!'       => 'Sepetin şu an boş.',
-		'New in store'                        => 'Mağazada yeni',
-		'Return to shop'                      => 'Alışverişe devam et',
-		'View my shopping cart'               => 'Sepeti görüntüle',
-		'Additional information'              => 'Ürün Bilgileri',
+		'Your cart is currently empty!'      => 'Sepetin şu an boş.',
+		'New in store'                       => 'Mağazada yeni',
+		'Return to shop'                     => 'Alışverişe devam et',
+		'View my shopping cart'              => 'Sepeti görüntüle',
+		'Billing details'                    => 'Fatura Bilgileri',
+		'Billing &amp; Shipping'             => 'Fatura & Gönderim',
+		'Ship to a different address?'       => 'Farklı bir adrese gönderilsin mi?',
+		'Create an account?'                 => 'Hesap oluştur',
+		'Your order'                         => 'Sipariş Özeti',
+		'Order notes'                        => 'Sipariş Notu',
+		'Place order'                        => 'Siparişi Onayla',
+		'Update totals'                      => 'Toplamları Güncelle',
+		'Have a coupon?'                     => 'Kuponunuz mu var?',
+		'You must be logged in to checkout.' => 'Ödeme adımı için giriş yapmalısınız.',
 	);
-	return $map[ $text ] ?? $translated;
+	if ( isset( $map[ $text ] ) ) { return $map[ $text ]; }
+	if ( 'Additional information' === $text ) {
+		return ( function_exists( 'is_checkout' ) && is_checkout() ) ? 'Sipariş Notu' : 'Ürün Bilgileri';
+	}
+	return $translated;
 }, 10, 3 );
 
 /* ── P47: sepet sayfası klasik shortcode'a zorlanır — sepet BLOĞU (JS i18n'li İngilizce
@@ -163,6 +179,19 @@ add_filter( 'gettext', function ( $translated, $text, $domain ) {
 add_filter( 'the_content', function ( $content ) {
 	if ( function_exists( 'is_cart' ) && is_cart() && ! has_shortcode( $content, 'woocommerce_cart' ) ) {
 		return do_shortcode( '[woocommerce_cart]' );
+	}
+	return $content;
+}, 20 );
+
+/* ── P57: checkout sayfası klasik [woocommerce_checkout] shortcode'a zorlanır — checkout
+ * BLOĞU (JS-i18n İngilizce + blok kartlar) yerine klasik şablon; P47 cart deseniyle AYNI
+ * kapı (the_content:20). POST akışı render'dan bağımsızdır: WC_Form_Handler::checkout_action
+ * wp_loaded'ta WC()->checkout()->process_checkout() çağırır (class-wc-form-handler.php:476)
+ * → klasik zorlama POST'u etkilemez. order-pay / order-received uçları da WC_Shortcode_Checkout::output
+ * içinde (kaynak:36-60) aynı shortcode'tan işlenir. ── */
+add_filter( 'the_content', function ( $content ) {
+	if ( function_exists( 'is_checkout' ) && is_checkout() && ! has_shortcode( $content, 'woocommerce_checkout' ) ) {
+		return do_shortcode( '[woocommerce_checkout]' );
 	}
 	return $content;
 }, 20 );
@@ -1213,4 +1242,43 @@ function sv56_handle_cart_save_address() {
 	}
 	wc_add_notice( sv41_notices()['address_saved'], 'success' );
 }
+
+/* ═══════════════════════════════════════════════════════════
+   P57 — CHECKOUT: MAHALLE ALANI + ADRES DEFTERİ PREFILL
+   - shipping_neighborhood: OPSİYONEL custom checkout alanı. Order meta kanıtı (Woo 11.1.0
+     kaynak): WC_Checkout::create_order() shipping_/billing_ önekli TÜM checkout alanlarını
+     _{key} order meta'sına yazar (class-wc-checkout.php:438-444; hariç tutma listesi 29-33
+     — neighborhood listede yok). Sıra: İlçe city:70 → Mahalle 75 → Posta postcode:80.
+   - TC checkout'a EKLENMEZ (sahip kararı: "checkout'u abartma"; veri minimizasyonu).
+   - Prefill: woocommerce_checkout_get_value filtresi (get_value:1487 kısa-devre kapısı);
+     adres defterinde seansın gönderim adresiyle birebir eşleşen kayıt > varsayılan kayıt.
+     Fatura/gönderim alanlarının kalanı customer üzerinden zaten dolu gelir (P56).
+   ═══════════════════════════════════════════════════════════ */
+add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
+	if ( ! isset( $fields['shipping'] ) || isset( $fields['shipping']['shipping_neighborhood'] ) ) { return $fields; }
+	$fields['shipping']['shipping_neighborhood'] = array(
+		'label'        => 'Mahalle / Köy',
+		'type'         => 'text',
+		'required'     => false,
+		'priority'     => 75,
+		'class'        => array( 'form-row-wide', 'address-field', 'sv-checkout-neighborhood' ),
+		'autocomplete' => 'address-level3',
+	);
+	return $fields;
+}, 20, 1 );
+
+add_filter( 'woocommerce_checkout_get_value', function ( $value, $input ) {
+	if ( null !== $value || 'shipping_neighborhood' !== $input || ! is_user_logged_in() ) { return $value; }
+	$items  = sv56_addresses( get_current_user_id() );
+	if ( empty( $items ) ) { return $value; }
+	$hit_id = '';
+	foreach ( $items as $item ) {
+		if ( sv56_address_matches_customer( $item ) ) { $hit_id = $item['id']; break; }
+	}
+	if ( '' === $hit_id ) { $hit_id = sv56_default_address_id( get_current_user_id() ); }
+	foreach ( $items as $item ) {
+		if ( $item['id'] === $hit_id ) { return (string) $item['neighborhood']; }
+	}
+	return $value;
+}, 10, 2 );
 

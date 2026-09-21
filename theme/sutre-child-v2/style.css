@@ -1745,6 +1745,83 @@ ul.products li.product .button:hover {
 	.sv56-addr-cards { grid-template-columns: 1fr; }
 }
 
+/* ═══ P57 — CHECKOUT (KLASİK): 2 sütun (fatura/gönderim + sipariş özeti), input dili, buton ink ═══ */
+.woocommerce-checkout form.checkout {
+	display: grid;
+	grid-template-columns: 1fr 38%;
+	grid-template-areas: "details review-head" "details review";
+	gap: 24px 48px;
+	align-items: start;
+	float: none;
+}
+.woocommerce-checkout form.checkout::after { display: none; content: none; }
+.woocommerce-checkout #customer_details { grid-area: details; float: none; width: 100%; margin: 0; }
+.woocommerce-checkout #customer_details .col-1,
+.woocommerce-checkout #customer_details .col-2 {
+	float: none; width: 100%; margin: 0 0 28px;
+	border: 1px solid rgba(26,26,26,.08); background: var(--white); padding: 28px 26px;
+}
+.woocommerce-checkout h3,
+.woocommerce-checkout #order_review_heading {
+	font-family: var(--font-serif); font-weight: 400; font-size: 26px;
+	letter-spacing: .02em; color: var(--ink); margin: 0 0 18px;
+}
+.woocommerce-checkout #order_review_heading { grid-area: review-head; margin: 0; }
+.woocommerce-checkout #order_review {
+	grid-area: review; float: none; width: 100%;
+	border: 1px solid rgba(26,26,26,.08); background: var(--white); padding: 24px 26px;
+}
+/* giriş dili: etiket + input (HESABIM dilinin devamı) */
+.woocommerce-checkout .form-row label {
+	font-family: var(--font-sans); font-size: 12px;
+	letter-spacing: .14em; text-transform: uppercase; color: var(--charcoal);
+}
+.woocommerce-checkout .form-row { margin-bottom: 16px; }
+.woocommerce-checkout .input-text,
+.woocommerce-checkout select,
+.woocommerce-checkout .select2-container .select2-selection--single {
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 16px; min-height: var(--touch); width: 100%; color: var(--ink);
+	font-family: var(--font-sans); font-size: 15px;
+}
+.woocommerce-checkout .select2-container .select2-selection--single { height: auto; display: flex; align-items: center; }
+.woocommerce-checkout .select2-container .select2-selection--single .select2-selection__rendered { padding: 0; color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.5; }
+.woocommerce-checkout .select2-container .select2-selection--single .select2-selection__arrow { height: 100%; }
+.woocommerce-checkout .select2-dropdown { border: 1px solid rgba(26,26,26,.15); border-radius: 0; }
+.woocommerce-checkout input[type="checkbox"] { width: auto; min-height: 0; accent-color: var(--ink); }
+.woocommerce-checkout .woocommerce-info,
+.woocommerce-checkout .woocommerce-message {
+	border-top-color: var(--silk); background: var(--white);
+	border-top-width: 2px; font-family: var(--font-sans);
+}
+.woocommerce-checkout .woocommerce-terms-and-conditions-wrapper,
+.woocommerce-checkout .woocommerce-additional-fields { margin: 0 0 20px; }
+/* sipariş özeti satır dili */
+.woocommerce-checkout #order_review table.shop_table { border: 0; margin: 0 0 16px; }
+.woocommerce-checkout #order_review table.shop_table th,
+.woocommerce-checkout #order_review table.shop_table td { padding: 10px 0; font-size: 14px; }
+.woocommerce-checkout #order_review .cart-subtotal th,
+.woocommerce-checkout #order_review .order-total th,
+.woocommerce-checkout #order_review .order-total td strong { font-weight: 500; }
+.woocommerce-checkout #order_review .order-total td { font-size: 16px; }
+/* buton: ink dolu */
+.woocommerce-checkout #place_order {
+	width: 100%; min-height: 52px; padding: 14px 26px;
+	background: var(--ink) !important; color: #fff !important;
+	font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+	letter-spacing: .18em; text-transform: uppercase; border: 0; border-radius: 0;
+	cursor: pointer; transition: background .3s var(--ease);
+}
+.woocommerce-checkout #place_order:hover, .woocommerce-checkout #place_order:focus-visible { background: #000 !important; color: #fff !important; }
+.woocommerce-checkout button[name="woocommerce_checkout_update_totals"],
+.woocommerce-checkout .button.sv-btn-outline { background: transparent; border: 1px solid rgba(26,26,26,.2); color: var(--ink); border-radius: 0; }
+@media (max-width: 781px) {
+	.woocommerce-checkout form.checkout { grid-template-columns: 1fr; grid-template-areas: "details" "review-head" "review"; gap: 20px; }
+	.woocommerce-checkout #customer_details .col-1,
+	.woocommerce-checkout #customer_details .col-2 { padding: 22px 18px; }
+	.woocommerce-checkout #order_review { padding: 20px 18px; }
+}
+
 /* ═══ /SEPET SAYFASI ═══ */
 
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
