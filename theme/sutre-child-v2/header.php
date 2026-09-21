@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
 		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>">Mağaza</a>
 		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : home_url('/my-account/') ); ?>">Hesabım</a>
+		<?php // P47: sepet ikonu — tıklanınca sepet sayfası; sayı AJAX fragmanıyla güncellenir
+		$count = function_exists( 'WC' ) && WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0; ?>
+		<a class="sv-header__cart" href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/') ); ?>" aria-label="Sepet">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 7h12l-1.2 12.2a1.8 1.8 0 0 1-1.8 1.6H9a1.8 1.8 0 0 1-1.8-1.6L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+			<span class="sv-header__cart-count<?php echo $count ? '' : ' is-empty'; ?>"><?php echo (int) $count; ?></span>
+		</a>
 	</nav>
 </header>
 

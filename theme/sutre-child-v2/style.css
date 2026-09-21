@@ -1342,6 +1342,89 @@ ul.products li.product .button:hover {
 
 /* ═══ /TEK ÜRÜN SAYFASI ═══ */
 
+/* ═══ SEPET SAYFASI + HEADER SEPET İKONU (P47) ═══ */
+
+/* P46-düzeltme: sepete ekle butonu Woo moru (#7f54b3) değil — ink */
+.woocommerce button.wp-element-button,
+.woocommerce a.wp-element-button,
+.woocommerce .single_add_to_cart_button,
+.woocommerce .wc-backward {
+	background: var(--ink) !important;
+	color: var(--bone) !important;
+	border-radius: 0 !important;
+	font-family: var(--font-sans) !important;
+	font-size: 13px !important;
+	letter-spacing: .18em !important;
+	text-transform: uppercase !important;
+}
+.woocommerce button.wp-element-button:hover,
+.woocommerce .single_add_to_cart_button:hover,
+.woocommerce .wc-backward:hover { background: var(--silk) !important; border-color: var(--silk) !important; color: var(--bone) !important; }
+
+/* Header sepet ikonu: Hesabım'ın sağı, sayaç silk rozet (0 ise gizli) */
+.sv-header__cart {
+	display: inline-flex; align-items: center; gap: 6px;
+	padding: 4px 2px;
+}
+.sv-header__cart svg { display: block; }
+.sv-header__cart-count {
+	font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+	letter-spacing: .04em; color: var(--ink);
+	background: var(--silk); border-radius: 999px;
+	min-width: 17px; height: 17px; line-height: 17px; text-align: center; padding: 0 4px;
+}
+.sv-header__cart-count.is-empty { display: none; }
+
+/* Adet seçimi: renk listesiyle aynı input dili; her şey ALT ALTA */
+.single-product div.product form.cart {
+	flex-direction: column; align-items: stretch; gap: 0;
+}
+.single-product div.product form.cart .quantity { width: 100%; margin: 10px 0 0; }
+.single-product div.product form.cart .quantity .qty {
+	width: 100%; text-align: left;
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 16px; min-height: var(--touch); color: var(--ink);
+	font-family: var(--font-sans); font-size: 15px;
+}
+.single-product div.product form.cart .button {
+	width: 100%; margin: 12px 0 0;
+}
+
+/* Sepet sayfası: blok grid kartları tasarım diline sokulur */
+.woocommerce-cart #sutre-content .woocommerce { padding: 48px 20px 80px; }
+.woocommerce-cart .wc-block-grid .wc-block-grid__products {
+	display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;
+	margin: 0; padding: 0; list-style: none;
+}
+.woocommerce-cart .wc-block-grid__product { margin: 0; }
+.woocommerce-cart .wc-block-grid__product-link { display: block; text-decoration: none; }
+.woocommerce-cart .wc-block-grid__product-image img {
+	width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block;
+}
+.woocommerce-cart .wc-block-grid__product-title {
+	font-family: var(--font-serif); font-weight: 400; font-size: 19px;
+	letter-spacing: .03em; color: var(--ink); margin: 14px 0 6px; padding: 0;
+}
+.woocommerce-cart .wc-block-grid__product-price { color: var(--ink); font-size: 14px; font-weight: 500; }
+.woocommerce-cart .wc-block-grid__product-onsale {
+	margin: 0; background: rgba(26,26,26,.85); color: var(--bone);
+	border: 0; border-radius: 0; box-shadow: none; z-index: 2;
+	font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+	letter-spacing: .22em; text-transform: uppercase; padding: 8px 15px; line-height: 1;
+}
+/* boş sepet + bölüm başlıkları: serif */
+.woocommerce-cart h2 { font-family: var(--font-serif); font-weight: 400; font-size: 30px; letter-spacing: .02em; color: var(--ink); }
+.woocommerce-cart .wp-block-separator { display: none; }
+/* dolu sepet: blok bileşenleri sadeleştirme (tablo/özet) */
+.woocommerce-cart .wc-block-cart { font-family: var(--font-sans); }
+.woocommerce-cart .wc-block-components-panel__heading,
+.woocommerce-cart .wc-block-components-totals-item__label { font-family: var(--font-sans); letter-spacing: .04em; }
+@media (max-width: 781px) {
+	.woocommerce-cart .wc-block-grid .wc-block-grid__products { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+
+/* ═══ /SEPET SAYFASI ═══ */
+
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
 ul.products li.product {
 	grid-column: auto !important;

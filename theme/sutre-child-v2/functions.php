@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.3' );
+define( 'SUTRE_VERSION', '3.4.4' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -108,8 +108,8 @@ add_filter( 'woocommerce_get_privacy_policy_text', function ( $text, $type ) {
 function sutre_stock_low_threshold() {
 	return (int) apply_filters( 'sv_stock_low_threshold', 3 );
 }
-function sutre_stock_low_html( $qty ) {
-	return '<p class="stock sv-stock-low">Acele et — stokta yalnızca ' . esc_html( $qty ) . ' adet kaldı!</p>';
+function sutre_stock_low_html() {
+	return '<p class="stock sv-stock-low">Acele et — stokta az kaldı!</p>';
 }
 add_filter( 'woocommerce_get_stock_html', function ( $html, $product ) {
 	if ( ! $product->managing_stock() || ! $product->is_in_stock() ) {
@@ -118,7 +118,7 @@ add_filter( 'woocommerce_get_stock_html', function ( $html, $product ) {
 	$qty = $product->get_stock_quantity();
 	if ( $qty === null ) { return $html; }
 	$t = sutre_stock_low_threshold();
-	if ( $qty <= $t ) { return sutre_stock_low_html( $qty ); }
+	if ( $qty <= $t ) { return sutre_stock_low_html(); }
 	return ''; // normal stokta hiçbir şey gösterme
 }, 10, 2 );
 add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
@@ -128,11 +128,32 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 	}
 	$t = sutre_stock_low_threshold();
 	if ( $qty <= $t ) {
-		$data['availability_html'] = sutre_stock_low_html( $qty );
+		$data['availability_html'] = sutre_stock_low_html();
 	} else {
 		$data['availability_html'] = '';
 	}
 	return $data;
+}, 10, 3 );
+
+/* ── P47: sepet sayacı AJAX fragmanı (sepete ekleme sonrası header'daki sayı güncellenir) ── */
+add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
+	$count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+	ob_start();
+	echo '<span class="sv-header__cart-count' . ( $count ? '' : ' is-empty' ) . '">' . (int) $count . '</span>';
+	$fragments['.sv-header__cart-count'] = ob_get_clean();
+	return $fragments;
+} );
+
+/* ── P47: sepet sayfası İngilizce stringler Türkçe (gettext — blok şablondan gelenler dahil) ── */
+add_filter( 'gettext', function ( $translated, $text, $domain ) {
+	if ( 'woocommerce' !== $domain ) { return $translated; }
+	$map = array(
+		'Your cart is currently empty!'       => 'Sepetin şu an boş.',
+		'New in store'                        => 'Mağazada yeni',
+		'Return to shop'                      => 'Alışverişe devam et',
+		'View my shopping cart'               => 'Sepeti görüntüle',
+	);
+	return $map[ $text ] ?? $translated;
 }, 10, 3 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
