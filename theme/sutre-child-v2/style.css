@@ -2144,3 +2144,22 @@ body.sv-drawer-open { overflow: hidden; }
 @media (max-width: 781px) {
 	.sv-header__right { gap: 0; }
 }
+
+/* ═══ P73 — TUR 2: SHOP + ÜRÜN SAYFASI MOBİL ═══ */
+@media (max-width: 781px) {
+	.sv-shop-banner { height: 200px; }
+	.sv-shop-banner__title { font-size: 30px; }
+	.woocommerce .woocommerce-result-count { margin: 0 0 14px; font-size: 13px; }
+	.woocommerce .woocommerce-ordering { margin: 0 0 18px; }
+	.woocommerce .woocommerce-ordering select { width: 100%; padding: 12px 16px; min-height: 48px; }
+	.single-product div.product .woocommerce-product-gallery { margin-bottom: 22px; }
+	.single-product .flex-control-thumbs { display: flex; flex-wrap: wrap; gap: 8px; }
+	.single-product .flex-control-thumbs li { width: calc(20% - 6.4px); float: none; }
+	.single-product div.product .product_meta { font-size: 11px; line-height: 1.7; }
+	.single-product .related.products { margin-top: 48px; padding-top: 32px; }
+}
+@media (max-width: 480px) {
+	.sv-shop-banner { height: 170px; }
+	.sv-shop-banner__title { font-size: 26px; }
+	.woocommerce .woocommerce-ordering select { font-size: 14px; }
+}
