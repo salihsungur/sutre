@@ -1831,6 +1831,55 @@ ul.products li.product .button:hover {
 
 /* ═══ /SEPET SAYFASI ═══ */
 
+/* ═══ P61 — SİPARİŞ GÖRÜNTÜLEME (view-order) ═══ */
+.woocommerce-view-order .woocommerce-MyAccount-content p.order-info {
+	font-family: var(--font-sans); font-size: 13px; letter-spacing: .06em;
+	color: var(--charcoal); margin: 0 0 24px;
+}
+.woocommerce-view-order .woocommerce-MyAccount-content mark.order-status {
+	background: var(--silk); color: var(--ink);
+	font-weight: 500; letter-spacing: .04em;
+	padding: 4px 10px; border-radius: 999px;
+}
+.woocommerce-view-order table.order_details {
+	border: 1px solid rgba(26,26,26,.08); border-radius: 0;
+	background: var(--white); width: 100%;
+}
+.woocommerce-view-order table.order_details thead th {
+	background: transparent;
+	font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+	letter-spacing: .14em; text-transform: uppercase; color: var(--charcoal);
+	border-bottom: 1px solid rgba(26,26,26,.12);
+	padding: 14px 16px;
+}
+.woocommerce-view-order table.order_details tbody td {
+	padding: 16px; font-size: 14px; color: var(--ink);
+	border-bottom: 1px solid rgba(26,26,26,.06);
+}
+.woocommerce-view-order table.order_details .product-name a {
+	color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--silk);
+}
+.woocommerce-view-order table.order_details tfoot th,
+.woocommerce-view-order table.order_details tfoot td {
+	padding: 12px 16px; border: 0; background: transparent;
+	font-family: var(--font-sans); font-size: 14px; text-align: right;
+}
+.woocommerce-view-order table.order_details tfoot th {
+	font-weight: 400; letter-spacing: .04em; color: var(--charcoal);
+}
+.woocommerce-view-order table.order_details tfoot tr:last-child th,
+.woocommerce-view-order table.order_details tfoot tr:last-child td {
+	font-weight: 500; font-size: 16px; color: var(--ink);
+	border-top: 1px solid rgba(26,26,26,.12);
+}
+.woocommerce-view-order .woocommerce-MyAccount-content form.order_again { margin-top: 28px; }
+.woocommerce-view-order .woocommerce-MyAccount-content .order-again .button {
+	background: transparent; color: var(--ink); border: 1px solid var(--ink);
+}
+.woocommerce-view-order .woocommerce-MyAccount-content .order-again .button:hover {
+	background: var(--ink); color: var(--bone);
+}
+
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
 ul.products li.product {
 	grid-column: auto !important;
