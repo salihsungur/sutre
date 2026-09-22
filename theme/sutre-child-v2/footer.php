@@ -79,3 +79,32 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 </script>
 </body>
 </html>
+<script>
+(function () {
+	'use strict';
+	var burger = document.getElementById('sv-burger');
+	var drawer = document.getElementById('sv-drawer');
+	var scrim  = document.getElementById('sv-drawer-scrim');
+	var closeB = document.getElementById('sv-drawer-close');
+	if (!burger || !drawer || !scrim) { return; }
+	function openDrawer() {
+		document.body.classList.add('sv-drawer-open');
+		burger.setAttribute('aria-expanded', 'true');
+		drawer.hidden = false; scrim.hidden = false;
+		requestAnimationFrame(function () { drawer.classList.add('is-open'); scrim.classList.add('is-visible'); });
+	}
+	function closeDrawer() {
+		document.body.classList.remove('sv-drawer-open');
+		burger.setAttribute('aria-expanded', 'false');
+		drawer.classList.remove('is-open'); scrim.classList.remove('is-visible');
+		window.setTimeout(function () { drawer.hidden = true; scrim.hidden = true; }, 340);
+	}
+	burger.addEventListener('click', openDrawer);
+	closeB.addEventListener('click', closeDrawer);
+	scrim.addEventListener('click', closeDrawer);
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape' && document.body.classList.contains('sv-drawer-open')) { closeDrawer(); }
+	});
+	drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeDrawer); });
+})();
+</script>

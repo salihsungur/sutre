@@ -22,21 +22,44 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 	</div>
 </div>
 
+<?php /* P72: mobil header düzeni — burger sol, logo orta, sepet sağ (sepet ikonu drawer'a TAŞINMAZ) */ ?>
 <header class="sv-header">
+	<button type="button" class="sv-header__burger" id="sv-burger" aria-label="Menüyü aç" aria-expanded="false" aria-controls="sv-drawer">
+		<span></span><span></span><span></span>
+	</button>
 	<a class="sv-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo/sutre-logo-header.png' ); ?>" alt="Sutre — ana sayfa" decoding="async">
 	</a>
-	<nav class="sv-header__nav" aria-label="Ana menü">
-		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
-		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>">Mağaza</a>
-		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : home_url('/my-account/') ); ?>">Hesabım</a>
-		<?php // P47: sepet ikonu — tıklanınca sepet sayfası; sayı AJAX fragmanıyla güncellenir
-		$count = function_exists( 'WC' ) && WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0; ?>
+	<div class="sv-header__right">
+		<nav class="sv-header__nav" aria-label="Ana menü">
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
+			<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>">Mağaza</a>
+			<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : home_url('/my-account/') ); ?>">Hesabım</a>
+		</nav>
+		<?php /* P72: sepet ikonu — tıklanınca sepet sayfası; sayı AJAX fragmanıyla güncellenir */ ?>
+		<?php $count = function_exists( 'WC' ) && WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0; ?>
 		<a class="sv-header__cart" href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/') ); ?>" aria-label="Sepet">
 			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 7h12l-1.2 12.2a1.8 1.8 0 0 1-1.8 1.6H9a1.8 1.8 0 0 1-1.8-1.6L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
 			<span class="sv-header__cart-count<?php echo $count ? '' : ' is-empty'; ?>"><?php echo (int) $count; ?></span>
 		</a>
-	</nav>
+	</div>
 </header>
+
+<?php /* P72: yandan açılan mobil menü (drawer) — tüm sayfa yönlendirmeleri burada */ ?>
+<div class="sv-drawer-scrim" id="sv-drawer-scrim" hidden></div>
+<aside class="sv-drawer" id="sv-drawer" aria-label="Menü" hidden>
+	<div class="sv-drawer__head">
+		<span class="sv-drawer__brand">SUTRE</span>
+		<button type="button" class="sv-drawer__close" id="sv-drawer-close" aria-label="Menüyü kapat">&times;</button>
+	</div>
+	<nav class="sv-drawer__nav" aria-label="Mobil menü">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
+		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>">Mağaza</a>
+		<a href="<?php echo esc_url( home_url( '/hakkimizda/' ) ); ?>">Hakkımızda</a>
+		<a href="<?php echo esc_url( home_url( '/iletisim/' ) ); ?>">İletişim</a>
+		<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : home_url('/my-account/') ); ?>">Hesabım</a>
+		<a href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/') ); ?>">Sepetim</a>
+	</nav>
+</aside>
 
 <div id="sutre-content">
