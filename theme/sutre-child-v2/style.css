@@ -2529,3 +2529,41 @@ body.sv-drawer-open { overflow: hidden; }
 	.woocommerce-account .sv56-addr-actions .button { flex: 1 1 auto; text-align: center; }
 }
 /* ═══ /TUR 4 ═══ */
+
+/* ═══ P76b — TUR 4 DÜZELTME: sağ taşma sınırı (hesabım mobil) ═══
+   Şikâyet: hesap menüsü/kartlar/arama kutusu içeriği sağ tarafa taşıyordu.
+   Menü YATAY KAYDIRMALI kalır (üst üste dizilmez) ama konteyneri kilitlenir;
+   kart, tablo ve form öğelerine sağ limit + kelime kırma uygulanır. */
+@media (max-width: 781px) {
+	.woocommerce-account .woocommerce-MyAccount-content,
+	.woocommerce-account .woocommerce-MyAccount-navigation {
+		max-width: 100%; min-width: 0; float: none;
+	}
+	.woocommerce-account .woocommerce-MyAccount-content { overflow-x: hidden; }
+	.woocommerce-account .woocommerce-MyAccount-content,
+	.woocommerce-account .sv56-addr-card__body,
+	.woocommerce-account .sv-account-section { overflow-wrap: anywhere; }
+
+	/* tablo kart dönüşümünde box-sizing eksikliği taşmayı besliyordu */
+	.woocommerce-account table.shop_table,
+	.woocommerce-account table.shop_table tr,
+	.woocommerce-account table.shop_table td,
+	.woocommerce-account table.shop_table th { box-sizing: border-box; max-width: 100%; }
+
+	/* hesap menüsü: kaydırma konteyneri NAV'da (UL değil) — sayfayı asla itmez */
+	.woocommerce-account .woocommerce-MyAccount-navigation { overflow-x: auto; }
+	.woocommerce-account .woocommerce-MyAccount-navigation ul { min-width: max-content; max-width: none; }
+
+	/* içerik bloklarına sağ limit */
+	.woocommerce-account .sv-account-section,
+	.woocommerce-account .sv56-addr-cards,
+	.woocommerce-account .sv56-addr-card,
+	.woocommerce-account .sv-account-form,
+	.woocommerce-account .sv-orders-filter { max-width: 100%; overflow: hidden; }
+
+	/* sipariş arama satırı: alta sarma + tam genişlik */
+	.woocommerce-account .sv-orders-filter { flex-wrap: wrap; }
+	.woocommerce-account .sv-orders-filter select { flex: 1 1 140px; }
+	.woocommerce-account .sv-orders-filter input[type="search"] { width: 100%; flex: 1 1 100%; }
+}
+/* ═══ /P76b ═══ */
