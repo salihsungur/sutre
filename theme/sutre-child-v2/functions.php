@@ -455,6 +455,7 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 			continue;
 		}
 		if ( 'edit-account' === $key ) { continue; }   // P50-fix: menü key'i 'edit-account' (account-details DEĞİL — P50'de yanlış anahtar elenmişti)
+		if ( 'downloads' === $key ) { continue; }      // P60: dijital ürün satmıyoruz — İndirilenler sayfası menüden çıkar (fiziksel mağaza)
 		if ( 'edit-address' === $key && ! isset( $new['adreslerim'] ) ) {   // P56: Adresler → Adreslerim (key §5a-b: wc_get_account_menu_items kaynak kodundan doğrulandı)
 			$new['adreslerim'] = 'Adreslerim';
 			continue;
