@@ -2164,58 +2164,255 @@ body.sv-drawer-open { overflow: hidden; }
 	.woocommerce .woocommerce-ordering select { font-size: 14px; }
 }
 
-/* ═══ P74 — TUR 3: SEPET + CHECKOUT MOBİL ═══ */
+/* ═══ P75 — SEPET BAŞTAN TASARIM: KART GÖRÜNÜMÜ + ÜRÜN SEÇİMİ + BEKLEYEN ÜRÜNLER ═══ */
+/* P74'ün data-title stack hack'i KALDIRILDI — kart düzeni stack'i gereksiz kılar;
+   thumbnail artık desktop (140px sol) ve mobil (üstte, tam genişlik) HER YERDE görünür. */
+
+/* ---- Konteyner: desktop 2 kolon — sol ürün kartları / sağ Sepet Özeti paneli ----
+   Bildirim sarmalayıcısı (woocommerce_before_cart / cart_is_empty prio 5 — kaynak:
+   wc-template-hooks.php:319-323) DOM'un en başına basılır → "notices" adlı açık
+   satıra atanır (auto-placement sıra hatası olmaz). */
+.woocommerce-cart #sutre-content .woocommerce {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 380px;
+	grid-template-areas:
+		"notices notices"
+		"items panel"
+		"parked parked";
+	gap: 0 56px;
+	align-items: start;
+}
+.woocommerce-cart .woocommerce > .woocommerce-notices-wrapper { grid-area: notices; }
+.woocommerce-cart form.woocommerce-cart-form { grid-area: items; margin: 0; }
+.woocommerce-cart .cart-collaterals { grid-area: panel; }
+.woocommerce-cart .sv-parked { grid-area: parked; }
+/* boş sepet: 2 kolon anlamsız → blok akış (mesaj → bekleyen ürünler → alışverişe dön) */
+.woocommerce-cart #sutre-content .woocommerce:has(> p.cart-empty) { display: block; }
+
+/* ---- Ürün kartı (Woo tablosu kart grid'ine dönüşür) ---- */
+.woocommerce-cart table.shop_table.cart {
+	display: block; border: 0; background: transparent;
+	border-collapse: separate; border-spacing: 0; margin: 18px 0 0;
+}
+.woocommerce-cart table.cart thead { display: none; }
+.woocommerce-cart table.cart tbody { display: block; }
+.woocommerce-cart table.cart tbody tr { display: block; background: transparent; }
+.woocommerce-cart table.cart tr.cart_item {
+	display: grid;
+	grid-template-columns: 140px minmax(0, 1fr) auto auto auto;
+	grid-template-areas:
+		"thumb name name name remove"
+		"thumb price qty  sub  sub";
+	gap: 16px 18px;
+	background: var(--white);
+	border: 1px solid rgba(26,26,26,.08);
+	padding: 20px 22px;
+	margin: 0 0 18px;
+}
+.woocommerce-cart table.cart tr.cart_item td { display: block; border: 0; padding: 0; background: transparent; }
+.woocommerce-cart table.cart tr.cart_item td::before { content: none; float: none; }
+.woocommerce-cart table.cart td.product-remove {
+	grid-area: remove; justify-self: end; align-self: start; text-align: right;
+}
+.woocommerce-cart table.cart td.product-remove a { font-size: 22px; line-height: 1; color: var(--charcoal); text-decoration: none; }
+.woocommerce-cart table.cart td.product-remove a:hover, .woocommerce-cart table.cart td.product-remove a:focus-visible { color: #7a2c2c; }
+.woocommerce-cart table.cart td.product-thumbnail { grid-area: thumb; }
+.woocommerce-cart table.cart td.product-thumbnail img {
+	width: 140px; height: auto; aspect-ratio: 3 / 4; object-fit: cover;
+	display: block; background: var(--bone);
+}
+.woocommerce-cart table.cart td.product-name {
+	grid-area: name; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+}
+.woocommerce-cart table.cart td.product-name a {
+	font-family: var(--font-serif); font-weight: 400; font-size: 21px;
+	letter-spacing: .02em; color: var(--ink); text-decoration: none;
+}
+.woocommerce-cart table.cart td.product-name a:hover { color: var(--silk); }
+.woocommerce-cart table.cart td.product-name dl.variation { margin: 0; font-family: var(--font-sans); font-size: 12.5px; color: var(--charcoal); }
+.woocommerce-cart table.cart td.product-name dl.variation dt, .woocommerce-cart table.cart td.product-name dl.variation dd { margin: 0; }
+.woocommerce-cart table.cart td.product-price { grid-area: price; align-self: end; font-family: var(--font-sans); font-size: 14px; color: var(--charcoal); }
+.woocommerce-cart table.cart td.product-quantity { grid-area: qty; align-self: end; }
+.woocommerce-cart table.cart td.product-subtotal {
+	grid-area: sub; align-self: end; justify-self: end; text-align: right;
+	font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--ink);
+}
+/* seçim checkbox'ı: kartın sol üstü (ürün adının üstünde) */
+.woocommerce-cart td.product-name .sv-select-item { order: -1; }
+.woocommerce-cart .sv-select-item {
+	display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+	font-family: var(--font-sans); font-size: 11.5px; font-weight: 500;
+	letter-spacing: .12em; text-transform: uppercase; color: var(--charcoal);
+}
+.woocommerce-cart .sv-select-item input[type="checkbox"] {
+	width: 17px; height: 17px; min-height: 0; margin: 0; flex: 0 0 auto;
+	accent-color: var(--ink); cursor: pointer;
+}
+
+/* ---- Sepet Özeti paneli (cart-collaterals) ---- */
+.woocommerce-cart .cart-collaterals {
+	display: flex; flex-direction: column;
+	background: var(--white); border: 1px solid rgba(26,26,26,.08);
+	padding: 28px 30px 30px; margin: 18px 0 0;
+}
+.woocommerce-cart .cart-collaterals .cart_totals { order: 1; margin: 0; }
+.woocommerce-cart .cart-collaterals .cross-sells { order: 2; border-top: 1px solid rgba(26,26,26,.07); margin: 26px 0 0; padding: 24px 0 0; }
+.woocommerce-cart .cart-collaterals .cross-sells h2 { font-size: 22px; margin: 0 0 14px; }
+.woocommerce-cart .cart_totals h2 { font-size: 26px; margin: 0 0 18px; }
+.woocommerce-cart .cart_totals table.shop_table { border: 0; border-collapse: collapse; background: transparent; margin: 0; width: 100%; }
+.woocommerce-cart .cart_totals table.shop_table tr, .woocommerce-cart .cart_totals table.shop_table th, .woocommerce-cart .cart_totals table.shop_table td {
+	border: 0; background: transparent;
+}
+.woocommerce-cart .cart_totals table.shop_table th {
+	float: none; font-family: var(--font-sans); font-weight: 400; font-size: 14px;
+	color: var(--charcoal); text-align: left; padding: 9px 0; width: auto;
+}
+.woocommerce-cart .cart_totals table.shop_table td {
+	text-align: right; padding: 9px 0; font-family: var(--font-sans); font-size: 15px; color: var(--ink);
+}
+.woocommerce-cart .cart_totals tr.order-total th, .woocommerce-cart .cart_totals tr.order-total td {
+	border-top: 1px solid rgba(26,26,26,.14); padding-top: 14px; font-size: 17px; font-weight: 500; color: var(--ink);
+}
+/* native "Ödemeye geç" gizli — tek CTA: Seçilenlerle Ödemeye Geç (JS yoksa o da checkout linki) */
+.woocommerce-cart .wc-proceed-to-checkout { display: none; }
+.woocommerce-cart .sv-cart-actions { margin: 22px 0 0; display: flex; flex-direction: column; gap: 14px; }
+.woocommerce-cart .sv-pay-count {
+	margin: 0; font-family: var(--font-sans); font-size: 12.5px;
+	letter-spacing: .02em; color: var(--charcoal);
+}
+.woocommerce-cart a.sv-pay-selected {
+	display: block; text-align: center; padding: 15px 26px;
+	background: var(--ink); color: var(--bone) !important; text-decoration: none;
+	font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+	letter-spacing: .18em; text-transform: uppercase;
+	transition: background .3s var(--ease);
+}
+.woocommerce-cart a.sv-pay-selected:hover, .woocommerce-cart a.sv-pay-selected:focus-visible { background: var(--silk); }
+.woocommerce-cart a.sv-pay-selected.is-busy { opacity: .65; pointer-events: none; }
+/* kupon: "Kupon kodunuz var mı?" açılır detay — JS taşır */
+.woocommerce-cart .sv-coupon-slot:empty, .woocommerce-cart .sv-update-slot:empty { display: none; }
+.woocommerce-cart .sv-coupon-details { border: 1px solid rgba(26,26,26,.12); }
+.woocommerce-cart .sv-coupon-details summary {
+	cursor: pointer; list-style: none; padding: 13px 16px;
+	font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+	letter-spacing: .12em; text-transform: uppercase; color: var(--ink);
+}
+.woocommerce-cart .sv-coupon-details summary::-webkit-details-marker { display: none; }
+.woocommerce-cart .sv-coupon-details summary::after { content: "+"; float: right; font-size: 15px; color: var(--silk); }
+.woocommerce-cart .sv-coupon-details[open] summary::after { content: "–"; }
+.woocommerce-cart .sv-coupon-details[open] summary { border-bottom: 1px solid rgba(26,26,26,.1); }
+.woocommerce-cart .sv-coupon-details .coupon { display: flex; gap: 10px; align-items: stretch; padding: 14px 16px; margin: 0; }
+.woocommerce-cart .sv-coupon-details .coupon .input-text#coupon_code {
+	width: 100%; min-width: 0; flex: 1 1 auto;
+	background: var(--white); border: 1px solid rgba(26,26,26,.15); border-radius: 0;
+	padding: 12px 16px; color: var(--ink); font-family: var(--font-sans); font-size: 14px;
+}
+.woocommerce-cart .sv-coupon-details .coupon .button { flex: 0 0 auto; min-height: var(--touch); padding: 12px 22px; }
+/* Sepeti Güncelle: kontur ikincil buton (P48 dilinin panel sürümü) */
+.woocommerce-cart .sv-update-slot button[name="update_cart"] {
+	width: 100%; min-height: 48px; margin: 0;
+	background: transparent !important; color: var(--ink) !important;
+	border: 1px solid var(--ink) !important; border-radius: 0 !important;
+	font-family: var(--font-sans) !important; font-size: 12px !important;
+	letter-spacing: .18em !important; text-transform: uppercase !important;
+	cursor: pointer; transition: background .3s var(--ease), color .3s var(--ease);
+}
+.woocommerce-cart .sv-update-slot button[name="update_cart"]:hover {
+	background: var(--ink) !important; color: var(--bone) !important;
+}
+/* JS taşırken boşalan actions satırı gizlenir (JS yoksa satır native yerinde kalır) */
+.woocommerce-cart table.cart td.actions.sv-actions-drained { display: none; }
+
+/* ---- Bekleyen Ürünler bölümü ---- */
+.woocommerce-cart .sv-parked { margin: 34px 0 0; }
+.woocommerce-cart .sv-parked__title {
+	font-family: var(--font-serif); font-weight: 400; font-size: 26px;
+	letter-spacing: .02em; color: var(--ink); margin: 0 0 6px;
+}
+.woocommerce-cart .sv-parked__desc {
+	margin: 0 0 18px; font-family: var(--font-sans); font-size: 13.5px; color: var(--charcoal);
+}
+.woocommerce-cart .sv-parked__list {
+	display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px; margin: 0; padding: 0; list-style: none;
+}
+.woocommerce-cart .sv-parked::before, .woocommerce-cart .sv-parked::after { content: none; display: none; }
+.sv-parked-card { display: flex; gap: 16px; background: var(--white); border: 1px solid rgba(26,26,26,.08); padding: 16px; }
+.sv-parked-card__thumb { flex: 0 0 auto; }
+.sv-parked-card__thumb img { width: 84px; height: 112px; object-fit: cover; display: block; background: var(--bone); }
+.sv-parked-card__body { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.sv-parked-card__name { margin: 2px 0 4px; font-family: var(--font-serif); font-weight: 400; font-size: 19px; line-height: 1.3; }
+.sv-parked-card__name a { color: var(--ink); text-decoration: none; }
+.sv-parked-card__name a:hover { color: var(--silk); }
+.sv-parked-card__meta { margin: 0 0 14px; font-family: var(--font-sans); font-size: 12.5px; color: var(--whisper); }
+.sv-parked-card__btn {
+	display: inline-block; padding: 10px 18px; margin-top: auto;
+	background: transparent; border: 1px solid var(--ink); border-radius: 0; cursor: pointer;
+	font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+	letter-spacing: .16em; text-transform: uppercase; color: var(--ink);
+	transition: background .3s var(--ease), color .3s var(--ease);
+}
+.sv-parked-card__btn:hover, .sv-parked-card__btn:focus-visible { background: var(--ink); color: var(--bone); }
+
+/* ---- Mobil (≤781px): tek kolon — kartlar alt alta, thumbnail ÜSTTE ---- */
 @media (max-width: 781px) {
-	/* sepet tablosu: kolonlu tablo → satır kart dönüşümü (Woo data-title etiketleriyle) */
-	.woocommerce-cart table.shop_table.cart { display: block; border: 0; background: transparent; }
-	.woocommerce-cart table.cart thead { display: none; }
-	.woocommerce-cart table.cart tbody,
-	.woocommerce-cart table.cart tr,
-	.woocommerce-cart table.cart td { display: block; width: 100%; box-sizing: border-box; }
-	.woocommerce-cart table.cart tbody tr {
+	.woocommerce-cart #sutre-content .woocommerce { display: block; }
+	.woocommerce-cart table.cart tr.cart_item {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"thumb"
+			"name"
+			"price"
+			"qty"
+			"sub";
+		gap: 12px;
+		padding: 14px;
 		position: relative;
-		border: 1px solid rgba(26,26,26,.08); background: var(--white);
-		margin: 0 0 14px; padding: 16px 14px 12px;
 	}
-	.woocommerce-cart table.cart td { border: 0; padding: 7px 0; text-align: right; }
-	.woocommerce-cart table.cart td::before {
-		content: attr(data-title);
-		float: left;
+	.woocommerce-cart table.cart td.product-thumbnail img { width: 100%; height: 220px; aspect-ratio: auto; }
+	.woocommerce-cart table.cart td.product-remove {
+		position: absolute; top: 10px; right: 10px; z-index: 2;
+	}
+	.woocommerce-cart table.cart td.product-remove a {
+		display: flex; align-items: center; justify-content: center;
+		width: 36px; height: 36px; font-size: 20px;
+		background: rgba(245,242,236,.94); border: 1px solid rgba(26,26,26,.12);
+	}
+	.woocommerce-cart table.cart td.product-name { gap: 12px; }
+	.woocommerce-cart table.cart td.product-name a { font-size: 19px; }
+	/* etiketli satırlar (P74 data-title stack'inin yerini alan kart dili;
+	   Woo'nun İngilizce data-title'ı td::before kapısıyla öldürüldü — Türkçe etiketler burada) */
+	.woocommerce-cart table.cart tr.cart_item td.product-price::before {
+		content: "Birim fiyat"; display: inline; float: none;
 		font-family: var(--font-sans); font-size: 11px; font-weight: 500;
 		letter-spacing: .14em; text-transform: uppercase; color: var(--whisper);
-		padding-top: 5px;
 	}
-	.woocommerce-cart table.cart td.product-thumbnail {
-		float: left; width: 80px; padding: 0 12px 6px 0;
+	.woocommerce-cart table.cart tr.cart_item td.product-subtotal::before {
+		content: "Ara toplam"; display: inline; float: none;
+		font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+		letter-spacing: .14em; text-transform: uppercase; color: var(--whisper);
 	}
-	.woocommerce-cart table.cart td.product-thumbnail::before { content: none; }
-	.woocommerce-cart table.cart td.product-thumbnail img { width: 68px; height: 88px; object-fit: cover; }
-	.woocommerce-cart table.cart td.product-name { text-align: left; }
-	.woocommerce-cart table.cart td.product-name::before { content: none; }
-	.woocommerce-cart table.cart td.product-remove {
-		position: absolute; top: 10px; right: 10px; width: auto; padding: 0;
+	.woocommerce-cart table.cart td.product-price,
+	.woocommerce-cart table.cart td.product-subtotal {
+		display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
 	}
-	.woocommerce-cart table.cart td.product-remove::before { content: none; }
-	.woocommerce-cart table.cart td.product-remove a { font-size: 22px; color: var(--charcoal); }
-
-	/* kupon + güncelle satırı dikey */
-	.woocommerce-cart table.shop_table td.actions { padding: 14px 0; }
-	.woocommerce-cart table.shop_table td .coupon { flex-direction: column; align-items: stretch; gap: 10px; }
-	.woocommerce-cart .coupon .input-text#coupon_code { width: 100%; }
-
-	/* toplamlar: label-değer tek satırda */
-	.woocommerce-cart table.cart tfoot tr {
-		display: flex; justify-content: space-between; align-items: center;
-		border: 0; margin: 0; padding: 6px 0; background: transparent;
+	.woocommerce-cart table.cart td.product-subtotal { border-top: 1px solid rgba(26,26,26,.07); padding-top: 12px; font-weight: 500; }
+	.woocommerce-cart table.cart tr.cart_item td.product-quantity::before {
+		content: "Adet"; display: inline; float: none; flex: 0 0 auto;
+		font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+		letter-spacing: .14em; text-transform: uppercase; color: var(--whisper);
 	}
-	.woocommerce-cart table.cart tfoot th,
-	.woocommerce-cart table.cart tfoot td { display: inline-block; width: auto; padding: 4px 0; }
-
-	/* cart-collaterals tam genişlik */
-	.woocommerce-cart .cart-collaterals { float: none; width: 100%; margin-top: 20px; }
-
-	/* checkout: sipariş butonu tam genişlik + notice akışı */
+	.woocommerce-cart table.cart td.product-quantity { display: flex; align-items: center; gap: 12px; }
+	.woocommerce-cart table.cart td.product-quantity input.qty { width: 100%; flex: 1 1 auto; text-align: center; }
+	/* özet paneli tam genişlik; kupon + butonlar tam genişlik ortalı */
+	.woocommerce-cart .cart-collaterals { padding: 22px 18px 24px; }
+	.woocommerce-cart .sv-coupon-details .coupon { flex-direction: column; align-items: stretch; gap: 10px; }
+	.woocommerce-cart .sv-coupon-details .coupon .input-text#coupon_code { width: 100%; }
+	.woocommerce-cart .sv-coupon-details .coupon .button { width: 100%; }
+	/* bekleyen ürünler tek kolon */
+	.woocommerce-cart .sv-parked__list { grid-template-columns: 1fr; }
+	/* checkout: sipariş butonu tam genişlik (P74'ten devralındı) */
 	.woocommerce-checkout #place_order { width: 100%; min-height: 54px; }
 }
 
-/* ═══ /TUR 3 ═══ */
+/* ═══ /P75 ═══ */

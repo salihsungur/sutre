@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.5.3' );
+define( 'SUTRE_VERSION', '3.6.0' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -172,6 +172,11 @@ add_filter( 'gettext', function ( $translated, $text, $domain ) {
 		'State / County'   => 'Şehir',
 		'Postcode / ZIP:'  => 'Posta Kodu',
 		'Country / region' => 'Ülke',
+		/* P75 — sepet baştan tasarım: özet paneli başlığı + güncelle butonu
+		 * (yalnız sepet sayfasında geçen çekirdek stringler; dil paketi ne derse desin
+		 * tasarım diliyle hizalı Türkçe döner). */
+		'Cart totals' => 'Sepet Özeti',
+		'Update cart' => 'Sepeti Güncelle',
 	);
 	if ( isset( $map[ $text ] ) ) { return $map[ $text ]; }
 	if ( 'Additional information' === $text ) {
@@ -1529,4 +1534,308 @@ function sv58_mirror_billing_from_shipping( $data ) {
 	return $data;
 }
 add_filter( 'woocommerce_checkout_posted_data', 'sv58_mirror_billing_from_shipping', 10, 1 );
+
+/* ═══════════════════════════════════════════════════════════
+   P75 — SEPET BAŞTAN TASARIM: KART GÖRÜNÜMÜ + ÜRÜN SEÇİMİ + BEKLEYEN ÜRÜNLER
+   "Seç ve Öde": her sepet kartında checkbox (varsayılan işaretli); "Seçilenlerle
+   Ödemeye Geç" seçilmeyenleri sepatten çıkarıp WC()->session 'sv_cart_parked'
+   listesine taşır (misafir + üye; Woo session cookie), sonra checkout'a yönlenir.
+   Bekleyen ürünler sepette ayrı bölümde "Sepete Geri Al" ile sepete döner.
+   Güvenlik: her POST kendi nonce'u (sv_cart_selection / sv_restore_parked) +
+   sanitize/validate; item key yalnız sunucunun ürettiği gerçek sepet key'iyle
+   eşleşir (POST'tan key UYDURULAMAZ); payTR/checkout akışına kod DOKUNMAZ —
+   yalnız sepetteki ürün kümesi değişir.
+   Kaynak kanıtı (Woo 11.1.0): templates/cart/cart.php @11.0.0 — checkbox kapısı
+   woocommerce_after_cart_item_name (td.product-name İÇİNDE); kupon/güncelle
+   td.actions'ta; cart-totals.php — panel eki woocommerce_after_cart_totals
+   (.cart_totals İÇİNDE); boş sepet ayrı şablon (cart-empty.php) olduğundan
+   bekleyen bölüm woocommerce_cart_is_empty hook'unda da basılır.
+   JS: inline vanilla (P67 deseni), fetch + JSON; JS yoksa buton checkout linki
+   olarak kalır → tüm ürünlerle checkout (bilinçli graceful degradation).
+   ═══════════════════════════════════════════════════════════ */
+
+/** PHP 8.5 permalink tuzağı guard'ı (AGENTS §5.5): array dönen permalink'ü string'e indirir. */
+function sv75_resolve_url( $url, $fallback ) {
+	$url = is_array( $url ) ? (string) reset( $url ) : (string) $url;
+	return '' !== $url ? $url : $fallback;
+}
+
+function sv75_cart_url() {
+	$url = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' );
+	return sv75_resolve_url( $url, home_url( '/cart/' ) );
+}
+
+function sv75_checkout_url() {
+	$url = function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/checkout/' );
+	return sv75_resolve_url( $url, home_url( '/checkout/' ) );
+}
+
+/** Bekleyen ürün listesi (oturum) — okuma anında beyaz-liste temizliği. */
+function sv75_parked_items() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) { return array(); }
+	$items = WC()->session->get( 'sv_cart_parked' );
+	if ( ! is_array( $items ) ) { return array(); }
+	$out = array();
+	foreach ( $items as $entry ) {
+		if ( ! is_array( $entry ) ) { continue; }
+		$pid = isset( $entry['product_id'] ) ? absint( $entry['product_id'] ) : 0;
+		$vid = isset( $entry['variation_id'] ) ? absint( $entry['variation_id'] ) : 0;
+		$qty = isset( $entry['quantity'] ) ? absint( $entry['quantity'] ) : 0;
+		if ( $pid < 1 || $qty < 1 ) { continue; }
+		$out[] = array(
+			'id'           => isset( $entry['id'] ) ? sanitize_text_field( (string) $entry['id'] ) : '',
+			'product_id'   => $pid,
+			'variation_id' => $vid,
+			'variation'    => ( isset( $entry['variation'] ) && is_array( $entry['variation'] ) ) ? $entry['variation'] : array(),
+			'quantity'     => $qty,
+		);
+	}
+	return $out;
+}
+
+/** Bekleyen ürün listesini oturuma yazar. */
+function sv75_parked_set( $items ) {
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'sv_cart_parked', array_values( $items ) );
+	}
+}
+
+/* ── P75: her sepet kartında "Ödemeye dahil et" checkbox'ı (varsayılan İŞARETLİ) ── */
+add_action( 'woocommerce_after_cart_item_name', 'sv75_cart_item_checkbox', 10, 2 );
+function sv75_cart_item_checkbox( $cart_item, $cart_item_key ) {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+	?>
+	<label class="sv-select-item">
+		<input type="checkbox" name="sv_cart_selected[]" value="<?php echo esc_attr( $cart_item_key ); ?>" checked="checked" />
+		<span><?php esc_html_e( 'Ödemeye dahil et', 'sutre' ); ?></span>
+	</label>
+	<?php
+}
+
+/* ── P75: Sepet Özeti paneli eki — seçim sayacı + "Seçilenlerle Ödemeye Geç" +
+   kupon/güncelle taşıma yuvaları (JS bunları td.actions'tan buraya taşır;
+   JS yoksa yerinde kalır, işlevli). ── */
+add_action( 'woocommerce_after_cart_totals', 'sv75_panel_actions' );
+function sv75_panel_actions() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) { return; }
+	$lines = count( (array) WC()->cart->get_cart() );
+	?>
+	<div class="sv-cart-actions">
+		<p class="sv-pay-count" aria-live="polite"><?php echo esc_html( sprintf( '%d ürün ödemeye dahil edilecek', $lines ) ); ?></p>
+		<a href="<?php echo esc_url( sv75_checkout_url() ); ?>" class="sv-pay-selected"><?php esc_html_e( 'Seçilenlerle Ödemeye Geç', 'sutre' ); ?></a>
+		<div class="sv-coupon-slot"></div>
+		<div class="sv-update-slot"></div>
+	</div>
+	<?php
+}
+
+/* ── P75: Bekleyen Ürünler bölümü — dolu sepette (woocommerce_after_cart) VE
+   tüm ürünler park edilmişse boş sepet görünümünde (woocommerce_cart_is_empty).
+   Statik guard çift basımı önler. ── */
+add_action( 'woocommerce_after_cart', 'sv75_render_parked', 20 );
+add_action( 'woocommerce_cart_is_empty', 'sv75_render_parked', 20 );
+function sv75_render_parked() {
+	static $done = false;
+	if ( $done ) { return; }
+	$done = true;
+	$items = sv75_parked_items();
+	if ( empty( $items ) ) { return; }
+	?>
+	<section class="sv-parked" aria-labelledby="sv-parked-title">
+		<h2 class="sv-parked__title" id="sv-parked-title"><?php esc_html_e( 'Bekleyen Ürünler', 'sutre' ); ?></h2>
+		<p class="sv-parked__desc"><?php esc_html_e( 'Ödemeye dahil etmediğin ürünler burada bekliyor. Dilediğinde sepete geri alabilirsin.', 'sutre' ); ?></p>
+		<ul class="sv-parked__list">
+			<?php foreach ( $items as $entry ) :
+				$sv_product = wc_get_product( $entry['variation_id'] > 0 ? $entry['variation_id'] : $entry['product_id'] );
+				if ( ! $sv_product instanceof WC_Product ) { continue; }
+				$sv_name = $sv_product->get_name();
+				$sv_link = $sv_product->is_visible() ? $sv_product->get_permalink() : '';
+				$sv_img  = $sv_product->get_image( 'woocommerce_thumbnail' );
+				?>
+				<li class="sv-parked-card">
+					<div class="sv-parked-card__thumb">
+						<?php if ( '' !== $sv_link ) { echo '<a href="' . esc_url( $sv_link ) . '">' . wp_kses_post( $sv_img ) . '</a>'; } else { echo wp_kses_post( $sv_img ); } ?>
+					</div>
+					<div class="sv-parked-card__body">
+						<h3 class="sv-parked-card__name">
+							<?php if ( '' !== $sv_link ) { echo '<a href="' . esc_url( $sv_link ) . '">' . esc_html( $sv_name ) . '</a>'; } else { echo esc_html( $sv_name ); } ?>
+						</h3>
+						<p class="sv-parked-card__meta"><?php echo esc_html( sprintf( 'Adet: %d', $entry['quantity'] ) ); ?></p>
+						<form method="post" action="<?php echo esc_url( sv75_cart_url() ); ?>" class="sv-parked-card__form">
+							<?php wp_nonce_field( 'sv_restore_parked', 'sv_restore_nonce' ); ?>
+							<input type="hidden" name="sv_restore_parked" value="1" />
+							<input type="hidden" name="sv_park_id" value="<?php echo esc_attr( $entry['id'] ); ?>" />
+							<button type="submit" class="sv-parked-card__btn"><?php esc_html_e( 'Sepete Geri Al', 'sutre' ); ?></button>
+						</form>
+					</div>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	</section>
+	<?php
+}
+
+/* ── P75: "Seçilenlerle Ödemeye Geç" AJAX işleyicisi — seçilmeyenleri park eder.
+   Key doğrulaması: POST gelen key yalnız sunucunun get_cart() ürettiği key'lerle
+   eşleşir; uydurma key sessizce düşer. Tüm ürünler park edilirse redirect sepete
+   döner (klasik boş sepet mesajı + bekleyen bölümü görünür); aksi hâlde checkout. ── */
+add_action( 'wp_ajax_sv_park_unselected', 'sv75_ajax_park_unselected' );
+add_action( 'wp_ajax_nopriv_sv_park_unselected', 'sv75_ajax_park_unselected' );
+function sv75_ajax_park_unselected() {
+	if ( ! check_ajax_referer( 'sv_cart_selection', 'nonce', false ) ) {
+		wp_send_json_error( array( 'message' => 'Güvenlik doğrulaması başarısız.' ), 403 );
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
+		wp_send_json_error( array( 'message' => 'Sepet boş.' ), 400 );
+	}
+	$sv_selected = array();
+	if ( isset( $_POST['selected'] ) && is_array( $_POST['selected'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- tek tek sanitize edilir
+		foreach ( array_values( wp_unslash( $_POST['selected'] ) ) as $sv_key ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$sv_key = sanitize_text_field( (string) $sv_key );
+			if ( '' !== $sv_key ) { $sv_selected[ $sv_key ] = true; }
+		}
+	}
+	$sv_parked    = sv75_parked_items();
+	$sv_remaining = 0;
+	foreach ( WC()->cart->get_cart() as $sv_key => $sv_item ) {
+		if ( isset( $sv_selected[ $sv_key ] ) ) { $sv_remaining++; continue; }
+		$sv_parked[] = array(
+			'id'           => md5( 'sv-park|' . $sv_key . '|' . microtime() . '|' . wp_rand() ),
+			'product_id'   => isset( $sv_item['product_id'] ) ? absint( $sv_item['product_id'] ) : 0,
+			'variation_id' => isset( $sv_item['variation_id'] ) ? absint( $sv_item['variation_id'] ) : 0,
+			'variation'    => ( isset( $sv_item['variation'] ) && is_array( $sv_item['variation'] ) ) ? $sv_item['variation'] : array(),
+			'quantity'     => isset( $sv_item['quantity'] ) ? max( 1, absint( $sv_item['quantity'] ) ) : 1,
+		);
+		WC()->cart->remove_cart_item( $sv_key );
+	}
+	sv75_parked_set( $sv_parked );
+	WC()->cart->calculate_totals();
+	wp_send_json_success( array(
+		'redirect'  => $sv_remaining > 0 ? sv75_checkout_url() : sv75_cart_url(),
+		'parked'    => count( $sv_parked ),
+		'remaining' => $sv_remaining,
+	) );
+}
+
+/* ── P75: "Sepete Geri Al" — bekleyen üründen sepete (PRG). Ürün stokta yoksa
+   Woo'nun kendi hata bildirimine düşer ve ürün bekleyen listede KALIR (kayıp yok).
+   P57 dersi: nonce başarısızlığı SESSİZ bırakılmaz — görünür bildirim basılır. ── */
+add_action( 'template_redirect', 'sv75_handle_restore', 20 );
+function sv75_handle_restore() {
+	if ( empty( $_POST['sv_restore_parked'] ) ) { return; } // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce bir sonraki satırda doğrulanır
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) { return; }
+	if ( ! isset( $_POST['sv_restore_nonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['sv_restore_nonce'] ) ), 'sv_restore_parked' ) ) {
+		wc_add_notice( 'Güvenlik doğrulaması başarısız. Lütfen sayfayı yenileyip tekrar deneyin.', 'error' );
+		return;
+	}
+	$sv_park_id = isset( $_POST['sv_park_id'] ) ? sanitize_text_field( wp_unslash( $_POST['sv_park_id'] ) ) : '';
+	$sv_items   = sv75_parked_items();
+	$sv_found   = null;
+	$sv_rest    = array();
+	foreach ( $sv_items as $sv_entry ) {
+		if ( null === $sv_found && '' !== $sv_entry['id'] && $sv_entry['id'] === $sv_park_id ) { $sv_found = $sv_entry; continue; }
+		$sv_rest[] = $sv_entry;
+	}
+	if ( null === $sv_found ) {
+		wc_add_notice( 'Bekleyen ürün bulunamadı. Sepet sayfasını yenileyip tekrar deneyin.', 'error' );
+		wp_safe_redirect( sv75_cart_url() );
+		exit;
+	}
+	$sv_added = WC()->cart->add_to_cart( $sv_found['product_id'], $sv_found['quantity'], $sv_found['variation_id'], $sv_found['variation'] );
+	if ( $sv_added ) {
+		sv75_parked_set( $sv_rest );
+		wc_add_notice( 'Ürün sepete geri alındı.', 'success' );
+	}
+	wp_safe_redirect( sv75_cart_url() );
+	exit;
+}
+
+/* ── P75: inline vanilla JS (yalnız sepet) — kupon + güncelle butonunu özet
+   paneline taşır (form dışına çıkan alanlar `form` niteliğiyle ilişkilendirilir),
+   seçim sayacını tutar, "Seçilenlerle Ödemeye Geç" için fetch → JSON redirect
+   yapar. Hata halinde native href fallback (tüm ürünlerle checkout). ── */
+add_action( 'wp_print_footer_scripts', 'sv75_cart_scripts' );
+function sv75_cart_scripts() {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+	$sv_ajax  = admin_url( 'admin-ajax.php' );
+	$sv_nonce = wp_create_nonce( 'sv_cart_selection' );
+	?>
+	<script>
+	(function () {
+		'use strict';
+		var form = document.querySelector('form.woocommerce-cart-form');
+		if (!form) { return; }
+		var cfg = { ajax: <?php echo wp_json_encode( $sv_ajax ); ?>, nonce: <?php echo wp_json_encode( $sv_nonce ); ?> };
+		if (!form.id) { form.id = 'sv-cart-form'; }
+		var fid = form.id;
+
+		/* Kupon + Güncelle → özet paneli. Form dışına çıkan input/button `form`
+		   niteliğiyle ilişkilendirilir (native submit bozulmaz); JS yoksa öğeler
+		   native yerinde kalır ve çalışır. */
+		function assoc(el) { if (el) { el.setAttribute('form', fid); } }
+		var coupon = form.querySelector('.coupon');
+		var couponSlot = document.querySelector('.sv-coupon-slot');
+		if (coupon && couponSlot) {
+			coupon.querySelectorAll('input,button,select,textarea').forEach(assoc);
+			var det = document.createElement('details');
+			det.className = 'sv-coupon-details';
+			var sum = document.createElement('summary');
+			sum.textContent = 'Kupon kodunuz var mı?';
+			det.appendChild(sum);
+			det.appendChild(coupon);
+			couponSlot.appendChild(det);
+		}
+		var update = form.querySelector('button[name="update_cart"]');
+		var updateSlot = document.querySelector('.sv-update-slot');
+		if (update && updateSlot) { assoc(update); updateSlot.appendChild(update); }
+		var actions = form.querySelector('td.actions');
+		if (actions) {
+			var left = Array.prototype.some.call(actions.children, function (c) {
+				return !(c.tagName === 'INPUT' && c.type === 'hidden');
+			});
+			if (!left) { actions.classList.add('sv-actions-drained'); }
+		}
+
+		/* Seçim sayacı. */
+		var boxes = form.querySelectorAll('input[name="sv_cart_selected[]"]');
+		var count = document.querySelector('.sv-pay-count');
+		var pay = document.querySelector('a.sv-pay-selected');
+		function refreshCount() {
+			if (!count) { return; }
+			var n = 0;
+			boxes.forEach(function (b) { if (b.checked) { n++; } });
+			count.textContent = n > 0
+				? n + ' ürün ödemeye dahil edilecek'
+				: 'Seçili ürün yok — tüm ürünler bekleyenlere geçecek';
+		}
+		boxes.forEach(function (b) { b.addEventListener('change', refreshCount); });
+		refreshCount();
+
+		if (!pay || !boxes.length) { return; }
+		pay.addEventListener('click', function (ev) {
+			ev.preventDefault();
+			var fd = new FormData();
+			fd.append('action', 'sv_park_unselected');
+			fd.append('nonce', cfg.nonce);
+			boxes.forEach(function (b) { if (b.checked) { fd.append('selected[]', b.value); } });
+			pay.classList.add('is-busy');
+			pay.setAttribute('aria-busy', 'true');
+			fetch(cfg.ajax, { method: 'POST', credentials: 'same-origin', body: fd })
+				.then(function (r) { return r.json(); })
+				.then(function (j) {
+					if (j && j.success && j.data && j.data.redirect) {
+						window.location.href = j.data.redirect;
+						return;
+					}
+					throw new Error('park-failed');
+				})
+				.catch(function () {
+					window.location.href = pay.getAttribute('href');
+				});
+		});
+	})();
+	</script>
+	<?php
+}
 
