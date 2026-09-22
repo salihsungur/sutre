@@ -2567,3 +2567,33 @@ body.sv-drawer-open { overflow: hidden; }
 	.woocommerce-account .sv-orders-filter input[type="search"] { width: 100%; flex: 1 1 100%; }
 }
 /* ═══ /P76b ═══ */
+
+/* ═══ P77 — TUR 5: HUKUKİ SAYFALAR MOBİL ═══ */
+@media (max-width: 781px) {
+	/* konteyner: kenar boşlukları mobil ölçüde */
+	#sutre-content .legal-page { padding: 34px 20px 60px; }
+	/* tipografi: kompakt */
+	.legal-page h1 { font-size: 27px; line-height: 1.25; }
+	.legal-page h2 { font-size: 21px; margin: 28px 0 10px; }
+	.legal-page h3 { font-size: 13px; margin: 22px 0 8px; }
+	.legal-page p { font-size: 14px; line-height: 1.85; }
+	.legal-page ul li { font-size: 14px; line-height: 1.8; }
+	.legal-page .legal-note { font-size: 13px; }
+	/* hukuki tablolar (ön-bilgilendirme, kullanım koşulları vb.):
+	   dar ekranda yatay kaydırılabilir — kolonlar ezilmez, içerik kaybolmaz */
+	.legal-page table {
+		display: block; width: 100%; overflow-x: auto;
+		-webkit-overflow-scrolling: touch; border-collapse: collapse;
+		box-sizing: border-box;
+	}
+	.legal-page table td, .legal-page table th {
+		padding: 9px 12px; font-size: 13px; line-height: 1.6;
+	}
+	/* uzun sözcük/URL kırma */
+	.legal-page, .legal-page td, .legal-page p { overflow-wrap: anywhere; }
+}
+@media (max-width: 480px) {
+	#sutre-content .legal-page { padding: 28px 16px 50px; }
+	.legal-page h1 { font-size: 24px; }
+}
+/* ═══ /TUR 5 ═══ */
