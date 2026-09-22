@@ -34,7 +34,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		<nav class="sv-header__nav" aria-label="Ana menü">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Ana Sayfa</a>
 			<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/') ); ?>">Mağaza</a>
+			<a href="<?php echo esc_url( home_url( '/hakkimizda/' ) ); ?>">Hakkımızda</a>
+			<a href="<?php echo esc_url( home_url( '/iletisim/' ) ); ?>">İletişim</a>
 			<a href="<?php echo esc_url( function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : home_url('/my-account/') ); ?>">Hesabım</a>
+			<a href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/') ); ?>">Sepetim</a>
 		</nav>
 		<?php /* P72: sepet ikonu — tıklanınca sepet sayfası; sayı AJAX fragmanıyla güncellenir */ ?>
 		<?php $count = function_exists( 'WC' ) && WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0; ?>
