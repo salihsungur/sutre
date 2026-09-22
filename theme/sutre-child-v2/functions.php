@@ -1055,6 +1055,26 @@ function sv56_address_book_content() {
 							<input type="hidden" name="sv_addr_country" value="TR">
 							<span class="sv-account-field__hint">Dış satış yapmıyoruz; teslimat yalnızca Türkiye içindir.</span>
 						</div>
+					<?php elseif ( 'city' === $field ) :
+						/* P59: Şehir = TR il listesinden select (checkout ile aynı kaynak); mevcut
+						 * kayıt listede yoksa (eski serbest metin) korumak için ek seçenek basılır. */
+						$sv_current_city = $editing ? (string) $editing[ $field ] : '';
+						$sv_cities       = ( function_exists( 'WC' ) && WC()->countries ) ? WC()->countries->get_states( 'TR' ) : array();
+						?>
+						<div class="form-row">
+							<label for="sv_addr_city">
+								<?php echo esc_html( $meta[0] ); ?><?php echo $meta[1] ? ' <span class="sv-req" aria-hidden="true">*</span>' : ''; ?>
+							</label>
+							<select class="input-select" name="sv_addr_city" id="sv_addr_city">
+								<option value="">Şehir seçin…</option>
+								<?php foreach ( $sv_cities as $sv_city_name ) : ?>
+									<option value="<?php echo esc_attr( $sv_city_name ); ?>" <?php selected( $sv_current_city, $sv_city_name ); ?>><?php echo esc_html( $sv_city_name ); ?></option>
+								<?php endforeach; ?>
+								<?php if ( '' !== $sv_current_city && ! in_array( $sv_current_city, $sv_cities, true ) ) : ?>
+									<option value="<?php echo esc_attr( $sv_current_city ); ?>" selected><?php echo esc_html( $sv_current_city ); ?></option>
+								<?php endif; ?>
+							</select>
+						</div>
 					<?php else : ?>
 						<div class="form-row">
 							<label for="sv_addr_<?php echo esc_attr( $field ); ?>">
