@@ -1881,7 +1881,7 @@ ul.products li.product .button:hover {
 }
 
 /* ═══ P65 — HUKUKİ SAYFA TİPOGRAFİSİ (legal-page) ═══ */
-.legal-page { max-width: 900px; }
+.legal-page { max-width: 900px; margin: 0 auto; }
 .legal-page p {
 	font-family: var(--font-sans); font-size: 15px; font-weight: 300;
 	line-height: 1.9; color: var(--ink); margin: 0 0 14px;
@@ -1996,7 +1996,7 @@ ul.products::after {
 .sv-cookie-band[hidden] { display: none !important; }
 
 /* ═══ P68 — İLETİŞİM FORMU ═══ */
-.sv-contact-form-wrap { max-width: 720px; margin: 40px 0 0; }
+.sv-contact-form-wrap { max-width: 720px; margin: 40px auto 0; padding: 0 24px 80px; }
 .sv-contact-form__title {
 	font-family: var(--font-serif); font-weight: 400; font-size: 26px;
 	letter-spacing: .02em; color: var(--ink); margin: 0 0 18px;
