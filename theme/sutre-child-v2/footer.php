@@ -53,5 +53,29 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 </footer>
 
 <?php wp_footer(); ?>
+
+<?php /* P67: çerez bildirim bandı — zorunlu olmayan çerez eklenince Reddet/Tercihler genişletilir */ ?>
+<div class="sv-cookie-band" id="sv-cookie-band" role="region" aria-label="Çerez bildirimi" hidden>
+	<p class="sv-cookie-band__text">
+		Sitemizde alışveriş oturumunun çalışması için zorunlu çerezler kullanılmaktadır. Detaylı bilgi için
+		<a href="<?php echo esc_url( home_url( '/gizlilik-politikasi/' ) ); ?>">Gizlilik Politikamıza</a> göz atabilirsiniz.
+	</p>
+	<button type="button" class="sv-cookie-band__accept" id="sv-cookie-accept">Tamam, Anladım</button>
+</div>
+<script>
+(function () {
+	'use strict';
+	var band = document.getElementById('sv-cookie-band');
+	if (!band) { return; }
+	var m = document.cookie.match(/(?:^|;\s*)sv_cookie_consent=1(?:;|$)/);
+	if (!m) { band.hidden = false; }
+	document.getElementById('sv-cookie-accept').addEventListener('click', function () {
+		var d = new Date();
+		d.setTime(d.getTime() + 180 * 24 * 60 * 60 * 1000);
+		document.cookie = 'sv_cookie_consent=1; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
+		band.hidden = true;
+	});
+})();
+</script>
 </body>
 </html>

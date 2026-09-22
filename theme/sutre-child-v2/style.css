@@ -1963,3 +1963,31 @@ ul.products::after {
 	border-bottom: 1px solid var(--silk);
 }
 .sv-register-consent .sv-req { color: var(--silk); text-decoration: none; }
+
+/* ═══ P67 — ÇEREZ BİLDİRİM BANDI ═══ */
+.sv-cookie-band {
+	position: fixed; left: 16px; right: 16px; bottom: 16px;
+	z-index: 999;
+	max-width: 1080px; margin: 0 auto;
+	background: var(--white); border: 1px solid rgba(26,26,26,.15);
+	box-shadow: 0 8px 30px rgba(26,26,26,.18);
+	display: flex; align-items: center; gap: 20px;
+	padding: 16px 22px;
+}
+.sv-cookie-band__text {
+	margin: 0; font-family: var(--font-sans); font-size: 13px;
+	font-weight: 300; line-height: 1.6; color: var(--ink);
+}
+.sv-cookie-band__text a { color: var(--ink); border-bottom: 1px solid var(--silk); text-decoration: none; }
+.sv-cookie-band__accept {
+	flex: 0 0 auto; min-height: 44px; padding: 10px 24px; cursor: pointer;
+	background: var(--ink); color: var(--bone); border: 1px solid var(--ink);
+	font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+	letter-spacing: .16em; text-transform: uppercase;
+	transition: background .3s var(--ease);
+}
+.sv-cookie-band__accept:hover { background: var(--silk); border-color: var(--silk); }
+@media (max-width: 781px) {
+	.sv-cookie-band { left: 10px; right: 10px; bottom: 10px; flex-direction: column; gap: 12px; padding: 16px 18px; text-align: center; }
+	.sv-cookie-band__accept { width: 100%; }
+}
