@@ -222,13 +222,19 @@ add_filter( 'option_woocommerce_ship_to_destination', function () { return 'ship
 
 /* ── P66: kayıt ekranı onay kutuları — KVKK (zorunlu) + Ticari Elektronik İleti (opsiyonel, boş) ── */
 add_action( 'woocommerce_register_form', function () {
-	$privacy = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'privacy_policy' ) : home_url( '/gizlilik-politikasi/' );
-	$ticari  = home_url( '/ticari-elektronik-ileti/' );
+	/* P66-fix: wc_get_page_permalink('privacy_policy') canlıda ana sayfaya döndü (güvenilmez).
+	 * Doğru kapı: page slug üzerinden çöz — Gizlilik ve KVKK Aydınlatma aynı sayfada birleşik. */
+	$gizlilik_url = home_url( '/gizlilik-politikasi/' );
+	$gizlilik_pg  = get_page_by_path( 'gizlilik-politikasi', OBJECT, 'page' );
+	if ( $gizlilik_pg && 'publish' === get_post_status( $gizlilik_pg ) ) {
+		$gizlilik_url = get_permalink( $gizlilik_pg );
+	}
+	$ticari = home_url( '/ticari-elektronik-ileti/' );
 	?>
 	<p class="form-row form-row-wide sv-register-consent">
 		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
 			<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox" name="sv_kvkk_consent" id="sv_kvkk_consent" value="1" required>
-			<span><a href="<?php echo esc_url( $privacy ); ?>" target="_blank" rel="noopener">Gizlilik Politikası ve KVKK Aydınlatma Metni</a>'ni okudum, anladım ve kişisel verilerimin belirtilen amaçlarla işlenmesini kabul ediyorum. <abbr class="sv-req" title="zorunlu">*</abbr></span>
+			<span><a href="<?php echo esc_url( $gizlilik_url ); ?>" target="_blank" rel="noopener">Gizlilik Politikası</a> ve <a href="<?php echo esc_url( $gizlilik_url ); ?>" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>'ni okudum, anladım ve kişisel verilerimin belirtilen amaçlarla işlenmesini kabul ediyorum. <abbr class="sv-req" title="zorunlu">*</abbr></span>
 		</label>
 	</p>
 	<p class="form-row form-row-wide sv-register-consent">
