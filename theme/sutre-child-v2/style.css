@@ -2439,3 +2439,27 @@ body.sv-drawer-open { overflow: hidden; }
 }
 
 /* ═══ /P75 ═══ */
+
+/* ═══ P75c — SEPET ÖZETİ PANELİ: desktop iç genişlik düzeltmesi ═══
+   Woo legacy `.cart_totals { float:right; width:50% }` paneli yarıya indiriyordu:
+   adres seçici sağa, actions sol yarıya sıkışıyordu. Panel içi her şey tam genişlik. */
+@media (min-width: 782px) {
+	.woocommerce-cart .cart-collaterals .cart_totals {
+		float: none !important; width: 100% !important;
+	}
+	.woocommerce-cart .cart-collaterals .shipping th { display: none; }
+	.woocommerce-cart .cart-collaterals .shipping td {
+		display: block; width: 100%; padding: 14px 0 0;
+	}
+	.woocommerce-cart .cart-collaterals .sv56-ship-selector,
+	.woocommerce-cart .cart-collaterals .sv56-ship-selector__form,
+	.woocommerce-cart .cart-collaterals .sv-cart-actions,
+	.woocommerce-cart .cart-collaterals a.sv-pay-selected,
+	.woocommerce-cart .cart-collaterals .sv-coupon-details,
+	.woocommerce-cart .cart-collaterals .sv-update-slot,
+	.woocommerce-cart .cart-collaterals .sv-update-slot button[name="update_cart"] {
+		width: 100%; box-sizing: border-box;
+	}
+	.woocommerce-cart .cart-collaterals .sv-cart-actions { display: flex; }
+}
+/* ═══ /P75c ═══ */
