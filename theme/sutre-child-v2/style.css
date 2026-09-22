@@ -2163,3 +2163,59 @@ body.sv-drawer-open { overflow: hidden; }
 	.sv-shop-banner__title { font-size: 26px; }
 	.woocommerce .woocommerce-ordering select { font-size: 14px; }
 }
+
+/* ═══ P74 — TUR 3: SEPET + CHECKOUT MOBİL ═══ */
+@media (max-width: 781px) {
+	/* sepet tablosu: kolonlu tablo → satır kart dönüşümü (Woo data-title etiketleriyle) */
+	.woocommerce-cart table.shop_table.cart { display: block; border: 0; background: transparent; }
+	.woocommerce-cart table.cart thead { display: none; }
+	.woocommerce-cart table.cart tbody,
+	.woocommerce-cart table.cart tr,
+	.woocommerce-cart table.cart td { display: block; width: 100%; box-sizing: border-box; }
+	.woocommerce-cart table.cart tbody tr {
+		position: relative;
+		border: 1px solid rgba(26,26,26,.08); background: var(--white);
+		margin: 0 0 14px; padding: 16px 14px 12px;
+	}
+	.woocommerce-cart table.cart td { border: 0; padding: 7px 0; text-align: right; }
+	.woocommerce-cart table.cart td::before {
+		content: attr(data-title);
+		float: left;
+		font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+		letter-spacing: .14em; text-transform: uppercase; color: var(--whisper);
+		padding-top: 5px;
+	}
+	.woocommerce-cart table.cart td.product-thumbnail {
+		float: left; width: 80px; padding: 0 12px 6px 0;
+	}
+	.woocommerce-cart table.cart td.product-thumbnail::before { content: none; }
+	.woocommerce-cart table.cart td.product-thumbnail img { width: 68px; height: 88px; object-fit: cover; }
+	.woocommerce-cart table.cart td.product-name { text-align: left; }
+	.woocommerce-cart table.cart td.product-name::before { content: none; }
+	.woocommerce-cart table.cart td.product-remove {
+		position: absolute; top: 10px; right: 10px; width: auto; padding: 0;
+	}
+	.woocommerce-cart table.cart td.product-remove::before { content: none; }
+	.woocommerce-cart table.cart td.product-remove a { font-size: 22px; color: var(--charcoal); }
+
+	/* kupon + güncelle satırı dikey */
+	.woocommerce-cart table.shop_table td.actions { padding: 14px 0; }
+	.woocommerce-cart table.shop_table td .coupon { flex-direction: column; align-items: stretch; gap: 10px; }
+	.woocommerce-cart .coupon .input-text#coupon_code { width: 100%; }
+
+	/* toplamlar: label-değer tek satırda */
+	.woocommerce-cart table.cart tfoot tr {
+		display: flex; justify-content: space-between; align-items: center;
+		border: 0; margin: 0; padding: 6px 0; background: transparent;
+	}
+	.woocommerce-cart table.cart tfoot th,
+	.woocommerce-cart table.cart tfoot td { display: inline-block; width: auto; padding: 4px 0; }
+
+	/* cart-collaterals tam genişlik */
+	.woocommerce-cart .cart-collaterals { float: none; width: 100%; margin-top: 20px; }
+
+	/* checkout: sipariş butonu tam genişlik + notice akışı */
+	.woocommerce-checkout #place_order { width: 100%; min-height: 54px; }
+}
+
+/* ═══ /TUR 3 ═══ */
