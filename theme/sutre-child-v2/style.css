@@ -2027,3 +2027,36 @@ ul.products::after {
 }
 .sv-contact-form__submit:hover { background: var(--silk); border-color: var(--silk); }
 .sv-honeypot { position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden; }
+
+/* ═══ P71 — TUR 1: GLOBAL + ANA SAYFA MOBİL ═══ */
+@media (max-width: 480px) {
+	/* duyuru şeridi: kompakt */
+	.sv-announce { padding: 9px 0; }
+	.sv-announce__track span { font-size: 11px; letter-spacing: .1em; padding: 0 28px; }
+
+	/* header: 360px ekranda nefes payı */
+	.sv-header { height: 56px; padding: 0 12px; gap: 10px; }
+	.sv-header__logo img { height: 30px; }
+	.sv-header__nav { gap: 6px; }
+	.sv-header__nav a { font-size: 10px; letter-spacing: .06em; padding: 0 3px; }
+	.sv-header__cart svg { width: 16px; height: 16px; }
+
+	/* hero: telefon yüksekliği */
+	.sv-hero { height: 62vh; min-height: 380px; }
+	.sv-hero__lockup { max-width: 230px; }
+	.sv-hero__content { gap: 28px; padding: 0 18px; }
+	.sv-hero__cta { width: 100%; max-width: 300px; text-align: center; }
+
+	/* section nefes payı */
+	.sv-section { padding: 48px 18px; }
+	.sv-section-title { font-size: clamp(26px, 7vw, 32px); }
+}
+
+/* footer: dokunma hedefleri + hizalama (480 altı) */
+@media (max-width: 480px) {
+	.sv-footer { padding: 44px 20px 0; }
+	.sv-footer__grid { gap: 30px; }
+	.sv-footer__col a { padding: 11px 0; font-size: 14px; }
+	.sv-footer__logo { height: 56px; }
+	.sv-footer__bottom { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+}
