@@ -1991,3 +1991,6 @@ ul.products::after {
 	.sv-cookie-band { left: 10px; right: 10px; bottom: 10px; flex-direction: column; gap: 12px; padding: 16px 18px; text-align: center; }
 	.sv-cookie-band__accept { width: 100%; }
 }
+
+/* P67-fix: hidden özniteliği CSS display:flex'i eziyor — gizli durum garanti */
+.sv-cookie-band[hidden] { display: none !important; }
