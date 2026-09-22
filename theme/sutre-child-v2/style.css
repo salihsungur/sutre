@@ -1946,3 +1946,20 @@ ul.products::after {
 	display: none !important;
 	content: none !important;
 }
+
+/* ═══ P66 — KAYIT ONAY KUTULARI (KVKK + Ticari İleti) ═══ */
+.sv-register-consent { margin: 6px 0 14px; }
+.sv-register-consent label {
+	display: flex; gap: 9px; align-items: flex-start;
+	font-family: var(--font-sans); font-size: 13px; font-weight: 300;
+	line-height: 1.6; color: var(--charcoal);
+	text-transform: none; letter-spacing: 0;
+}
+.sv-register-consent input[type="checkbox"] {
+	width: auto; min-height: 0; margin: 2px 0 0; accent-color: var(--ink);
+}
+.sv-register-consent a {
+	color: var(--ink); text-decoration: none;
+	border-bottom: 1px solid var(--silk);
+}
+.sv-register-consent .sv-req { color: var(--silk); text-decoration: none; }

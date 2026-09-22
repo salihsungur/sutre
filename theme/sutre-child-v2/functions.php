@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.19' );
+define( 'SUTRE_VERSION', '3.4.20' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -219,6 +219,44 @@ add_action( 'wp_loaded', function () {
  * seçilen gönderim adresi gizli kalıyordu. Bu modda checkout GÖNDERİM alanlarını gösterir
  * (sepet seçicisinin yazdığı adres otomatik dolar), fatura "opsiyonel" checkbox'a düşer ── */
 add_filter( 'option_woocommerce_ship_to_destination', function () { return 'shipping'; } );
+
+/* ── P66: kayıt ekranı onay kutuları — KVKK (zorunlu) + Ticari Elektronik İleti (opsiyonel, boş) ── */
+add_action( 'woocommerce_register_form', function () {
+	$privacy = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'privacy_policy' ) : home_url( '/gizlilik-politikasi/' );
+	$ticari  = home_url( '/ticari-elektronik-ileti/' );
+	?>
+	<p class="form-row form-row-wide sv-register-consent">
+		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+			<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox" name="sv_kvkk_consent" id="sv_kvkk_consent" value="1" required>
+			<span><a href="<?php echo esc_url( $privacy ); ?>" target="_blank" rel="noopener">Gizlilik Politikası ve KVKK Aydınlatma Metni</a>'ni okudum, anladım ve kişisel verilerimin belirtilen amaçlarla işlenmesini kabul ediyorum. <abbr class="sv-req" title="zorunlu">*</abbr></span>
+		</label>
+	</p>
+	<p class="form-row form-row-wide sv-register-consent">
+		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+			<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox" name="sv_ticari_ileti" id="sv_ticari_ileti" value="1">
+			<span>SUTRE tarafından yeni koleksiyonlar, indirimler ve kampanyalara ilişkin SMS ve e-posta ticari iletileri gönderilmesine onay veriyorum. (<a href="<?php echo esc_url( $ticari ); ?>" target="_blank" rel="noopener">Ticari Elektronik İleti Metni</a>)</span>
+		</label>
+	</p>
+	<?php
+} );
+
+/* P66: KVKK onayı zorunlu — işaretlenmezse kayıt reddedilir */
+add_action( 'woocommerce_register_post', function ( $username, $email, $errors ) {
+	if ( empty( $_POST['sv_kvkk_consent'] ) ) {
+		$errors->add( 'sv_kvkk_consent', 'Kayıt için Gizlilik Politikası ve KVKK Aydınlatma Metni\'ni onaylamanız gerekmektedir.' );
+	}
+}, 10, 3 );
+
+/* P66: kayıt sonrası onayları hesaba işle (İletişim Tercihleri ile aynı meta yapısı) */
+add_action( 'woocommerce_created_customer', function ( $customer_id ) {
+	$optin  = ! empty( $_POST['sv_ticari_ileti'] );
+	update_user_meta( $customer_id, 'sv_contact_pref_email', $optin ? 'yes' : 'no' );
+	update_user_meta( $customer_id, 'sv_contact_pref_sms', $optin ? 'yes' : 'no' );
+	update_user_meta( $customer_id, 'sv_kvkk_consent', 'yes' );
+	if ( $optin ) {
+		update_user_meta( $customer_id, 'sv_ticari_optin_date', current_time( 'mysql' ) );
+	}
+}, 10, 1 );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
