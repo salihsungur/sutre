@@ -26,10 +26,15 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		</div>
 
 		<div class="sv-footer__col">
-			<h3 class="sv-footer__heading"><?php esc_html_e( 'Yardım', 'sutre' ); ?></h3>
-			<a href="<?php echo esc_url( home_url( '/mesafeli-satis-sozlesmesi/' ) ); ?>"><?php esc_html_e( 'Mesafeli Satış Sözleşmesi', 'sutre' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/iade-ve-cayma/' ) ); ?>"><?php esc_html_e( 'İade &amp; Cayma', 'sutre' ); ?></a>
-			<a href="<?php echo esc_url( home_url( '/gizlilik-politikasi/' ) ); ?>"><?php esc_html_e( 'Gizlilik Politikası', 'sutre' ); ?></a>
+			<h3 class="sv-footer__heading"><?php esc_html_e( 'Kurumsal', 'sutre' ); ?></h3>
+			<a href="<?php echo esc_url( home_url( '/hakkimizda/' ) ); ?>">Hakkımızda</a>
+			<a href="<?php echo esc_url( home_url( '/iletisim/' ) ); ?>">İletişim</a>
+			<a href="<?php echo esc_url( home_url( '/mesafeli-satis-sozlesmesi/' ) ); ?>">Mesafeli Satış Sözleşmesi</a>
+			<a href="<?php echo esc_url( home_url( '/iade-ve-cayma/' ) ); ?>">İade ve Cayma</a>
+			<a href="<?php echo esc_url( home_url( '/gizlilik-politikasi/' ) ); ?>">Gizlilik Politikası</a>
+			<a href="<?php echo esc_url( home_url( '/kullanim-kosullari/' ) ); ?>">Kullanım Koşulları</a>
+			<a href="<?php echo esc_url( home_url( '/on-bilgilendirme-formu/' ) ); ?>">Ön Bilgilendirme Formu</a>
+			<a href="<?php echo esc_url( home_url( '/ticari-elektronik-ileti/' ) ); ?>">Ticari Elektronik İleti Açık Rıza Metni</a>
 		</div>
 
 		<div class="sv-footer__col">

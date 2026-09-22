@@ -1880,6 +1880,48 @@ ul.products li.product .button:hover {
 	background: var(--ink); color: var(--bone);
 }
 
+/* ═══ P65 — HUKUKİ SAYFA TİPOGRAFİSİ (legal-page) ═══ */
+.legal-page { max-width: 900px; }
+.legal-page p {
+	font-family: var(--font-sans); font-size: 15px; font-weight: 300;
+	line-height: 1.9; color: var(--ink); margin: 0 0 14px;
+}
+.legal-page h2 {
+	font-family: var(--font-serif); font-weight: 400; font-size: 26px;
+	letter-spacing: .02em; color: var(--ink); margin: 38px 0 14px;
+}
+.legal-page h3 {
+	font-family: var(--font-sans); font-weight: 500; font-size: 15px;
+	letter-spacing: .1em; text-transform: uppercase; color: var(--charcoal);
+	margin: 28px 0 10px;
+}
+.legal-page ul { list-style: none; padding: 0; margin: 0 0 14px; }
+.legal-page ul li {
+	font-family: var(--font-sans); font-size: 15px; font-weight: 300;
+	line-height: 1.8; color: var(--ink);
+	padding: 4px 0 4px 18px; position: relative;
+}
+.legal-page ul li::before {
+	content: ""; position: absolute; left: 0; top: 14px;
+	width: 6px; height: 1px; background: var(--silk);
+}
+.legal-page hr.legal-sep {
+	border: 0; border-top: 1px solid rgba(26,26,26,.08);
+	margin: 36px 0;
+}
+.legal-page .legal-note {
+	background: rgba(201,166,107,.1); border-left: 2px solid var(--silk);
+	padding: 14px 18px; font-size: 13px !important; line-height: 1.7 !important;
+	color: var(--charcoal);
+}
+.legal-page .legal-updated {
+	font-size: 12px !important; letter-spacing: .08em;
+	text-transform: uppercase; color: var(--whisper); margin-top: 30px;
+}
+/* hukuki sayfa gövde boşluğu */
+.page-template-default #sutre-content .legal-page,
+#sutre-content .legal-page { padding: 48px 24px 80px; }
+
 /* ═══ P36b — grid kilidi: çapraz/staggered imkansız ═══ */
 ul.products li.product {
 	grid-column: auto !important;

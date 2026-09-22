@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.18' );
+define( 'SUTRE_VERSION', '3.4.19' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
