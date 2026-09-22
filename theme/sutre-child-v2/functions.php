@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.22' );
+define( 'SUTRE_VERSION', '3.4.23' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -264,7 +264,85 @@ add_action( 'woocommerce_created_customer', function ( $customer_id ) {
 	}
 }, 10, 1 );
 
-/* ── Placeholder görsel: Woo core'dan ── */
+/* ── P68: İletişim sayfası formu — shortcode the_content sonuna eklenir (DB düzenlemesi gerekmez) ── */
+add_shortcode( 'sutre_contact_form', function () {
+	$sent = isset( $_GET['sv_contact'] ) && $_GET['sv_contact'] === 'sent';
+	ob_start();
+	?>
+	<div class="sv-contact-form-wrap" id="iletisim-formu">
+		<h2 class="sv-contact-form__title">Bize Yazın</h2>
+		<?php if ( $sent ) : ?>
+			<div class="sv-account-notice" role="status">Mesajınız ulaştı — en geç 1 iş günü içinde size dönüş yapacağız. Teşekkürler!</div>
+		<?php endif; ?>
+		<form class="sv-contact-form" method="post" action="">
+			<div class="sv-contact-form__grid">
+				<div class="form-row">
+					<label for="sv_c_name">Ad Soyad <span class="sv-req" aria-hidden="true">*</span></label>
+					<input type="text" class="input-text" name="sv_c_name" id="sv_c_name" required autocomplete="name">
+				</div>
+				<div class="form-row">
+					<label for="sv_c_email">E-Posta <span class="sv-req" aria-hidden="true">*</span></label>
+					<input type="email" class="input-text" name="sv_c_email" id="sv_c_email" required autocomplete="email">
+				</div>
+				<div class="form-row">
+					<label for="sv_c_phone">Telefon <span class="sv-account-field__opt">(opsiyonel)</span></label>
+					<input type="tel" class="input-text" name="sv_c_phone" id="sv_c_phone" autocomplete="tel">
+				</div>
+			</div>
+			<div class="form-row">
+				<label for="sv_c_message">Mesajınız <span class="sv-req" aria-hidden="true">*</span></label>
+				<textarea class="input-text" name="sv_c_message" id="sv_c_message" rows="6" required></textarea>
+			</div>
+			<p class="sv-honeypot" aria-hidden="true"><label>Web sitesi<input type="text" name="sv_c_website" tabindex="-1" autocomplete="off"></label></p>
+			<input type="hidden" name="sv_contact_submit" value="1">
+			<?php wp_nonce_field( 'sv_contact_form', 'sv_contact_nonce' ); ?>
+			<button type="submit" class="sv-contact-form__submit">Mesajı Gönder</button>
+		</form>
+	</div>
+	<?php
+	return ob_get_clean();
+} );
+
+add_filter( 'the_content', function ( $content ) {
+	if ( ! is_admin() && function_exists( 'is_page' ) && is_page( 'iletisim' ) && in_the_loop() ) {
+		$content .= do_shortcode( '[sutre_contact_form]' );
+	}
+	return $content;
+}, 30 );
+
+add_action( 'template_redirect', function () {
+	if ( empty( $_POST['sv_contact_submit'] ) ) { return; }
+	if ( ! isset( $_POST['sv_contact_nonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['sv_contact_nonce'] ) ), 'sv_contact_form' ) ) { return; }
+	// Honeypot: bot doldurduysa sessizce "başarılı" göster (içerik yok)
+	if ( ! empty( $_POST['sv_c_website'] ) ) {
+		wp_safe_redirect( add_query_arg( 'sv_contact', 'sent', get_permalink( get_page_by_path( 'iletisim' ) ) ) );
+		exit;
+	}
+	$name    = isset( $_POST['sv_c_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sv_c_name'] ) ) : '';
+	$email   = isset( $_POST['sv_c_email'] ) ? sanitize_email( wp_unslash( $_POST['sv_c_email'] ) ) : '';
+	$phone   = isset( $_POST['sv_c_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['sv_c_phone'] ) ) : '';
+	$message = isset( $_POST['sv_c_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['sv_c_message'] ) ) : '';
+
+	$errors = array();
+	if ( '' === $name ) { $errors[] = 'Ad Soyad zorunludur.'; }
+	if ( ! is_email( $email ) ) { $errors[] = 'Geçerli bir e-posta adresi giriniz.'; }
+	if ( '' === trim( $message ) ) { $errors[] = 'Mesaj alanı boş olamaz.'; }
+	if ( $errors ) {
+		foreach ( $errors as $e ) { wc_add_notice( $e, 'error' ); }
+		return; // form sayfası yeniden render olur, Woo notice'ları görünür
+	}
+
+	$to      = 'sutrescarfs@gmail.com';
+	$subject = '[SUTRE İletişim Formu] ' . $name;
+	$body    = "Ad Soyad: {$name}\nE-Posta: {$email}\nTelefon: {$phone}\n\nMesaj:\n{$message}\n\n— SUTRE web sitesi iletişim formu";
+	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
+	$sent    = wp_mail( $to, $subject, $body, $headers );
+
+	$redirect = get_permalink( get_page_by_path( 'iletisim' ) );
+	wp_safe_redirect( add_query_arg( 'sv_contact', $sent ? 'sent' : 'error', $redirect ) );
+	exit;
+}, 20 );
+
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
 	$src = is_array( $src ) ? (string) reset( $src ) : (string) $src;
 	if ( empty( $src ) ) { return ''; }
