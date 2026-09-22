@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.6.0' );
+define( 'SUTRE_VERSION', '3.6.1' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -1797,20 +1797,52 @@ function sv75_cart_scripts() {
 			if (!left) { actions.classList.add('sv-actions-drained'); }
 		}
 
-		/* Seçim sayacı. */
+		/* Seçim sayacı + CANLI TOPLAM: işaret kaldırılınca panel totalleri anında düşer
+		   (taban-fark yöntemi: kupon/indirim varsa da doğru — yalnız çıkarılan satır
+		   kadar düşürülür; sunucu tarafı "Seçilenlerle Ödemeye Geç"te kesinleşir). */
 		var boxes = form.querySelectorAll('input[name="sv_cart_selected[]"]');
 		var count = document.querySelector('.sv-pay-count');
 		var pay = document.querySelector('a.sv-pay-selected');
-		function refreshCount() {
-			if (!count) { return; }
-			var n = 0;
-			boxes.forEach(function (b) { if (b.checked) { n++; } });
-			count.textContent = n > 0
-				? n + ' ürün ödemeye dahil edilecek'
-				: 'Seçili ürün yok — tüm ürünler bekleyenlere geçecek';
+		function parseAmt(t) {
+			var m = String(t).replace(/\s/g, '').match(/([\d.,]+)/);
+			if (!m) { return 0; }
+			var s = m[1];
+			if (s.indexOf(',') > -1) { s = s.replace(/\./g, '').replace(',', '.'); }
+			var v = parseFloat(s);
+			return isNaN(v) ? 0 : v;
 		}
-		boxes.forEach(function (b) { b.addEventListener('change', refreshCount); });
-		refreshCount();
+		function fmtAmt(v) {
+			return v.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺';
+		}
+		var subEl = document.querySelector('.cart_totals .cart-subtotal .amount');
+		var totEl = document.querySelector('.cart_totals .order-total .amount');
+		var sub0 = subEl ? parseAmt(subEl.textContent) : 0;
+		var tot0 = totEl ? parseAmt(totEl.textContent) : 0;
+		function refreshSelection() {
+			var n = 0, excluded = 0;
+			boxes.forEach(function (b) {
+				var tr = b.closest('tr.cart_item');
+				if (b.checked) {
+					n++;
+					if (tr) { tr.classList.remove('sv-item--excluded'); }
+				} else {
+					if (tr) {
+						tr.classList.add('sv-item--excluded');
+						var sub = tr.querySelector('td.product-subtotal');
+						if (sub) { excluded += parseAmt(sub.textContent); }
+					}
+				}
+			});
+			if (count) {
+				count.textContent = n > 0
+					? n + ' ürün ödemeye dahil edilecek'
+					: 'Seçili ürün yok — tüm ürünler bekleyenlere geçecek';
+			}
+			if (subEl) { subEl.textContent = fmtAmt(Math.max(0, sub0 - excluded)); }
+			if (totEl) { totEl.textContent = fmtAmt(Math.max(0, tot0 - excluded)); }
+		}
+		boxes.forEach(function (b) { b.addEventListener('change', refreshSelection); });
+		refreshSelection();
 
 		if (!pay || !boxes.length) { return; }
 		pay.addEventListener('click', function (ev) {

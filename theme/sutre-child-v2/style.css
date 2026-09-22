@@ -2206,7 +2206,9 @@ body.sv-drawer-open { overflow: hidden; }
 	gap: 16px 18px;
 	background: var(--white);
 	border: 1px solid rgba(26,26,26,.08);
-	padding: 20px 22px;
+	/* üst bant: "Ödemeye dahil et" sabit köşede (isim uzunluğundan bağımsız) */
+	position: relative;
+	padding: 62px 22px 20px;
 	margin: 0 0 18px;
 }
 .woocommerce-cart table.cart tr.cart_item td { display: block; border: 0; padding: 0; background: transparent; }
@@ -2237,8 +2239,12 @@ body.sv-drawer-open { overflow: hidden; }
 	grid-area: sub; align-self: end; justify-self: end; text-align: right;
 	font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--ink);
 }
-/* seçim checkbox'ı: kartın sol üstü (ürün adının üstünde) */
-.woocommerce-cart td.product-name .sv-select-item { order: -1; }
+/* seçim checkbox'ı: kartın SOL ÜST KÖŞESİ — sabit (absolute), isim akışından bağımsız */
+.woocommerce-cart td.product-name .sv-select-item { order: 0; }
+.woocommerce-cart table.cart tr.cart_item > .sv-select-item,
+.woocommerce-cart td.product-name .sv-select-item {
+	position: absolute; top: 19px; left: 22px; z-index: 2;
+}
 .woocommerce-cart .sv-select-item {
 	display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
 	font-family: var(--font-sans); font-size: 11.5px; font-weight: 500;
@@ -2247,6 +2253,14 @@ body.sv-drawer-open { overflow: hidden; }
 .woocommerce-cart .sv-select-item input[type="checkbox"] {
 	width: 17px; height: 17px; min-height: 0; margin: 0; flex: 0 0 auto;
 	accent-color: var(--ink); cursor: pointer;
+}
+/* seçimden çıkarılan kart: soluk + "dahil değil" rozeti */
+.woocommerce-cart tr.cart_item.sv-item--excluded { opacity: .42; }
+.woocommerce-cart tr.cart_item.sv-item--excluded::after {
+	content: "Ödemeye dahil değil";
+	position: absolute; top: 19px; right: 22px;
+	font-family: var(--font-sans); font-size: 10.5px; font-weight: 500;
+	letter-spacing: .12em; text-transform: uppercase; color: #7a2c2c;
 }
 
 /* ---- Sepet Özeti paneli (cart-collaterals) ---- */
@@ -2273,6 +2287,12 @@ body.sv-drawer-open { overflow: hidden; }
 .woocommerce-cart .cart_totals tr.order-total th, .woocommerce-cart .cart_totals tr.order-total td {
 	border-top: 1px solid rgba(26,26,26,.14); padding-top: 14px; font-size: 17px; font-weight: 500; color: var(--ink);
 }
+/* panel içi çapraz satışlar: 380px panelde 4 kolon sıkışır → 2 kolon kompakt */
+.woocommerce-cart .cart-collaterals .cross-sells ul.products {
+	grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
+}
+.woocommerce-cart .cart-collaterals .cross-sells ul.products li.product { width: 100%; float: none; margin: 0; }
+.woocommerce-cart .cart-collaterals .cross-sells h2 { font-size: 18px; margin: 0 0 12px; }
 /* native "Ödemeye geç" gizli — tek CTA: Seçilenlerle Ödemeye Geç (JS yoksa o da checkout linki) */
 .woocommerce-cart .wc-proceed-to-checkout { display: none; }
 .woocommerce-cart .sv-cart-actions { margin: 22px 0 0; display: flex; flex-direction: column; gap: 14px; }
@@ -2366,9 +2386,12 @@ body.sv-drawer-open { overflow: hidden; }
 			"qty"
 			"sub";
 		gap: 12px;
-		padding: 14px;
+		padding: 52px 14px 14px;
 		position: relative;
 	}
+	/* checkbox: mobilde de sabit sol üst köşe */
+	.woocommerce-cart td.product-name .sv-select-item { top: 14px; left: 14px; }
+	.woocommerce-cart tr.cart_item.sv-item--excluded::after { content: none; }
 	.woocommerce-cart table.cart td.product-thumbnail img { width: 100%; height: 220px; aspect-ratio: auto; }
 	.woocommerce-cart table.cart td.product-remove {
 		position: absolute; top: 10px; right: 10px; z-index: 2;
