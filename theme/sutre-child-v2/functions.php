@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.15' );
+define( 'SUTRE_VERSION', '3.4.16' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -207,6 +207,11 @@ add_action( 'wp_loaded', function () {
  * formun İÇİNDE render edilir ve wp_loaded işleyicisi sv56_handle_cart_save_address'tir.
  * Eski hook + işleyici kaldırıldı — Woo 9.7+ nonce alan adı ve form yapısı değiştiği için
  * eski akış zaten sessizce çalışmıyordu (nonce alan adı uyuşmuyordu + checkbox form dışındaydı). ── */
+
+/* ── P58a: checkout teslimat odaklı — Woo varsayılanı "fatura adresine gönder" olduğu için
+ * seçilen gönderim adresi gizli kalıyordu. Bu modda checkout GÖNDERİM alanlarını gösterir
+ * (sepet seçicisinin yazdığı adres otomatik dolar), fatura "opsiyonel" checkbox'a düşer ── */
+add_filter( 'option_woocommerce_ship_to_destination', function () { return 'shipping'; } );
 
 /* ── Placeholder görsel: Woo core'dan ── */
 add_filter( 'woocommerce_placeholder_img', function ( $html, $size, $dimensions, $src ) {
