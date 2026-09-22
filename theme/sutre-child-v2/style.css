@@ -1745,7 +1745,7 @@ ul.products li.product .button:hover {
 	.sv56-addr-cards { grid-template-columns: 1fr; }
 }
 
-/* ═══ P57 — CHECKOUT (KLASİK): 2 sütun (fatura/gönderim + sipariş özeti), input dili, buton ink ═══ */
+/* ═══ P57+P58 — CHECKOUT (KLASİK): 2 sütun (teslimat/fatura + sipariş özeti), tek-form düzeni, input dili, buton ink ═══ */
 .woocommerce-checkout form.checkout {
 	display: grid;
 	grid-template-columns: 1fr 38%;
@@ -1755,12 +1755,19 @@ ul.products li.product .button:hover {
 	float: none;
 }
 .woocommerce-checkout form.checkout::after { display: none; content: none; }
-.woocommerce-checkout #customer_details { grid-area: details; float: none; width: 100%; margin: 0; }
+/* P58: tek-form düzeni — gönderim (col-2) DOM'da sonra geldiği hâlde BİRİNCİL görünür;
+ * fatura (col-1) checkbox işaretliyken gizli (gizli inputlar POST'a devam eder). */
+.woocommerce-checkout #customer_details { grid-area: details; float: none; width: 100%; margin: 0; display: flex; flex-direction: column; }
 .woocommerce-checkout #customer_details .col-1,
 .woocommerce-checkout #customer_details .col-2 {
 	float: none; width: 100%; margin: 0 0 28px;
 	border: 1px solid rgba(26,26,26,.08); background: var(--white); padding: 28px 26px;
 }
+.woocommerce-checkout #customer_details .col-2 { order: -1; }
+.woocommerce-checkout #customer_details:has(#sv_invoice_same:checked) .col-1 { display: none; }
+.woocommerce-checkout .sv-invoice-same-row { margin: 4px 0 0; padding-top: 14px; border-top: 1px solid rgba(26,26,26,.08); }
+.woocommerce-checkout .sv-invoice-same-row label.checkbox { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--font-sans); font-size: 14px; letter-spacing: .01em; text-transform: none; color: var(--ink); cursor: pointer; }
+.woocommerce-checkout .sv-invoice-same-row input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; flex: 0 0 auto; accent-color: var(--ink); cursor: pointer; }
 .woocommerce-checkout h3,
 .woocommerce-checkout #order_review_heading {
 	font-family: var(--font-serif); font-weight: 400; font-size: 26px;
