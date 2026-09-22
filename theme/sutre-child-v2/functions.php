@@ -5,7 +5,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'SUTRE_VERSION', '3.4.16' );
+define( 'SUTRE_VERSION', '3.4.17' );
 
 /* ── Asset enqueue ── */
 add_action( 'wp_enqueue_scripts', function () {
@@ -165,6 +165,13 @@ add_filter( 'gettext', function ( $translated, $text, $domain ) {
 		'Update totals'                      => 'Toplamları Güncelle',
 		'Have a coupon?'                     => 'Kuponunuz mu var?',
 		'You must be logged in to checkout.' => 'Ödeme adımı için giriş yapmalısınız.',
+		/* P58 — sepet hesaplayıcı çekirdek etiketleri (şema insan-dili; gettext global
+		 * uygulanır ama bu stringler yalnız hesaplayıcı şablonunda geçer — alan şemasıyla
+		 * checkout/defter etiketleri hizalanır). */
+		'City:'            => 'İlçe / Semt',
+		'State / County'   => 'Şehir',
+		'Postcode / ZIP:'  => 'Posta Kodu',
+		'Country / region' => 'Ülke',
 	);
 	if ( isset( $map[ $text ] ) ) { return $map[ $text ]; }
 	if ( 'Additional information' === $text ) {
@@ -310,7 +317,6 @@ function sv41_notices() {
 		'address_default'        => 'Varsayılan adres güncellendi.',
 		'address_applied'        => 'Teslimat adresi güncellendi.',
 		'error_address'          => 'Lütfen zorunlu adres alanlarını doldurun.',
-		'error_address_tc'       => 'TC Kimlik No 11 haneli bir sayı olmalıdır.',
 		'error_address_label'    => 'Lütfen adresinize bir isim (etiket) verin.',
 		'error_address_notfound' => 'Adres bulunamadı.',
 	);
@@ -664,24 +670,30 @@ add_action( 'init', function () {
 } );
 
 /**
- * P56 adres alan şeması — SAHİBİN TANIMI. SIRA P57'de sahibin istediği akışa alındı:
- * İsim Soyisim → Telefon → Adres 1 → Adres 2 → Ülke(TR kilit) → Şehir → İlçe →
- * Mahalle/Köy → Posta Kodu → TC → etiket (→ varsayılan/kaydet yalnız sepet formunda).
- * country sabit TR (dış satış yok); tc opsiyonel ama verildiyse ^\d{11}$ zorunlu (sanitize'da).
+ * P58 adres alan şeması — WOO-NATIVE (sahibin kararı, 21-09-2026). SIRA bu şemadır:
+ * Ad → Soyad → Firma(ops) → Adres Satırı 1 → Adres Satırı 2(ops) → İlçe/Semt →
+ * Posta Kodu → Ülke(TR kilit) → Şehir → Telefon → etiket (→ varsayılan/kaydet
+ * yalnız sepet formunda). Key'ler Woo kanonik alan adlarıdır: defter öğeleri
+ * doğrudan Woo shipping_ ve billing_ key'leriyle eşleşir.
+ * - TC Kimlik ve Mahalle/Köy KALDIRILDI; eski kayıtlarda bu key'ler varsa
+ *   sessizce yok sayılır (migrasyon yok — sv56_addresses yeni şemayla okur).
+ * - TR eşlemesi (P57 normalizasyonu korunur): 'state' = İl (defterde insan-okur
+ *   İL ADI, customer'da Woo kanonik KOD), 'city' = İlçe/Semt (serbest metin).
+ * - country sabit TR (dış satış yok); telefon zorunlu (şema: (ops) işaretsiz).
  */
 function sv56_address_fields() {
 	return array(
-		'name'         => array( 'İsim Soyisim', true ),
-		'phone'        => array( 'Cep Telefonu', true ),
-		'address_1'    => array( 'Adres Satırı 1', true ),
-		'address_2'    => array( 'Adres Satırı 2', false ),
-		'country'      => array( 'Ülke', true ),
-		'city'         => array( 'Şehir', true ),
-		'district'     => array( 'İlçe', true ),
-		'neighborhood' => array( 'Mahalle / Köy', true ),
-		'postcode'     => array( 'Posta Kodu', true ),
-		'tc'           => array( 'TC Kimlik No', false ),
-		'label'        => array( 'Adres Etiketi', true ),
+		'first_name' => array( 'Ad', true ),
+		'last_name'  => array( 'Soyad', true ),
+		'company'    => array( 'Firma', false ),
+		'address_1'  => array( 'Adres Satırı 1', true ),
+		'address_2'  => array( 'Adres Satırı 2', false ),
+		'city'       => array( 'İlçe / Semt', true ),
+		'postcode'   => array( 'Posta Kodu', true ),
+		'country'    => array( 'Ülke', true ),
+		'state'      => array( 'Şehir', true ),
+		'phone'      => array( 'Telefon', true ),
+		'label'      => array( 'Adres Etiketi', true ),
 	);
 }
 
@@ -781,7 +793,8 @@ function sv56_set_default_address( $user_id, $id ) {
 /**
  * Girdi dizisini paket şemasına göre temizler. $values ham dizi (POST slash'li olabilir;
  * wc_clean kendi içinde wp_unslash yapar). Döner: array( 'data' => öğe, 'errors' => alan=>true ).
- * Ülke sabit TR; tc verildiyse 11 rakam zorunlu, değilse boş bırakılır (opsiyonel).
+ * Ülke sabit TR. P58: İl ('state') KOD geldiyse insan-okur İL ADI'na çevrilir (P57
+ * normalizasyonu); 'city' = İlçe/Semt serbest metindir; TC alanı şemadan çıktı.
  */
 function sv56_sanitize_address_data( $values ) {
 	$errors = array();
@@ -792,17 +805,9 @@ function sv56_sanitize_address_data( $values ) {
 		if ( 'phone' === $field ) {
 			$value = wp_check_invalid_utf8( preg_replace( '/[^0-9+\s()-]/', '', (string) $value ) );
 		}
-		if ( 'city' === $field ) {
-			/* P57: seçimden gelen İl KODU ('TR34') deftere insan-okur İL ADI olarak yazılır. */
+		if ( 'state' === $field ) {
+			/* P58: hesaplayıcı İl select'i KOD post'lar ('TR34') → deftere İL ADI. */
 			$value = sv56_state_code_to_name( $value );
-		}
-		if ( 'tc' === $field ) {
-			$digits = preg_replace( '/\D/', '', (string) $value );
-			$value  = '';
-			if ( '' !== $digits ) {
-				if ( preg_match( '/^\d{11}$/', $digits ) ) { $value = $digits; }
-				else { $errors['tc'] = true; }
-			}
 		}
 		if ( $meta[1] && '' === trim( (string) $value ) ) { $errors[ $field ] = true; }
 		$data[ $field ] = (string) $value;
@@ -858,15 +863,25 @@ function sv56_delete_address( $user_id, $id ) {
 /**
  * Adresi WC()->customer gönderim alanlarına uygular (sepet/checkout anında doğru).
  * TR eşlemesi (Woo TR locale — kaynak kodla doğrulandı): İl = shipping_state,
- * İlçe = shipping_city. Telefon set_shipping_phone (Woo 5.6+; varsa yazılır).
+ * İlçe = shipping_city. P58: Ad/Soyad/Firma da yazılır (checkout prefill dolu gelsin).
+ * Telefon set_shipping_phone (Woo 5.6+; varsa yazılır).
  */
 function sv56_apply_address_to_customer( $address ) {
 	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
 	$c = WC()->customer;
 	$c->set_shipping_country( 'TR' );
-	/* P57: defterdeki İL ADI Woo'nun kanonik İl KODU'na döner (calc/checkout select'leri kod bekler). */
-	$c->set_shipping_state( isset( $address['city'] ) ? sv56_state_name_to_code( (string) $address['city'] ) : '' );
-	$c->set_shipping_city( isset( $address['district'] ) ? (string) $address['district'] : '' );
+	if ( method_exists( $c, 'set_shipping_first_name' ) ) {
+		$c->set_shipping_first_name( isset( $address['first_name'] ) ? (string) $address['first_name'] : '' );
+	}
+	if ( method_exists( $c, 'set_shipping_last_name' ) ) {
+		$c->set_shipping_last_name( isset( $address['last_name'] ) ? (string) $address['last_name'] : '' );
+	}
+	if ( method_exists( $c, 'set_shipping_company' ) ) {
+		$c->set_shipping_company( isset( $address['company'] ) ? (string) $address['company'] : '' );
+	}
+	/* P57'den korunur: defterdeki İL ADI Woo'nun kanonik İl KODU'na döner (calc/checkout select'leri kod bekler). */
+	$c->set_shipping_state( isset( $address['state'] ) ? sv56_state_name_to_code( (string) $address['state'] ) : '' );
+	$c->set_shipping_city( isset( $address['city'] ) ? (string) $address['city'] : '' );
 	$c->set_shipping_postcode( isset( $address['postcode'] ) ? (string) $address['postcode'] : '' );
 	$c->set_shipping_address_1( isset( $address['address_1'] ) ? (string) $address['address_1'] : '' );
 	$c->set_shipping_address_2( isset( $address['address_2'] ) ? (string) $address['address_2'] : '' );
@@ -881,10 +896,11 @@ function sv56_apply_address_to_customer( $address ) {
 function sv56_address_matches_customer( $address ) {
 	if ( ! is_array( $address ) || ! function_exists( 'WC' ) || ! WC()->customer ) { return false; }
 	$c     = WC()->customer;
-	/* P57: İl karşılaştırması iki tarafta da İL ADI üzerinden (customer'da kod saklanır → ada çevrilir). */
+	/* P57: İl karşılaştırması iki tarafta da İL ADI üzerinden (customer'da kod saklanır → ada çevrilir).
+	 * P58 key'leri: state = İl, city = İlçe/Semt. */
 	$pairs = array(
-		array( (string) $address['city'], sv56_state_code_to_name( (string) $c->get_shipping_state() ) ),
-		array( (string) $address['district'], (string) $c->get_shipping_city() ),
+		array( (string) $address['state'], sv56_state_code_to_name( (string) $c->get_shipping_state() ) ),
+		array( (string) $address['city'], (string) $c->get_shipping_city() ),
 		array( (string) $address['postcode'], (string) $c->get_shipping_postcode() ),
 		array( (string) $address['address_1'], (string) $c->get_shipping_address_1() ),
 	);
@@ -894,10 +910,10 @@ function sv56_address_matches_customer( $address ) {
 	return true;
 }
 
-/** Tek satır adres özeti (kart + sepet seçici). */
+/** Tek satır adres özeti (kart + sepet seçici). P58: Mahalle çıktı; İlçe→Şehir sırası. */
 function sv56_address_summary( $address ) {
 	$parts = array();
-	foreach ( array( 'address_1', 'address_2', 'neighborhood', 'district', 'city', 'postcode' ) as $field ) {
+	foreach ( array( 'address_1', 'address_2', 'city', 'state', 'postcode' ) as $field ) {
 		if ( isset( $address[ $field ] ) && '' !== (string) $address[ $field ] ) { $parts[] = (string) $address[ $field ]; }
 	}
 	return implode( ', ', $parts );
@@ -947,8 +963,7 @@ function sv56_handle_account_address_forms() {
 			}
 			$parsed = sv56_sanitize_address_data( $values );
 			if ( ! empty( $parsed['errors'] ) ) {
-				$only_tc = ( isset( $parsed['errors']['tc'] ) && 1 === count( $parsed['errors'] ) );
-				sv41_redirect_notice( $only_tc ? 'error_address_tc' : 'error_address', 'adreslerim' );
+				sv41_redirect_notice( 'error_address', 'adreslerim' );
 			}
 			$new_id = sv56_save_address( $user_id, $parsed['data'], '' === $edit_id ? '' : $edit_id );
 			if ( null === $new_id ) { sv41_redirect_notice( 'error_address_notfound', 'adreslerim' ); }
@@ -1049,8 +1064,9 @@ function sv56_address_book_content() {
 								name="sv_addr_<?php echo esc_attr( $field ); ?>" id="sv_addr_<?php echo esc_attr( $field ); ?>"
 								value="<?php echo esc_attr( $editing ? $editing[ $field ] : '' ); ?>"
 								<?php echo 'phone' === $field ? 'placeholder="+90 5XX XXX XX XX" autocomplete="tel"' : ''; ?>
-								<?php echo 'name' === $field ? 'autocomplete="name"' : ''; ?>
-								<?php echo 'tc' === $field ? 'inputmode="numeric" maxlength="11" autocomplete="off"' : ''; ?>>
+								<?php echo 'first_name' === $field ? 'autocomplete="given-name"' : ''; ?>
+								<?php echo 'last_name' === $field ? 'autocomplete="family-name"' : ''; ?>
+								<?php echo 'company' === $field ? 'autocomplete="organization"' : ''; ?>>
 						</div>
 					<?php endif; ?>
 				<?php endforeach; ?>
@@ -1076,9 +1092,8 @@ function sv56_address_book_content() {
 							<?php if ( $item['id'] === $def_id ) : ?><span class="sv56-addr-badge">Varsayılan</span><?php endif; ?>
 						</div>
 						<div class="sv56-addr-card__body">
-							<p class="sv56-addr-card__name"><?php echo esc_html( $item['name'] ); ?> · <?php echo esc_html( $item['phone'] ); ?></p>
+							<p class="sv56-addr-card__name"><?php echo esc_html( trim( $item['first_name'] . ' ' . $item['last_name'] ) ); ?> · <?php echo esc_html( $item['phone'] ); ?></p>
 							<p class="sv56-addr-card__summary"><?php echo esc_html( sv56_address_summary( $item ) ); ?></p>
-							<?php if ( '' !== $item['tc'] ) : ?><p class="sv56-addr-card__tc">TC: <?php echo esc_html( $item['tc'] ); ?></p><?php endif; ?>
 						</div>
 						<div class="sv56-addr-card__actions">
 							<a class="sv56-addr-action" href="<?php echo esc_url( add_query_arg( 'duzenle', $item['id'], $base_url ) ); ?>">Düzenle</a>
@@ -1194,7 +1209,8 @@ function sv56_handle_cart_apply() {
  *     buton asla ölü hissettirmesin.
  * (3) calc_shipping_state İl KODU post'lar → sanitize sv56_state_code_to_name ile deftere
  *     İL ADI yazar (bkz. sv56_state_list kanıt notu).
- * (4) TC Kimlik alanı hesaplayıcıya eklendi (sahip talebi; opsiyonel, ^\d{11}$ sanitize'da).
+ * (4) P58: TC ve Mahalle alanları şemadan çıkarıldı; alan seti Woo-native key'ler
+ *     (first_name/last_name/company/state/city) — bkz. sv56_address_fields().
  */
 add_action( 'wp_loaded', 'sv56_handle_cart_save_address', 30 );
 function sv56_handle_cart_save_address() {
@@ -1219,24 +1235,24 @@ function sv56_handle_cart_save_address() {
 		return;
 	}
 
-	/* Hesaplayıcıdaki eşleme (Woo TR locale): calc_shipping_state = İl (POST'ta KOD),
-	 * calc_shipping_city = İlçe. */
+	/* Hesaplayıcıdaki eşleme (Woo TR locale, P58 key'leri): calc_shipping_state = İl
+	 * (POST'ta KOD → sanitize İL ADI yazar), calc_shipping_city = İlçe/Semt,
+	 * calc_shipping_postcode = Posta. TC/Mahalle alanları şemadan çıktı. */
 	$values = array(
-		'label'        => $label,
-		'name'         => isset( $_POST['sv_addr_name'] ) ? $_POST['sv_addr_name'] : '',
-		'phone'        => isset( $_POST['sv_addr_phone'] ) ? $_POST['sv_addr_phone'] : '',
-		'address_1'    => isset( $_POST['sv_addr_address_1'] ) ? $_POST['sv_addr_address_1'] : '',
-		'address_2'    => isset( $_POST['sv_addr_address_2'] ) ? $_POST['sv_addr_address_2'] : '',
-		'city'         => isset( $_POST['calc_shipping_state'] ) ? $_POST['calc_shipping_state'] : '',
-		'district'     => isset( $_POST['calc_shipping_city'] ) ? $_POST['calc_shipping_city'] : '',
-		'neighborhood' => isset( $_POST['sv_addr_neighborhood'] ) ? $_POST['sv_addr_neighborhood'] : '',
-		'postcode'     => isset( $_POST['calc_shipping_postcode'] ) ? $_POST['calc_shipping_postcode'] : '',
-		'tc'           => isset( $_POST['sv_addr_tc'] ) ? $_POST['sv_addr_tc'] : '',
+		'label'      => $label,
+		'first_name' => isset( $_POST['sv_addr_first_name'] ) ? $_POST['sv_addr_first_name'] : '',
+		'last_name'  => isset( $_POST['sv_addr_last_name'] ) ? $_POST['sv_addr_last_name'] : '',
+		'company'    => isset( $_POST['sv_addr_company'] ) ? $_POST['sv_addr_company'] : '',
+		'address_1'  => isset( $_POST['sv_addr_address_1'] ) ? $_POST['sv_addr_address_1'] : '',
+		'address_2'  => isset( $_POST['sv_addr_address_2'] ) ? $_POST['sv_addr_address_2'] : '',
+		'city'       => isset( $_POST['calc_shipping_city'] ) ? $_POST['calc_shipping_city'] : '',
+		'state'      => isset( $_POST['calc_shipping_state'] ) ? $_POST['calc_shipping_state'] : '',
+		'postcode'   => isset( $_POST['calc_shipping_postcode'] ) ? $_POST['calc_shipping_postcode'] : '',
+		'phone'      => isset( $_POST['sv_addr_phone'] ) ? $_POST['sv_addr_phone'] : '',
 	);
 	$parsed = sv56_sanitize_address_data( $values );
 	if ( ! empty( $parsed['errors'] ) ) {
-		$only_tc = ( isset( $parsed['errors']['tc'] ) && 1 === count( $parsed['errors'] ) );
-		wc_add_notice( sv41_notices()[ $only_tc ? 'error_address_tc' : 'error_address' ], 'error' );
+		wc_add_notice( sv41_notices()['error_address'], 'error' );
 		return;
 	}
 
