@@ -2463,3 +2463,69 @@ body.sv-drawer-open { overflow: hidden; }
 	.woocommerce-cart .cart-collaterals .sv-cart-actions { display: flex; }
 }
 /* ═══ /P75c ═══ */
+
+/* ═══ P76 — TUR 4: HESABIM SAYFALARI MOBİL ═══ */
+@media (max-width: 781px) {
+	/* hesap menüsü: sarmalayan çok satır yerine yatay kaydırılabilir tek sıra */
+	.woocommerce-account .woocommerce-MyAccount-navigation ul {
+		flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+		gap: 0 26px; scrollbar-width: none; padding-bottom: 2px;
+	}
+	.woocommerce-account .woocommerce-MyAccount-navigation ul::-webkit-scrollbar { display: none; }
+	.woocommerce-account .woocommerce-MyAccount-navigation a { white-space: nowrap; padding: 12px 0; }
+
+	/* tablolar (Siparişlerim + sipariş detayı) → satır kart dönüşümü (Woo data-title) */
+	.woocommerce-account table.shop_table {
+		display: block; border: 0; background: transparent; border-collapse: separate;
+	}
+	.woocommerce-account table.shop_table thead { display: none; }
+	.woocommerce-account table.shop_table tbody { display: block; }
+	.woocommerce-account table.shop_table tbody tr {
+		display: block; background: var(--white);
+		border: 1px solid rgba(26,26,26,.08);
+		margin: 0 0 12px; padding: 12px 16px;
+	}
+	.woocommerce-account table.shop_table td {
+		display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+		border: 0; padding: 7px 0; text-align: right; background: transparent; width: 100%;
+	}
+	.woocommerce-account table.shop_table td::before {
+		content: attr(data-title);
+		font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+		letter-spacing: .14em; text-transform: uppercase; color: var(--whisper);
+		flex: 0 0 auto;
+	}
+	.woocommerce-account table.shop_table td:empty { display: none; }
+	.woocommerce-account table.shop_table td.woocommerce-orders-table__cell-order-actions::before,
+	.woocommerce-account table.shop_table td .nobr::before { content: none; }
+	.woocommerce-account table.shop_table td.woocommerce-orders-table__cell-order-actions {
+		justify-content: flex-end; border-top: 1px solid rgba(26,26,26,.07); padding-top: 12px;
+	}
+	.woocommerce-account table.shop_table td .woocommerce-button,
+	.woocommerce-account table.shop_table td a.button {
+		width: 100%; text-align: center; display: block; box-sizing: border-box;
+	}
+	/* sipariş detayı: tfoot toplamları tek satır (label solda / değer sağda) */
+	.woocommerce-account table.shop_table tfoot tr {
+		display: flex; justify-content: space-between; align-items: baseline;
+		background: transparent; border: 0; margin: 0; padding: 4px 16px;
+	}
+	.woocommerce-account table.shop_table tfoot th,
+	.woocommerce-account table.shop_table tfoot td {
+		display: inline-block; width: auto; border: 0; padding: 4px 0; background: transparent;
+	}
+	/* sipariş detay üst özeti: float'lı iki kolon → dikey liste */
+	.woocommerce-account ul.order_details { display: block; margin: 0 0 18px; padding: 0; }
+	.woocommerce-account ul.order_details li {
+		float: none; width: 100%; list-style: none;
+		border: 1px solid rgba(26,26,26,.08); border-bottom: 0;
+		padding: 10px 14px; margin: 0;
+		display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+	}
+	.woocommerce-account ul.order_details li:last-child { border-bottom: 1px solid rgba(26,26,26,.08); }
+	.woocommerce-account ul.order_details li strong { text-align: right; }
+	/* adreslerim işlem satırı zaten flex-wrap — tam genişlik butonlar */
+	.woocommerce-account .sv56-addr-actions { gap: 10px; }
+	.woocommerce-account .sv56-addr-actions .button { flex: 1 1 auto; text-align: center; }
+}
+/* ═══ /TUR 4 ═══ */
