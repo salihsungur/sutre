@@ -1265,41 +1265,124 @@ function sv56_handle_cart_save_address() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   P57 — CHECKOUT: MAHALLE ALANI + ADRES DEFTERİ PREFILL
-   - shipping_neighborhood: OPSİYONEL custom checkout alanı. Order meta kanıtı (Woo 11.1.0
-     kaynak): WC_Checkout::create_order() shipping_/billing_ önekli TÜM checkout alanlarını
-     _{key} order meta'sına yazar (class-wc-checkout.php:438-444; hariç tutma listesi 29-33
-     — neighborhood listede yok). Sıra: İlçe city:70 → Mahalle 75 → Posta postcode:80.
-   - TC checkout'a EKLENMEZ (sahip kararı: "checkout'u abartma"; veri minimizasyonu).
-   - Prefill: woocommerce_checkout_get_value filtresi (get_value:1487 kısa-devre kapısı);
-     adres defterinde seansın gönderim adresiyle birebir eşleşen kayıt > varsayılan kayıt.
-     Fatura/gönderim alanlarının kalanı customer üzerinden zaten dolu gelir (P56).
+   P58 — CHECKOUT: WOO-NATIVE ALAN ŞEMASI + TEK-FORM AYNALAMA
+   Alan şeması sv56_address_fields() ile aynı key/sıradadır (herkes; misafir dahil —
+   şema veri katmanıdır, şablon UX'i ise yalnız girişlide değişir):
+   - P57'nin shipping_neighborhood custom alanı ve mahalle prefill filtresi KALDIRILDI.
+   - Fatura formunda Firma/Telefon YOK (şema; telefon aynalamayla gelir). E-posta
+     çekirdek zorunlu alanı olarak kalır (hesap/sipariş e-postası).
+   - Gönderimde Firma TR locale'de gizli geldiği için opsiyonel geri eklenir.
+   - Ülke alanları tek seçenekli TR select (şema: "Ülke (TR kilit, readonly)").
+     Mağaza ülke ayarına dokunulmaz (KDV/ülke ayarı LEGAL_REVIEW_REQUIRED kapısı).
+   - TEK-FORM UX şablon katmanında: woocommerce/checkout/form-shipping.php +
+     form-billing.php override'ları (girişli: "Teslimat Bilgileri" birincil form +
+     "Faturayı da aynı adrese gönderilsin" checkbox'ı; misafir: çekirdek birebir).
+   SUNUCU AYNALAMASI (veri bütünlüğü) — kaynak kanıtı (Woo 11.1.0):
+   get_posted_data() çıktısı (filtre: :858) update_session → validate_checkout →
+   create_order zincirine GEÇER (:1381-1411); create_order adresleri $data argümanından
+   yazar (:435-445) → işaretliyken sipariş fatura adresi daima teslimat adresiyle dolu
+   (e-arşiv/iade); validate_checkout da aynı veriyi doğrular → gizli fatura alanları
+   hata üretmez. update_session aynı veriyle customer fatura alanlarını da günceller
+   (set_customer_address_fields) → oturum tutarlı kalır.
    ═══════════════════════════════════════════════════════════ */
-add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
-	if ( ! isset( $fields['shipping'] ) || isset( $fields['shipping']['shipping_neighborhood'] ) ) { return $fields; }
-	$fields['shipping']['shipping_neighborhood'] = array(
-		'label'        => 'Mahalle / Köy',
-		'type'         => 'text',
-		'required'     => false,
-		'priority'     => 75,
-		'class'        => array( 'form-row-wide', 'address-field', 'sv-checkout-neighborhood' ),
-		'autocomplete' => 'address-level3',
-	);
-	return $fields;
-}, 20, 1 );
+add_filter( 'woocommerce_checkout_fields', 'sv58_checkout_fields', 20, 1 );
+function sv58_checkout_fields( $fields ) {
+	if ( ! isset( $fields['shipping'] ) || ! is_array( $fields['shipping'] ) ) { return $fields; }
 
-add_filter( 'woocommerce_checkout_get_value', function ( $value, $input ) {
-	if ( null !== $value || 'shipping_neighborhood' !== $input || ! is_user_logged_in() ) { return $value; }
-	$items  = sv56_addresses( get_current_user_id() );
-	if ( empty( $items ) ) { return $value; }
-	$hit_id = '';
-	foreach ( $items as $item ) {
-		if ( sv56_address_matches_customer( $item ) ) { $hit_id = $item['id']; break; }
+	/* P57 custom alanı kaldırılır (Mahalle şemadan çıktı). */
+	unset( $fields['shipping']['shipping_neighborhood'] );
+
+	/* Fatura formunda Firma ve Telefon YOK (şema). */
+	if ( isset( $fields['billing'] ) && is_array( $fields['billing'] ) ) {
+		unset( $fields['billing']['billing_company'] );
+		unset( $fields['billing']['billing_phone'] );
 	}
-	if ( '' === $hit_id ) { $hit_id = sv56_default_address_id( get_current_user_id() ); }
-	foreach ( $items as $item ) {
-		if ( $item['id'] === $hit_id ) { return (string) $item['neighborhood']; }
+
+	/* Gönderimde Firma: TR locale gizli gelir → opsiyonel olarak geri eklenir. */
+	if ( ! isset( $fields['shipping']['shipping_company'] ) ) {
+		$fields['shipping']['shipping_company'] = array(
+			'label'        => 'Firma',
+			'type'         => 'text',
+			'required'     => false,
+			'class'        => array( 'form-row-wide' ),
+			'autocomplete' => 'organization',
+			'priority'     => 30,
+		);
 	}
-	return $value;
-}, 10, 2 );
+
+	/* Şema etiket + sıra + zorunluluk (sv56_address_fields ile aynı insan-dili). */
+	$sv_schema = array(
+		'first_name' => array( 'Ad', 10, true ),
+		'last_name'  => array( 'Soyad', 20, true ),
+		'company'    => array( 'Firma', 30, false ),
+		'address_1'  => array( 'Adres Satırı 1', 40, true ),
+		'address_2'  => array( 'Adres Satırı 2', 50, false ),
+		'city'       => array( 'İlçe / Semt', 60, true ),
+		'postcode'   => array( 'Posta Kodu', 70, true ),
+		'country'    => array( 'Ülke', 80, true ),
+		'state'      => array( 'Şehir', 90, true ),
+		'phone'      => array( 'Telefon', 100, true ),
+	);
+	foreach ( array( 'billing', 'shipping' ) as $sv_fs ) {
+		if ( ! isset( $fields[ $sv_fs ] ) || ! is_array( $fields[ $sv_fs ] ) ) { continue; }
+		foreach ( $sv_schema as $sv_key => $sv_def ) {
+			$sv_full = $sv_fs . '_' . $sv_key;
+			if ( ! isset( $fields[ $sv_fs ][ $sv_full ] ) ) { continue; }
+			$fields[ $sv_fs ][ $sv_full ]['label']    = $sv_def[0];
+			$fields[ $sv_fs ][ $sv_full ]['priority'] = $sv_def[1];
+			if ( $sv_def[2] ) { $fields[ $sv_fs ][ $sv_full ]['required'] = true; }
+		}
+	}
+
+	/* Ülke TR kilit: tek seçenekli select — POST daima TR. Çekirdek ülke select'iyle
+	 * aynı input_class'lar korunur (selectWoo/state JS etkilenmez: tek seçenek). */
+	foreach ( array( 'billing' => 'billing_country', 'shipping' => 'shipping_country' ) as $sv_fs => $sv_cc ) {
+		if ( isset( $fields[ $sv_fs ][ $sv_cc ] ) ) {
+			$fields[ $sv_fs ][ $sv_cc ]['type']    = 'select';
+			$fields[ $sv_fs ][ $sv_cc ]['options'] = array( 'TR' => 'Türkiye' );
+			$fields[ $sv_fs ][ $sv_cc ]['default'] = 'TR';
+		}
+	}
+
+	return $fields;
+}
+
+/**
+ * P58 sunucu aynalaması — "Faturayı da aynı adrese gönderilsin" işaretliyken (veya
+ * işaretin hiç POST edilmediği bağlamlarda güvenlik ağı olarak) posted billing
+ * alanlarını shipping alanlarından yazar. KURALLAR:
+ * - Yalnız girişli kullanıcı (misafir çekirdek iki-form akışına dokunulmaz).
+ * - İşaret kalktıysa (marker var, sv_invoice_same yok) aynalama YAPILMAZ — kullanıcı
+ *   fatura adresini ayrı girmiştir.
+ * - Gönderim adı boşsa aynalanmaz (sipariş faturası asla boşaltılmaz).
+ * - E-posta ayrıca yedeklenir: çekirdek get_value'da e-posta fallback'i YOK
+ *   (class-wc-customer.php:676-678) → gizli fatura formunda boş post'lanabilir.
+ * - Checkbox durumu oturuma yazılır (doğrulama hatası dönüşünde korunur).
+ */
+function sv58_mirror_billing_from_shipping( $data ) {
+	if ( ! is_array( $data ) || ! is_user_logged_in() ) { return $data; }
+
+	$sv_form_ours = isset( $_POST['sv_invoice_same_present'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- işleyici yalnız checkout POST zincirinde çalışır
+	$sv_checked   = isset( $_POST['sv_invoice_same'] ) && '1' === (string) wp_unslash( $_POST['sv_invoice_same'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+	if ( $sv_form_ours && function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'sv_invoice_same', $sv_checked ? 'yes' : 'no' );
+	}
+	if ( $sv_form_ours && ! $sv_checked ) { return $data; }
+
+	$sv_source = isset( $data['shipping_first_name'] ) ? trim( (string) $data['shipping_first_name'] ) : '';
+	if ( '' === $sv_source ) { return $data; }
+
+	foreach ( array( 'first_name', 'last_name', 'address_1', 'address_2', 'city', 'postcode', 'state', 'phone' ) as $sv_key ) {
+		$data[ 'billing_' . $sv_key ] = isset( $data[ 'shipping_' . $sv_key ] ) ? $data[ 'shipping_' . $sv_key ] : '';
+	}
+	$data['billing_country'] = isset( $data['shipping_country'] ) ? $data['shipping_country'] : 'TR';
+
+	if ( empty( $data['billing_email'] ) ) {
+		$sv_user = wp_get_current_user();
+		if ( ! empty( $sv_user->user_email ) ) { $data['billing_email'] = (string) $sv_user->user_email; }
+	}
+	return $data;
+}
+add_filter( 'woocommerce_checkout_posted_data', 'sv58_mirror_billing_from_shipping', 10, 1 );
 
