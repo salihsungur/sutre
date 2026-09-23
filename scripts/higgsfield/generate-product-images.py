@@ -27,6 +27,9 @@ import sys
 
 CRED_FILE = pathlib.Path.home() / "Library/Application Support/Hermes/sutre-higgsfield.env"
 MODEL_ID = "xai/grok-imagine-image-2.0"
+# xAI list fiyatı (24-09-2026, docs.x.ai): çıktı + girdi görseli
+COST_OUT = {("1k", "low"): 0.04, ("1k", "medium"): 0.06, ("2k", "low"): 0.06, ("2k", "medium"): 0.08}
+COST_INPUT_IMAGE = 0.01  # her referans görseli için
 DEFAULT_PROMPTS = pathlib.Path(__file__).resolve().parents[2] / "docs/visual-prompts/prompts-iman-nour-v3.json"
 
 SHOTS = ("urun-drape", "makro-doku", "model-portre")
@@ -130,6 +133,9 @@ def main() -> int:
         print("DRY-RUN — API çağrısı yapılmadı")
         print(f"model      : {MODEL_ID}")
         print(f"aspect     : {aspect}  resolution: {resolution}  quality: {quality}")
+        out_cost = COST_OUT.get((resolution, quality), 0.0)
+        est = out_cost + COST_INPUT_IMAGE * len(args.ref)
+        print(f"tahmini maliyet: ${est:.2f}  (çıktı ${out_cost:.2f} + referans ${COST_INPUT_IMAGE:.2f}×{len(args.ref)})")
         print(f"referans   : {[str(r) for r in args.ref]}")
         print(f"çıktı      : {args.out_dir / out_name}")
         print(f"prompt     :\n{prompt}")
@@ -137,6 +143,11 @@ def main() -> int:
 
     key = load_credentials()
     os.environ["HF_KEY"] = key
+
+    out_cost = COST_OUT.get((resolution, quality), 0.0)
+    est = out_cost + COST_INPUT_IMAGE * len(args.ref)
+    print(f"TAHMİNİ MALİYET: ${est:.2f}  (çıktı {resolution}/{quality} ${out_cost:.2f} + {len(args.ref)} referans × ${COST_INPUT_IMAGE:.2f})")
+    print("(xAI liste fiyatı; Higgsfield kredi sistemi farklı yansıtabilir — panelden teyit)")
 
     import higgsfield_client as hf
 
