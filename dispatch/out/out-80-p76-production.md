@@ -3,10 +3,10 @@
 Tarih: 2026-09-23 · Paket: PACK-80 · Başlangıç HEAD = origin/main = `be6dc4320c7554b5d80d4026ecb4ddacc08e50e9` (beklenen ile aynı). Sahip onayı alındı (23-09-2026: "Evet, production'a al").
 
 ## 1) Yapılanlar
-Prod hedefi FTP listelemesiyle tespit edildi (tahmin yok) → deploy ÖNCESİ yedek alındı → 3 dosya MUTLAK yolla yüklendi → yerel↔uzak 3/3 SHA-256 PASS → canlı curl + gerçek-Brave ekran görüntüsü/ölçüm → AGENTS §7 güncellendi. Ham loglar: `dispatch/out/logs/out-80-{ftp-probe,ftp-deploy,curl-production,shots}.txt`.
+Prod hedefi FTP listelemesiyle tespit edildi (tahmin yok) → deploy ÖNCESİ yedek alındı → 3 dosya MUTLAK yolla yüklendi → yerel↔uzak 3/3 SHA-256 PASS → canlı curl + gerçek-Brave ekran görüntüsü/ölçüm → AGENTS §7 güncellendi. Loglar: `dispatch/out/logs/out-80-*`.
 
 ## 2) Prod hedef yolu (nasıl doğrulandı)
-- FTP kök listelemesinde `sutre.store/` dizini; `/sutre.store/wp-content/themes/` listesinde `sutre-child` (+ `.bak` ve twentytwenty* default'lar) — `dispatch/out/logs/out-80-ftp-probe.txt`.
+- FTP kök listelemesinde `sutre.store/`; `wp-content/themes/` listesinde `sutre-child` (+ `.bak`, default temalar) — kanıt: `out-80-ftp-probe.txt`.
 - Canlı HTML'de `themes/sutre-child` izi 7 kez (başka varyant yok).
 - Yükleme hedefi (MUTLAK): `/sutre.store/wp-content/themes/sutre-child/{footer.php,style.css,functions.php}`. Login: `@spokenlab.com.tr` (diğer aday 530 ile düştü).
 
@@ -33,8 +33,7 @@ Yerel dosyalar = repo HEAD kopyaları; üç SHA pack-78 staging kanıtıyla da b
 1) HTTP 200
 2) sv-footer__payments = 1
 3) aria-label (sort -u): "Kabul edilen ödeme yöntemleri" · Visa · Mastercard · TROY · PayTR
-   (+ site etiketleri: Ana menü, Menü, Menüyü aç/kapat, Mobil menü, Sepet,
-      Çerez bildirimi, İlk siparişe %10 indirim — SUTRE10 kodu, ürün seçenekleri)
+   (+ site etiketleri: Ana menü, Menü, Sepet, Çerez bildirimi, SUTRE10 şeridi)
 4) ver izleri: ver=3.6.6 (+ eklenti 3.4.1/3.7.1)
 5) tema CSS linki: themes/sutre-child/style.css?ver=3.6.6
 6) Fatal/Warning: 0      8) /shop/ Fatal/Warning: 0
@@ -42,9 +41,9 @@ Yerel dosyalar = repo HEAD kopyaları; üç SHA pack-78 staging kanıtıyla da b
 ```
 
 ## 6) Ekran görüntüleri + ölçümler (gerçek Brave / Playwright-core, canlı prod)
-- `dispatch/out/evidence/out-80-footer-production-desktop.png` (2880×1160 = 1440@2x)
-- `dispatch/out/evidence/out-80-footer-production-mobile.png` (750×2294 = 375@2x)
-- Ölçüm JSON: `~/.hermes/profiles/coder/cache/scratch/out80/measurements-prod.json`
+- `dispatch/out/evidence/out-80-footer-production-desktop.png` (2880×1160; 1440@2x)
+- `dispatch/out/evidence/out-80-footer-production-mobile.png` (750×2294; 375@2x)
+- Ölçüm JSON (scratch): `out80/measurements-prod.json`
 
 | viewport | chip | satır | chip h / svg | yatay taşma | not |
 |---|---|---|---|---|---|
@@ -54,7 +53,7 @@ Yerel dosyalar = repo HEAD kopyaları; üç SHA pack-78 staging kanıtıyla da b
 
 Vision: 4 chip tam render; kesilme/örtüşme yok.
 
-## 7) AGENTS.md güncellemesi (commit `%%SHA1%%`)
+## 7) AGENTS.md güncellemesi (commit `b5fd6c9`)
 - P76: `STAGING DOĞRULANDI — production ONAY BEKLİYOR` → `ZATEN YAPILDI (production canlı, 23-09-2026)`; prod curl, 3/3 SHA, yedek SHA'ları, görsel yolları eklendi.
 - Yeni **P76c** (düşük öncelik, ertelendi) kaydı eklendi; `/magaza/`→404 notu pack-81'e bağlandı.
 
@@ -62,35 +61,27 @@ Vision: 4 chip tam render; kesilme/örtüşme yok.
 ```bash
 python3 ~/.hermes/profiles/coder/cache/scratch/out80/ftp_restore_prod.py
 ```
-Prosedür: script `SHA256SUMS`'i doğrular → 3 dosyayı `/sutre.store/wp-content/themes/sutre-child/` üstüne yazar → RETR ile doğrular (3/3 SHA). Geri yükleme sonrası beklenen prod SHA'ları: footer.php `a4fbdfe7…` (5626B) · style.css `8b61dc9f…` (104337B) · functions.php `7a90e8d9…` (95257B); `sv-footer__payments`=0 ve tema CSS `?ver=3.6.5`. Alternatif: üç yedeği FTP istemcisiyle aynı MUTLAK yola elle yükle.
+Prosedür: `SHA256SUMS` doğrulanır → 3 dosya aynı MUTLAK yola yazılır → RETR ile 3/3 SHA. Geri yükleme sonrası beklenen prod SHA'ları: footer.php `a4fbdfe7…` (5626B) · style.css `8b61dc9f…` (104337B) · functions.php `7a90e8d9…` (95257B); `sv-footer__payments`=0 ve tema CSS `?ver=3.6.5`. Alternatif: üç yedek FTP istemcisiyle elle yüklenir.
 
 ## 9) Açık noktalar
 - Sahip adımı: **LiteSpeed → Purge All**. Kanıtlar `?v=` cache-buster'lı.
 - Mobil 2px taşma → **P76c** (düşük öncelik, ertelendi). `/magaza/` 404 → pack-81.
-- Geri alma varlıkları: yedek dosyaları bilinçli olarak repo DIŞINDA (yalnız SHA listesi commit'li); rollback script'i scratch'te (`out80/`).
+- Geri alma varlıkları: yedekler repo DIŞINDA (yalnız SHA listesi commit'li); script scratch `out80/`.
 - Kapsam: prod kontrol ana sayfa + `/shop/`; 9×3 viewport matrisi staging'de pack-79'da.
 
 ## Temizlik
-`git status -sb` (commit öncesi):
+`git status -sb` (özet; commit öncesi):
 ```
 ## main...origin/main
  M AGENTS.md
-?? dispatch/out/evidence/out-79-footer-desktop-1440.png
-?? dispatch/out/evidence/out-79-footer-mobile-375.png
-?? dispatch/out/evidence/out-79-footer-tablet-768.png
-?? dispatch/out/evidence/out-80-footer-production-desktop.png
-?? dispatch/out/evidence/out-80-footer-production-mobile.png
-?? dispatch/out/logs/
-?? dispatch/out/out-76-paytr-logos-research.md
-?? dispatch/out/out-76b-agents-p76-record.md
-?? dispatch/out/out-79-footer-verification.md
+?? dispatch/out/evidence/out-80-footer-production-{desktop,mobile}.png
 ?? dispatch/out/out-80-p76-production.md
-?? dispatch/pack-76-paytr-payment-logos-research.md
-?? dispatch/pack-76b-agents-p76-record.md
-?? dispatch/pack-77-footer-payment-logos.md
-?? dispatch/pack-78-footer-staging-deploy.md
-?? dispatch/pack-79-footer-verification.md
-?? dispatch/pack-80-p76-production-deploy.md
-?? dispatch/pack-81-magaza-404-audit.md
+?? dispatch/out/logs/
+?? (diğer paketlerin untracked dosyaları: out-76/78/79 kayıtları, pack-76..81 paketleri)
 ```
 `git diff --check` → çıktı yok (temiz). Geçici dosya: yok (scratch repo dışı; loglar `dispatch/out/logs/`).
+
+## Commit / push kaydı
+- Prod deploy commit'i: `b5fd6c918fcd8e71ee6161826bbbf62c6d4464f6` — `feat(p76): footer odeme logolari PRODUCTION canlida + AGENTS kapanis` (`be6dc43..b5fd6c9 main -> main`).
+- Push doğrulaması: `git rev-parse HEAD origin/main` → ikisi de `b5fd6c9…`.
+- Bu kayıt commit'i: `docs(p76): production deploy commit SHA kaydi`.
