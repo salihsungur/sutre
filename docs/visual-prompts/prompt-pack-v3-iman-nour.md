@@ -20,11 +20,19 @@
 
 ---
 
-## B. ÜRÜN TANIMI KURALI (her promptta aynı iskelet)
-`190cm x 70cm rectangular {FABRIC} silk shawl with a {PATTERN} jacquard weave in tone-on-tone {TONE_A} and {TONE_B} tones, {SHEEN}, hemmed edges without fringe`
+## B0. REFERANS KİLİDİ — EN ÖNEMLİ KURAL (24-09-2026 dersi, kanıtlı)
+**Prompt'ta desen/motif METİNLE TARİF EDİLMEZ.** İlk denemede prompt'a "large-scale baroque damask floral jacquard" yazıldı; model referansı bırakıp **kendi desenini uydurdu** (referans ise küçük ölçekli soyut geometrik ton-sur-ton bir dokumaydı) → ürün fotoğrafı ürünle alakasız çıktı. Kök neden: metin tarifi, görsel referanstan üstün tutuluyor.
+**Zorunlu kalıp (her promptun başında):**
+> `The shawl is the EXACT same physical product as in the provided reference photo. Preserve its woven jacquard pattern with maximum fidelity: the same fine all-over tone-on-tone woven motif, the SAME motif scale as in the reference (do not enlarge, shrink or restyle the motif), the same repeat rhythm and the same {renk} color. Do NOT invent, redraw or substitute a different pattern — never turn it into a large-scale floral, damask or baroque design.`
+- Tarif edilebilir: **renk, sahne, dekor, ışık, döküm biçimi, bağlama stili, kadraj**.
+- Tarif **YASAK**: desen tipi, motif adı, motif ölçeği (referans neyse o).
+- Referans görsel her üretimde `upload_file` ile yüklenir; `image_urls` zorunlu.
 
-- **PATTERN** her renkte farklı olabilir ama **ton-sur-ton (tone-on-tone)** olmak zorunda: barok damask floral / gül madalyon damask / ince tonal geometrik / klasik kaşmir (boteh) / floral madalyon.
-- **SHEEN** kumaş karakterini yansıtır (saten/ipek parlaklığı) — "satın alınan ürün neyse o" (mat ise mat yazılır; bkz. §G onay kapısı).
+## B. ÜRÜN TANIMI KURALI (her promptta aynı iskelet)
+`190cm x 70cm rectangular cotton-polyester shawl with a silky satin-finish jacquard weave, hemmed edges without fringe`
+
+- **KUMAŞ (sahip onayı):** malzeme **pamuk-polyester**, dokuma **ipek/saten hissi** verir → ipeksi görünüm korunur, yanlış "silk (saf ipek)" iddiası kullanılmaz.
+- **DESEN:** metinle yazılmaz — bkz. §B0 referans kilidi.
 - **Kenar:** hemli, **püskülsüz** (without fringe).
 
 ---
