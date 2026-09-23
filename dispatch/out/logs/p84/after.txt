@@ -1,0 +1,113 @@
+### AFTER ###
+=== https://sutre.store/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0
+  bytes=59217
+
+=== https://sutre.store/shop/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0
+  bytes=58880
+
+=== https://sutre.store/cart/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  Cache-Control: no-cache, must-revalidate, max-age=0, private
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0
+  bytes=297382
+
+=== https://sutre.store/my-account/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  Cache-Control: no-cache, must-revalidate, max-age=0, private
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['1.6.1', '3.6.7']
+  Fatal=0 Warning=0
+  bytes=74485
+
+=== https://sutre.store/wp-sitemap.xml ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  meta-robots: YOK
+  sv-footer__payments=0
+  style.css ver: YOK
+  Fatal=0 Warning=0
+  <urlset>/<sitemapindex>: VAR · <loc> sayisi=6
+  bytes=686
+
+=== https://sutre.store/sitemap.xml ===
+HTTP: 200
+  X-LiteSpeed-Cache: hit
+  X-Cache: HIT
+  Cache-Control: no-cache, must-revalidate
+  Content-Length: 686
+  meta-robots: YOK
+  sv-footer__payments=0
+  style.css ver: YOK
+  Fatal=0 Warning=0
+  <urlset>/<sitemapindex>: VAR · <loc> sayisi=6
+  bytes=686
+
+=== https://sutre.store/sitemap_index.xml ===
+HTTP: 404
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  Cache-Control: no-cache, must-revalidate, max-age=0, no-store, private
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0
+  bytes=58052
+
+=== https://sutre.store/robots.txt ===
+HTTP: 200
+  X-LiteSpeed-Cache: miss
+  X-Cache: MISS
+  meta-robots: YOK
+  sv-footer__payments=0
+  style.css ver: YOK
+  Fatal=0 Warning=0
+  robots satiri: Sitemap: https://sutre.store/wp-sitemap.xml
+  bytes=358
+
+=== https://geleceginbilimi.com/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: hit
+  X-Cache: HIT
+  Cache-Control: no-cache, must-revalidate
+  Content-Length: 173051
+  meta-robots: YOK
+  sv-footer__payments=0
+  style.css ver: ['7.1.2']
+  Fatal=0 Warning=0
+  bytes=172480
+
+=== https://staging.sutre.store/ ===
+HTTP: 200
+  X-LiteSpeed-Cache: hit
+  X-Cache: HIT
+  Cache-Control: no-cache, must-revalidate
+  Content-Length: 60049
+  meta-robots: YOK
+  sv-footer__payments=1
+  style.css ver: ['3.6.6']
+  Fatal=0 Warning=0
+  bytes=59849
+

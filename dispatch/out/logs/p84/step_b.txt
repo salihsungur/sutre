@@ -1,0 +1,15 @@
+FTP kullanici: sutredeploy@spokenlab.com.tr (parola gizli)
+yerel betik: /Users/salihsungur/.hermes/profiles/devops/cache/scratch/p84/p84-maint-le0skn17.php (972 B, sha256 a1406673860c64f0)
+FTP cwd: /sutre.store
+uzak betik sha256: a1406673860c64f0 -> PASS
+calistirma URL'i: https://sutre.store/p84-maint-le0skn17.php?k=<gizli>
+BETIK HTTP: 200
+BETIK GOVDE: {"blog_public":1,"rewrite_flushed":true,"litespeed":"purged"}
+BETIK JSON: {"blog_public": 1, "rewrite_flushed": true, "litespeed": "purged"}
+BETIK 2. CAGRII HTTP: 200 GOVDE: {"blog_public":1,"rewrite_flushed":true,"litespeed":"purged"}
+ANAHTARSIZ CAGRII HTTP: 403 GOVDE: forbidden
+FTP DELE: p84-maint-le0skn17.php
+DIR LISTE (silme sonrasi, eslesme olmamali): []
+SILME SONRASI HTTP (404 beklenir): 404
+SILME SONRASI URL: https://sutre.store/p84-maint-le0skn17.php
+yerel betik silindi: /Users/salihsungur/.hermes/profiles/devops/cache/scratch/p84/p84-maint-le0skn17.php

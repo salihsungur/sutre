@@ -1,0 +1,22 @@
+İş tamam. Rapor: `/Users/salihsungur/dev/sutre/dispatch/out/out-81-magaza-404-audit.md` (749 kelime, ≤800) + kanıt: `/Users/salihsungur/dev/sutre/dispatch/out/evidence/out-81-magaza-404-desktop.png`
+
+Ön koşullar
+- HEAD `5cd1c93…` = `origin/main` — PASS. Pack-80 zemini: `sv-footer__payments`=1 — PASS.
+- `AGENTS.md` + anayasa TAMAMEN okundu.
+
+Ana sonuçlar
+1. **Kullanıcıya görünen kırık iç bağlantı: 0.** 9 sayfadan 30 tekilleştirilmiş iç bağlantı toplandı (≤60 sınırı altında), 29'u 200. Tek non-200 `/imunify-bot-check` → 403; ama o bağlantı kaynakta yok — hosting'in enjekte ettiği `display:none`, `aria-hidden`, `nofollow` **gizli** öğe → kullanıcıya görünmez, defekt değil.
+2. **`/magaza/` hiçbir yerde bağlantı olarak referans edilmiyor.** Ne menüde, ne sayfa içeriğinde, ne canonical/hreflang/JSON-LD'de, ne sitemap/robots'ta. Menüdeki "Mağaza" etiketi `header.php:36` ve `:60`'tan `wc_get_page_permalink('shop')` ile **`/shop/`**'a gidiyor. Yani pack-79'un "kırık link" varsayımı yanlış: bu **eksik bir rota**, kırık bağlantı değil.
+3. **En kritik bulgu — 404 sayfası boş:** temada `404.php` yok, `index.php` `have_posts()` false iken hiçbir şey basmıyor → ziyaretçi header ile footer arasında **tamamen boş** bir alan görüyor; hata mesajı, arama, "koleksiyona dön" CTA yok. Ekran görüntüsüyle ve accessibility ağacıyla (banner → contentinfo arası region yok) doğrulandı.
+4. **Tüm site `noindex, nofollow`** (/, /shop/, /my-account/, /magaza/ + staging — 3 taze istekte teyit; WP `blog_public=0` konumu). 404'ün noindex olması doğru, ama hiçbir sayfa indexlenemiyor.
+5. **Sitemap yok:** 6 aday yol da 404, `robots.txt`'te `Sitemap:` satırı yok.
+6. 404 davranışı: HTTP 404, `Location` yok, `X-Robots-Tag` yok.
+
+Öneri (uygulama YAPILMADI): menüye dokunma (zaten doğru); `404.php` şablonu ekle (en yüksek kullanıcı etkisi); `/magaza/` → `/shop/` 301 (düşük maliyet, ama noindex çözülene dek SEO değeri yok); `noindex`+sitemap ayrı ve `OWNER_APPROVAL_REQUIRED`.
+
+Rol sınırı: repoda takip edilen dosya değişmedi, commit/push/FTP/production değişikliği yok; yalnız izinli 2 çıktı eklendi, geçici dosya bırakılmadı.
+- `## main...origin/main` · HEAD `5cd1c93…` sabit — PASS
+
+Açık noktalar: e-posta şablonları DB'de → DOĞRULANAMADI; kapsam dışı gözlem: `/shop/`'ta canonical eksik.
+
+session_id: 20260923_164737_d12911

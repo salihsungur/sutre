@@ -1,0 +1,39 @@
+PACK-78 tamamlandı — tüm adımlar kanıtlı, push edildi.
+
+## Sonuç — PACK-78 (P76 footer logoları: staging deploy + kanıt + rapor)
+
+Başlangıç doğrulandı: HEAD = origin/main = 619c2e3 (önceki koşunun kodu sağlam; kod YENİDEN YAZILMADI).
+
+1) Sözdizimi + kod kontrolü
+- `php -l` footer.php + functions.php → "No syntax errors detected" (PHP 8.5.10).
+- `619c2e3` içeriği: `.sv-footer__payments` footer.php satır 52'de; dört marka (Visa · Mastercard · TROY · PayTR) inline SVG olarak mevcut → eksik marka yok, yeni kod commit'i gerekmedi.
+
+2) Staging FTP deploy (kanal B, mutlak yol)
+- Deploy ÖNCESİ uzak kopyalar indirildi ve HEAD~1 (`fea2080`) blob SHA'larıyla birebir eşleşti (drift yok).
+- Upload sonrası yerel↔uzak 3/3 SHA-256 PASS:
+  - footer.php 12760B `20effb74…` · style.css 104975B `43326422…` · functions.php 95257B `20492e8a…`
+
+3) Canlı kanıt (staging, cache-buster)
+- `sv-footer__payments` = 1 · `aria-label`: "Kabul edilen ödeme yöntemleri" + Visa/Mastercard/TROY/PayTR · CSS `?ver=3.6.6` · Fatal 0
+- İndirilen canlı style.css (HTTP 200, 104975B) SHA = yerel dosya (birebir)
+
+4) Ekran görüntüleri + ölçümler (Playwright-core + gerçek Brave)
+- `dispatch/out/evidence/out-78-footer-staging-desktop.png` (1440@2x), `...-mobile.png` (375@2x)
+- Masaüstü: 4 chip tek satır, h30px (svg18px), dikey sapma ≤1.5px; ödeme sağ kenarı 961 < İstanbul x=1265 → **solda**; taşma 0px
+- Mobil: 4 chip tek satır h26px, İstanbul altında (mevcut ≤781px kuralı); taşma 2px — kaynağı `.sv-cat-card` (P76 dışı mevcut durum); footer taşma üretmiyor
+- Görsel içerik (vision ile teyit): 4 beyaz chip sırasıyla Visa/Mastercard/Troy/PayTR, kesilme yok
+
+5) Commit/push — HEAD == origin/main = `be6dc4320c7554b5d80d4026ecb4ddacc08e50e9`
+- `6a30695` docs(agents): P76 staging dogrulandi - production onay bekliyor (AGENTS.md §7: SÜRÜYOR → STAGING DOĞRULANDI — production ONAY BEKLİYOR + kanıt özeti)
+- `35572e5` out-78 raporu + 2 PNG · `72c79ae`/`6f46ef5`/`be6dc43` rapor kayıt/düzeltmeleri
+- `git diff --check` temiz; ağaçta yalnızca başka ajanların `dispatch/pack-*.md` + `logs/` dosyaları untracked (rol sınırı gereği dokunulmadı)
+
+6) Rapor: `dispatch/out/out-78-footer-payment-logos.md` (792 kelime; tüm bölümler + geri alma komutu)
+
+Riskler/açık kapılar
+- **PRODUCTION DEPLOY YAPILMADI** (OWNER_APPROVAL bekliyor) — sutre.store hâlâ 3.6.5/P76 öncesi.
+- Görsel onay sahipte (§0.6) — iki ekran görüntüsü hazır.
+- Mobil 2px taşma `.sv-cat-card` kaynaklı, P76 kapsamı dışı (ayrı paket önerilir).
+- Rollback: `git revert 619c2e3 && git push` + `python3 scratch/out78/ftp_deploy_staging.py` (backup+upload+doğrulama); kalıcı kaynak `fea2080` blob'ları.
+
+session_id: 20260923_152403_0fe5c3

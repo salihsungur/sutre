@@ -1,0 +1,33 @@
+Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-82-litespeed-purge.md (600 kelime, secret yok). Commit YAPILMADI (paket kuralı: yalnız rapor dosyası).
+
+Özet — ölçüm ve ham kanıt
+
+1) Envanter (`/lscache`, FTP özyinelemeli)
+   127 dizin · 57 dosya · toplam 2.364.510 B (2,25 MB) = 56 önbellek girdisi + `.cm.log` (43 B). 20.000 eşiğinin çok altında → durma koşulu yok. `/lscache` ağacının son yazım zamanı 2026-08-24…26.
+
+2) Ait olanı ayırma — kritik bulgu
+   56/56 girdi indirildi, gzip açıldı, içerik tarandı: `sutre` / `sutre.store` / `sv-footer` içeren 0; `geleceginbilimi` içeren 56. Yani FTP ile görünen mağazada **sutre.store'a ait tek girdi yok** (örnek yollar raporda: `/lscache/4/d/6/4d6ec3b9980adf29` 374.042 B = `/`, `/lscache/3/a/2/3a2eb56ab6b12d54` = `/wp-json/` …).
+
+3) Silme
+   Silinen sutre girdisi: **0**. Hiçbir dosya/dizin silinmedi; `.cm.log`'a dokunulmadı; geleceginbilimi girdileri kapsam dışı olduğu için korundu.
+
+4) Eklenti cache
+   `/sutre.store/wp-content/litespeed/` içinde `cssjs` ve `cache` dizinleri YOK (CWD testi: `550 No such file or directory`) → temizlenecek içerik yok. `.litespeed_conf.dat` FTP ile okunamadı (error_perm).
+
+5) Canlı doğrulama (cache-buster'sız, ham çıktı raporda)
+   - `https://sutre.store/` → 200, `x-litespeed-cache: hit`, etag `W/"6ab3ce27-304f"`, content-length 52443, `sv-footer__payments=0`, aria Visa/Mastercard/TROY/PayTR = 0/0/0/0, `style.css?ver=3.6.5`, Fatal 0 → **hâlâ ESKİ**
+   - `/shop/`, `/cart/`, `/my-account/`, `/mesafeli-satis-sozlesmesi/`, `/iade-ve-cayma/` → payments=1, dört marka 1/1/1/1, `style.css?ver=3.6.6`, Fatal/Warning 0 → YENİ
+   Bayatlık yalnız `/` girdisinde.
+
+6) Mağaza-konumu kanıtı (karar testi)
+   3 taze sutre URL'si (`?p82probe=b1..b3`) 1. istek `miss` → 2. istek `hit` (girdi yazıldı); buna rağmen `/lscache` dosya sayısı **57 → 57, yeni dosya 0**. sutre.store girdileri FTP-görünür ağaçta değil.
+
+7) Dışarıdan purge denemeleri — hepsi etkisiz
+   `X-LiteSpeed-Purge: public,<tag>` → yanıtta `x-litespeed-purge` yok · `PURGE` metodu → HTTP 405 · `?LSCWP_CTRL=purge_all` → 6 sn sonra `/` değişmedi · `wp-cron.php` → 200, değişmedi. Kod kanıtı: `litespeed-cache/src/router.cls.php:557-577, 631-636` (purge için nonce veya yönetici-IP şartı).
+
+8) Regresyon
+   `geleceginbilimi.com` → HTTP 200 (dokunulmadı) · `staging.sutre.store` → HTTP 200.
+
+YAPILAMADI: `/` ana sayfa cache girdisi bu erişimle temizlenemedi (girdi FTP-görünür mağazada değil, dış purge reddediliyor; cPanel/SSH ve WP admin erişimi yok) → ana sayfanın cache-buster'sız doğrulaması BAŞARISIZ. Sahip için tek mini adım: WP Admin → LiteSpeed Cache → Toolbox → Purge All (sutre.store kapsamlı) veya cPanel → LiteSpeed Cache Manager → sutre.store purge; sonra `https://sutre.store/` parametresiz kontrol. Cache kendini yeniden doldurur, geri alma gerekmez.
+
+session_id: 20260923_162445_a568bb

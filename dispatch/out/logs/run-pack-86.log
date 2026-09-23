@@ -1,0 +1,35 @@
+PACK-86 tamamlandı — read-only inceleme bitti, hiçbir şey silinmedi/taşınmadı/yüklenmedi. Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-86-staging-klasor-incelemesi.md (700 kelime, 10 bölüm; commit YOK — repoda yalnız bu rapor dosyası yeni).
+
+Sahibin sorusunun cevabı: "staging.sutre.store test domaininin linki onla alakalıdır?"
+
+  Kısmen evet — adı o domainden geliyor ama İÇERİĞİ domainin kendisi değil. Yapı tam olarak şu:
+  /sutre.store/wp-content/themes/sutre-child/staging.sutre.store/wp-content/themes/sutre-child/  → 2 dosya: functions.php (22888 B) + style.css (36915 B), toplam 59803 B. Başka hiçbir şey yok (.env, wp-config, .sql, .zip, index.php, gizli dosya YOK).
+
+NE OLDUĞU (kanıtlı)
+- İçerik, commit efc30be (P43 kart başlığı fix'i, 21-09-2026 13:44 +03) ile SHA-256 düzeyinde BİREBİR aynı; içindeki SUTRE_VERSION = 3.4.0. Yani P43 deploy'unun yüklediği iki dosyanın yanlış yola düşmüş kopyası.
+- Ne zaman: 21-09-2026 13:46:36 (+03) — HTTP Last-Modified: Mon, 21 Sep 2026 10:46:36 GMT; commit'ten 2 dk 21 sn sonra.
+- Köken kanıtı: dispatch/out/out-43-title-fix.md o koşuda "style.css + functions.php → /staging.sutre.store/wp-content/themes/sutre-child/ (SHA PASS)" diyor ve aynı turda "göreli yol kazası (home köküne /functions.php, /style.css çöpü)" kaydı var — aynı iki dosya; temizlik yalnız home köküne bakmış, bu nested kopya gözden kaçmış. O saatlerde FTP oturumu sutre-child dizinine kilitliydi (AGENTS §3), yol tema dizinine göre çözülmüş.
+- Çürütüldü: pack-77/78/80/83 bunu üretmiş olamaz — hepsi 23-09 tarihli ve mutlak yol kullanıyor (out-80-ftp-deploy.txt: cwd=... (ABSOLUTE)); dosya damgası 21-09.
+- Prod'a nasıl geldi: 21-09'da production'da tema deploy'u yok (migration 22-09). Prod kopyası aynı SHA + aynı mtime → 22-09 P62 cp -a kopyalamasıyla taşınmış (timestamp korunur).
+
+WEB ERİŞİMİ (güvenlik)
+- Dizin: https://sutre.store/wp-content/themes/sutre-child/staging.sutre.store/ → 403 (dizin listeleme kapalı, index.php yok). Staging'de birebir aynı.
+- nested style.css → 200 text/css, tam 36915 B herkese açık (eski CSS; kamuya açık veri).
+- nested functions.php → 200, 0 BAYT + x-litespeed-cache: miss ve _lscache_priv cookie → PHP BU YOLDA ÇALIŞIYOR (kaynak dökülmüyor; statik sunulsaydı 22888 B kaynak gelirdi). Yani klasöre yazabilen biri PHP çalıştırabilir.
+
+AKTİF Mİ
+- HAYIR, ÖLÜ ARTIK: repo teması 0, prod ana sayfa HTML 0, staging ana sayfa HTML 0, wp-sitemap.xml 0 referans. Hiçbir mekanizma bu dosyaları okumuyor.
+
+RİSK
+- Düşük–orta; acil değil. Gerçek risk: referanssız + PHP çalışan dizin (yazma yetkisi gerekir) ve bakım sırasında kafa karışıklığı (pack-83 tam bu yüzden işaretledi). Sızıntı/secret/CVE yok.
+
+SEÇENEKLER
+- (a) Dokunma: etki sıfır, risk sürer.
+- (b) ARŞİVLE → SİL (önerim): önce dispatch/out/backups/p86-nested-geri-alma/ altına indirip SHA256SUMS al, sonra iki ortamda (prod + staging) içteki ağacı ftp-tool.py rmrf ile sil, ardından 403/404 + /, /shop/, /cart/, /product/* Fatal 0 regresyonu. Kayıp riski yok: dosyalar git'te efc30be olarak duruyor, geri alma blob'dan tek komut.
+- (c) Doğrudan sil: aynı etki/risk, arşiv izi yok — teknik olarak güvenli ama denetim izi bırakmaz.
+
+Karar SORULDU ama bu oturumda cevap verecek kullanıcı yoktu (tek sorguluk koşu) ve paket §3 silmeyi yasaklıyor → UYGULAMA YAPILMADI. Onay verirseniz (b) adımlarını prod + staging için tek paket halinde uygularım.
+
+YAPILAMADI/DOĞRULANAMADI: P43'ün birebir FTP komutu (Docker çağı, örnek 24-09'da silindi → kayıt yok; koşu/zaman/mekanizma kanıtlı), chroot'un doğrudan ispatı (bugünkü oturum home kökünden açılıyor), prod'a geçişin P62 cp -a ile olduğu (mtime/SHA korelasyonu, log yok), ftp_deploy_staging.py bulunamadı. Geçici indirilen örnekler temizlendi.
+
+session_id: 20260923_182434_3da1b8

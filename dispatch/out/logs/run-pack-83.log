@@ -1,0 +1,33 @@
+PACK-83 tamamlandı — 404 şablonu staging + PRODUCTION'da canlı.
+
+YAPILANLAR
+  - theme/sutre-child-v2/404.php (YENİ, 3423B): get_header/get_footer; 404 üst etiketi + h1 "Aradığınız sayfayı bulamadık" + açıklama + arama formu (name=s) + "Ana sayfaya dön" (ink birincil) / "Mağazaya git" (wc_get_page_permalink('shop') deseni) + "Öne Çıkanlar" (≤3 ürün; wc_get_products featured → boşsa en yeni görünür; wp_reset_postdata() çağrılıyor)
+  - style.css sonuna P83 bloğu: yalnız .sv-404* seçicileri, ≤781 ve ≤480 kırılımları, 48px dokunma hedefi
+  - functions.php: SUTRE_VERSION 3.6.6 → 3.6.7
+
+KANIT (gate sırası)
+  1) php -l: 404.php + functions.php "No syntax errors detected" (PHP 8.5.10, exit 0)
+  2) Yerel WP'siz render (2 varyant, fatal 0): main.sv-404 = 1465px, h1=1, form=1, buton=2, yatay taşma 0px → boş alan kalmadı. Kanıt: /Users/salihsungur/dev/sutre/dispatch/out/evidence/out-83-404-local.png
+  3) Commit/push: e3185dc (kod) + 400cb8e (rapor/AGENTS); HEAD == origin/main == 400cb8e
+  4) Staging FTP (mutlak yol) 3/3 SHA-256 PASS: 404.php fd9b7018… / style.css b43e024b… / functions.php 4fbb134e…
+     staging curl → HTTP 404 · marker grep = 14 · Fatal 0 · style.css?ver=3.6.7
+  5) Production: önce yedek dispatch/out/backups/p83-prod-pre-deploy/ (style.css 43326422… + functions.php 20492e8a…; 404.php uzakta yoktu → atlandı) → deploy 3/3 SHA-256 PASS
+     prod curl → HTTP 404 · marker = 14 · Fatal/Warning 0 · ?ver=3.6.7 · ölçüm: main 1465px, 2 ürün kartı, h1=1, yatay taşma 0px, klavye odak halkası 2px silk
+     regresyon: / + /shop/ + /my-account/ + /cart/ + /product/jakarli-sal/ → 200 & Fatal 0; ana sayfada footer ödeme logoları (4) yerinde
+  6) AGENTS.md §7'ye P81 maddesi işlendi (ayrı commit: 400cb8e)
+
+GÖRSELLER
+  /Users/salihsungur/dev/sutre/dispatch/out/evidence/out-83-404-{local,staging-desktop,staging-mobile,production-desktop,production-mobile}.png
+
+RAPOR
+  /Users/salihsungur/dev/sutre/dispatch/out/out-83-404-template.md (666 kelime; git status -sb + git diff --check kayıtlı)
+
+GERİ ALMA
+  Prod: dispatch/out/backups/p83-prod-pre-deploy/ içindeki style.css + functions.php'yi FTP ile geri yükle, 404.php'yi uzaktan sil → P83 öncesi (boş 404) davranış; kod: git revert e3185dc
+
+AÇIK NOKTALAR
+  - Cache purge bu pakette YAPILMADI (pack-84): prod 404 yanıtı cache-control: no-store + x-litespeed-cache: miss → 404 cache'lenmiyor; / istekleri ?v= ile MISS.
+  - Kapsam dışı gözlem: prod tema klasörünün FTP listesinde "staging.sutre.store" adlı beklenmedik girdi var (bu paketten önce de vardı, dokunulmadı — incelenmesi önerilir).
+  - featured işaretli ürün yoksa "Öne Çıkanlar" en yeni görünür ürünlere düşüyor (canlıda 2 ürün böyle geldi).
+
+session_id: 20260923_165427_a531d8

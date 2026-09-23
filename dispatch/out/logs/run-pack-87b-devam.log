@@ -1,0 +1,44 @@
+↻ Resumed session 20260923_185739_3324c6 "Ölü staging dizini yeniden adlandır ve AGENTS kaydet" (1 user message, 46 total messages)
+SON TEYİT de temiz (eski 404 / yeni 403, iki ortam). İş tamam — özet:
+
+YAPILANLAR (pack-87)
+- Arşiv (silme yok): dört iç dosya indirildi → dispatch/out/backups/p87-olu-artik/{prod,staging}/ + SHA256SUMS. `shasum -c SHA256SUMS` → 4/4 OK.
+- SHA'lar pack-86 değerleri VE git `efc30be` blob'larıyla birebir (değişmemişlik kanıtı):
+  functions.php 22888 B · 87619be3…1afaf01
+  style.css 36915 B · cd6e23e3…a24a86e1
+- Rename (FTP RNFR/RNTO, yalnız üst öğe; alt dizin taşıma YOK):
+  prod    /sutre.store/…/themes/sutre-child/staging.sutre.store → _OLU-ARTIK-staging.sutre.store-20260921
+  staging /staging.sutre.store/…/themes/sutre-child/staging.sutre.store → aynı yeni ad
+  Her ikisinde çıktı: RENAME OK · eski var_mi=False · yeni var_mi=True
+- İç yapı korundu (yeni ad içi, her iki ortam): functions.php 22888 B + style.css 36915 B, damgalar 21-09 13:46.
+
+DOĞRULAMA
+- Eski yol → 404 (prod + staging); yeni yol → 403 (listeleme kapalı); yeni yol style.css → 200 / 36915 B / text/css; functions.php → 200 / 0 B (PHP yürütülüyor, davranış değişmedi).
+- FTP ham ls: tema dizinlerinde yalnız `_OLU-ARTIK-…` var, eski ad yok (iki ortam).
+- Regresyon (check-live.sh, fatal=0 hepsi): sutre.store / · /shop/ · /cart/ · /my-account/ = 200; /404-test-xyz-p87/ = 404; staging.sutre.store/ · /shop/ = 200; geleceginbilimi.com = 200. payments=1, svg=5.
+
+AGENTS.md §7 — 3 kayıt eklendi: P84 (cache purge + noindex + sitemap, ZATEN YAPILDI), P86 (iç içe dizin İNCELENDİ + İŞARETLENDİ → _OLU-ARTIK-…), KURAL (FTP parola hijyeni).
+
+COMMIT / PUSH
+- Tek commit de7cdf4: `chore(hosting): olu artik dizini isaretlendi + P84/P86 kayitlari`
+- Kapsam tam 3 dosya: AGENTS.md · dispatch/out/out-87-olu-artik-isaretleme.md · dispatch/out/backups/p87-olu-artik/SHA256SUMS (ignore'lu `backups/` → git add -f). İndirilen ham dosyalar repoya GİRMEDİ (git check-ignore doğruladı).
+- Push: 869e24b..de7cdf4 main → main · `git rev-parse HEAD origin/main` → de7cdf4a133af80bf74a5d564368b67b919780be (ikisi eşit) · `git diff --check` boş.
+
+RAPOR: /Users/salihsungur/dev/sutre/dispatch/out/out-87-olu-artik-isaretleme.md (599 kelime, 9 bölüm)
+
+GERİ ALMA (geri adlandırma)
+python3 ~/.hermes/profiles/devops/cache/scratch/p87-rename.py rename /sutre.store/wp-content/themes/sutre-child/_OLU-ARTIK-staging.sutre.store-20260921 /sutre.store/wp-content/themes/sutre-child/staging.sutre.store
+(aynısı /staging.sutre.store/… yolu ile staging için). İçerik yerinde; arşiv ayrıca duruyor.
+
+RİSK / GÜVENLİK
+- Secret/kişisel veri etkisi: yok; FTP parolası komut satırına/çıktıya yazılmadı (parola ftpinfo.txt'ten okunuyor).
+- Ödeme/fiyat/stok/fatura etkisi: yok. DB'ye dokunulmadı, tema dosyası değiştirilmedi, yalnız dizin adı değişti.
+- Sonraki en küçük güvenli adım: yok — paket kapandı.
+
+YAPILAMADI / NOT
+- Cache purge yapılmadı (gerekmez: rename HTML çıktısına girmez).
+- ftp-tool.py'de rename verb'ü yok → yardımcı scratch betiği yazıldı (repoya konmadı, paylaşılan ~/.hermes/tools/ftp-tool.py değiştirilmedi).
+- out-86 / pack-86 / pack-87 dosyaları paket kapsamı gereği bu commit'e alınmadı (untracked kalır); out-86'ya AGENTS P86 maddesinden atıf var.
+- Rapor §7'de tip SHA'sı bilinçli olarak gömülmedi (yazımı commit hash'ini değiştirir); gerçek tip SHA'sı yukarıda: de7cdf4.
+
+session_id: 20260923_185739_3324c6

@@ -1,0 +1,76 @@
+server: ftp.spokenlab.com.tr:21 | user candidates: 2
+LOGIN FAIL (@staging.sutre.store): error_perm: 530 Login authentication failed
+LOGIN OK (@spokenlab.com.tr)
+--- 1) FTP root listing (home root) ---
+  .
+  ..
+  .bash_history
+  .bash_logout
+  .bash_profile
+  .bashrc
+  .cache
+  .cagefs
+  .caldav
+  .cl.selector
+  .cpanel
+  .ftpquota
+  .htpasswds
+  .imunify_patch_id
+  .koality
+  .lastlogin
+  .myimunify_id
+  .softaculous
+  .spamassassin
+  .spamassassinboxenable
+  .spamassassinenable
+  .ssh
+  .subaccounts
+  .trash
+  access-logs
+  detoneakademi_repo
+  etc
+  geleceginbilimi.com
+  geleceginbilimi_git
+  geleceginbilimi_new
+  legal-import
+  logs
+  lscache
+  mail
+  muharrembilalsungur.com.tr
+  public_ftp
+  public_html
+  repositories
+  salihsungur.site
+  salihsungur.site.db
+  selective-aqua-lion.89-252-180-19.cpanel.site
+  selective-aqua-lion.89-252-180-243.cpanel.site
+  softaculous_backups
+  sosyalcocuk.com.tr
+  spokenlab_repo
+  ssl
+  staging-cron.log
+  staging.sutre.store
+  sutre.store
+  tmp
+  www
+  yedek
+--- 2) production docroot: /sutre.store ---
+cwd: /sutre.store
+wp-content/themes listing:
+  wp-content/themes/.
+  wp-content/themes/..
+  wp-content/themes/.test-write
+  wp-content/themes/index.php
+  wp-content/themes/sutre-child
+  wp-content/themes/sutre-child.bak
+  wp-content/themes/twentytwentyfive
+  wp-content/themes/twentytwentyfour
+  wp-content/themes/twentytwentythree
+theme cwd OK (ABSOLUTE): /sutre.store/wp-content/themes/sutre-child
+--- 3) pre-deploy remote sizes (read-only) ---
+  remote footer.php: 5626B
+  remote style.css: 104337B
+  remote functions.php: 95257B
+--- 4) staging sanity (same user, read-only) ---
+staging theme cwd OK; footer.php SIZE: 12760
+PROBE RESULT: OK

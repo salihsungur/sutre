@@ -1,0 +1,27 @@
+PACK-85 tamamlandı. Özet:
+
+DURUM
+- 404.php ürün bloğu: başlık "Yeni gelenler"; sorgu tek ve deterministik (wc_get_products orderby=date DESC, limit 3, visibility=catalog); featured işareti + yedek zinciri tamamen kaldırıldı; ürün yoksa blok hiç basılmıyor; yanında "Tüm koleksiyonu gör" (/shop/) bağlantısı. CSS scoped .sv-404__latest*; SUTRE_VERSION 3.6.7 → 3.6.8.
+- Başlangıç HEAD beklenenden 1 commit ileriydi: 900d9de = 400cb8e + pack-84 docs-only raporu; `git diff 400cb8e..900d9de -- theme/` boş, P83 SHA'ları birebir → kod sapması yok.
+
+KAPILAR (hepsi ölçülü)
+- php -l 404.php + functions.php: 0 hata (PHP 8.5.10); php-parser 3.7.0 PASS.
+- Yerel render 3 varyant (fatal 0): Woo yok → blok yok; 2 ürün → başlık+link+2 kart (1 sorgu çağrısı, featured=YOK); 0 ürün → blok yok. Kanıt: dispatch/out/evidence/out-85-404-local.png
+- Commit/push: a9563c7 (kod+yerel kanıt) → 03c8166 (rapor+AGENTS+staging/prod görselleri+loglar) → 869e24b (rapor düzeltmesi); HEAD = origin/main = 869e24b1acfd93e3aa4234ea95bee34aabed62b0
+- Staging: FTP mutlak yol/3 dosya, 3/3 SHA-256 PASS (404.php 4055B edb099cf… · style.css 109400B 8baaa364… · functions.php 95257B 660ef6bf…). Canlı: HTTP 404, cache=miss, css=ver=3.6.8, fatal=0; gövde: "Yeni gelenler"=1, "Öne Çıkanlar"=0, li.product=2. Görseller: out-85-404-staging-{desktop,mobile}.png
+- Production: yedek dispatch/out/backups/p85-prod-pre-deploy/ (+SHA256SUMS, P83 ile birebir) → deploy 3/3 SHA-256 PASS → canlı aynı sonuçlar; görseller: out-85-404-production-{desktop,mobile}.png (vision ile de teyit: başlık+link görünür, "Öne Çıkanlar" yok, çerez bandı yok).
+- Regresyon: / , /shop/ , /cart/ , /my-account/ , /product/jakarli-sal/ → 5/5 HTTP 200, fatal=0.
+- AGENTS.md §7: P81 maddesi güncellendi (inline blok tanımı + "P85 düzeltmesi (23-09-2026, commit a9563c7)" kaydı), aynı commit'te push edildi.
+
+RAPOR
+- /Users/salihsungur/dev/sutre/dispatch/out/out-85-404-yeni-gelenler.md (598 kelime; php -l, SHA tabloları, canlı check-live ham satırları, regresyon, geri alma, git status -sb + git diff --check çıktıları içinde).
+
+GERİ ALMA
+- dispatch/out/backups/p85-{staging,prod}-pre-deploy/ içindeki 3 dosyayı FTP ile geri yükle (SHA256SUMS doğrula) → ver 3.6.7 + eski blok döner; kod: git revert a9563c7.
+
+AÇIK NOKTALAR
+- Cache: cache-hit gövdelerde hâlâ "ver=3.6.7" görünüyor (bayat HTML); taze yanıtlar ?v= ile ver=3.6.8 — sahibin LiteSpeed Purge All adımı gerekiyor (bu paketin kapsamı dışı).
+- pack-84'ün AGENTS §7 kaydı yok (pack-84 raporu §8'de belirtilmiş); bu pakette eklenmedi (kapsam P81 idi).
+- Prod tema klasöründe beklenmedik "staging.sutre.store" dizini (pack-83'ten beri) dokunulmadan duruyor.
+
+session_id: 20260923_180044_adfd52

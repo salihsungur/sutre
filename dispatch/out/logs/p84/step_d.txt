@@ -1,0 +1,50 @@
+=== home | https://sutre.store/ | HTTP 200 | 59217 B ===
+  meta-robots: ["<meta name='robots' content='max-image-preview:large' />"]
+  'noindex' gecisi: 0
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0 | sv-footer__payments=1
+
+=== shop | https://sutre.store/shop/ | HTTP 200 | 58880 B ===
+  meta-robots: ["<meta name='robots' content='max-image-preview:large' />"]
+  'noindex' gecisi: 0
+  style.css ver: ['3.6.7']
+  Fatal=0 Warning=0 | sv-footer__payments=1
+
+=== sitemap | https://sutre.store/wp-sitemap.xml | HTTP 200 | 686 B ===
+  meta-robots: YOK
+  'noindex' gecisi: 0
+  govde:
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="https://sutre.store/wp-sitemap-index.xsl" ?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>https://sutre.store/wp-sitemap-posts-post-1.xml</loc></sitemap><sitemap><loc>https://sutre.store/wp-sitemap-posts-page-1.xml</loc></sitemap><sitemap><loc>https://sutre.store/wp-sitemap-posts-product-1.xml</loc></sitemap><sitemap><loc>https://sutre.store/wp-sitemap-taxonomies-category-1.xml</loc></sitemap><sitemap><loc>https://sutre.store/wp-sitemap-taxonomies-product_cat-1.xml</loc></sitemap><sitemap><loc>https://sutre.store/wp-sitemap-users-1.xml</loc></sitemap></sitemapindex>
+
+  style.css ver: YOK
+  Fatal=0 Warning=0 | sv-footer__payments=0
+
+=== robots | https://sutre.store/robots.txt | HTTP 200 | 358 B ===
+  meta-robots: YOK
+  'noindex' gecisi: 0
+  govde:
+User-agent: *
+Disallow: /wp-content/uploads/wc-logs/
+Disallow: /wp-content/uploads/woocommerce_transient_files/
+Disallow: /wp-content/uploads/woocommerce_uploads/
+Disallow: /*?add-to-cart=
+Disallow: /*?*add-to-cart=
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+Sitemap: https://sutre.store/wp-sitemap.xml
+
+User-agent: *
+Disallow: /imunify-bot-check
+
+  style.css ver: YOK
+  Fatal=0 Warning=0 | sv-footer__payments=0
+
+=== geo | https://geleceginbilimi.com/ | HTTP 200 | 172480 B ===
+  meta-robots: ["<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />"]
+  'noindex' gecisi: 0
+  style.css ver: ['7.1.2']
+  Fatal=0 Warning=0 | sv-footer__payments=0
+

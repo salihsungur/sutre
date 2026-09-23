@@ -27,8 +27,12 @@ cache/
 *.sql.gz
 *.dump
 *.bak
-backups/
 *.backup
+# Dispatch kanıt yedekleri: İÇERİK dosyaları (php/css) repo DIŞI kalır; SHA256SUMS kayıtları takip edilir (PACK-88)
+backups/
+!dispatch/out/backups/
+dispatch/out/backups/**/*.php
+dispatch/out/backups/**/*.css
 
 # --- Node / PHP bağımlılıkları ---
 node_modules/

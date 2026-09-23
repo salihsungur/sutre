@@ -1,0 +1,4 @@
+env dosyasi: /Users/salihsungur/Library/Application Support/Hermes/sutre-cpanel.env
+anahtarlar: CPANEL_API_TOKEN, CPANEL_HOST, CPANEL_PORT, CPANEL_USER
+host uzunlugu=20 port=2083 kullanici-karakter=28 token-uzunluk=32
+BAGLANTI HATASI: URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'ftp.spokenlab.com.tr'. (_ssl.c:1129)>

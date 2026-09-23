@@ -1,0 +1,17 @@
+PACK-80 tamamlandı. P76 footer ödeme logoları production'da canlı.
+
+Yapılanlar (kanıt özeti)
+- Prod hedefi (tahmin değil, FTP listelemesiyle): `/sutre.store/wp-content/themes/sutre-child/` — kök listede `sutre.store/`, `wp-content/themes/` altında `sutre-child`; canlı HTML'de `themes/sutre-child` izi 7 kez.
+- Deploy ÖNCESİ yedek: `dispatch/out/backups/p76-prod-pre-deploy/` — footer.php 5626B `a4fbdfe7…` · style.css 104337B `8b61dc9f…` · functions.php 95257B `7a90e8d9…` (üçü de fea2080/HEAD~1 blob'larıyla birebir → drift yok). SHA256SUMS aynı dizinde.
+- Upload: 3 dosya MUTLAK yolla; RETR ile geri indirilerek yerel↔uzak 3/3 SHA-256 PASS (footer.php 12760B `20effb74…` · style.css 104975B `43326422…` · functions.php 95257B `20492e8a…`).
+- Canlı Prod (cache-buster'lı): HTTP 200 · `sv-footer__payments`=1 · aria-label Visa/Mastercard/TROY/PayTR + "Kabul edilen ödeme yöntemleri" · tema CSS `style.css?ver=3.6.6` · Fatal/Warning 0 (ana sayfa ve /shop/); indirilen canlı style.css 104975B ve SHA'sı yerel dosyayla birebir.
+- Ekran görüntüleri (gerçek Brave): `dispatch/out/evidence/out-80-footer-production-desktop.png` (2880×1160) + `...-mobile.png` (750×2294). Ölçüm: 1440/768 taşma 0px, ödeme bloğu sağ kenarı 960.9 < İstanbul x 1264.9 (solda); 375'te 2px taşma footer gizlenince de 2px → kaynak footer değil (`.sv-cat-card`) = P76 DIŞI.
+- AGENTS.md §7: P76 → `ZATEN YAPILDI (production canlı, 23-09-2026)`; yeni P76c (düşük öncelik, ertelendi) kaydı eklendi; `/magaza/`→404 notu pack-81'e bağlandı.
+- Commit/push: `b5fd6c9` (feat(p76) — AGENTS + rapor + 2 PNG + SHA256SUMS) ve `5cd1c93` (SHA kaydı). HEAD = origin/main = `5cd1c935c36d06dc970e867f9d735f2ddf074dcd` (eşit).
+- Rapor: `dispatch/out/out-80-p76-production.md` (696 kelime, bölümler 1-9); ham loglar `dispatch/out/logs/out-80-*.txt`.
+
+Geri alma hazır: `python3 ~/.hermes/profiles/coder/cache/scratch/out80/ftp_restore_prod.py` (yedekten FTP'ye yazar + 3/3 SHA doğrular; script yoksa yedekler aynı mutlak yola elle yüklenir; git revert gerekmez).
+
+Sahip için tek adım: LiteSpeed → Purge All (production cache). Ekran görüntüleri yukarıdaki yollarda; görsel revize talebin olursa işlenir.
+
+session_id: 20260923_160656_5c33ab

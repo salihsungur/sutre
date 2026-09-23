@@ -1,0 +1,18 @@
+Variables/get_user_information [user=sutredeploy@...]   HTTP 401 | login-sayfasi=True | title=cPanel Login
+Variables/get_user_information [user=spokenla@...]      HTTP 200 | {"metadata":{},"messages":null,"status":1,"warnings":null,"errors":null,"data":{"pushbullet_access_token":"","utf8_mailbox":"1","notify_account_authn_link":"1","notify_account_authn_link_notification_disabled":"1","maxim
+LiteSpeed/get_litespeed_info [user=sutredeploy@...]     HTTP 401 | login-sayfasi=True | title=cPanel Login
+LiteSpeed/get_litespeed_info [user=spokenla@...]        HTTP 200 | {"errors":["Failed to load module “LiteSpeed”: The system failed to load the module “Cpanel::API::LiteSpeed” because of an error: Can't locate Cpanel/API/LiteSpeed.pm in @INC (you may need to install the Cpanel::API::Lit
+LiteSpeedCache/get_status [user=sutredeploy@...]        HTTP 401 | login-sayfasi=True | title=cPanel Login
+LiteSpeedCache/get_status [user=spokenla@...]           HTTP 200 | {"status":0,"messages":null,"metadata":{},"data":null,"errors":["Failed to load module “LiteSpeedCache”: The system failed to load the module “Cpanel::API::LiteSpeedCache” because of an error: Can't locate Cpanel/API/Lit
+LiteSpeed/status [user=sutredeploy@...]                 HTTP 401 | login-sayfasi=True | title=cPanel Login
+LiteSpeed/status [user=spokenla@...]                    HTTP 200 | {"status":0,"messages":null,"metadata":{},"data":null,"errors":["Failed to load module “LiteSpeed”: The system failed to load the module “Cpanel::API::LiteSpeed” because of an error: Can't locate Cpanel/API/LiteSpeed.pm 
+
+--- FTP (salt okunur) site-scoped cache dizini kaniti ---
+VAR  /sutre.store/wp-content/litespeed -> ['.', '..', 'qc.last.news', 'qc.curr.news', 'qc.last.ddash', '.htaccess', 'robots.txt', 'qc.curr.vercheck', 'qc.last.vercheck', 'qc.curr.ddash', 'debug']
+VAR  /sutre.store/wp-content/litespeed/debug -> ['.', '..', 'index.php']
+YOK  /sutre.store/wp-content/cache -> 550 Can't change directory to /sutre.store/wp-content/cache: No such file or directory
+
+/lscache (kök) ilk girdiler:
+['.', '..', '.cm.log', '0', '1', '2', '3', '4', '5', '6', '7', '8']
+
+Not: hicbir dosya silinmedi/yazilmadi; yalniz LIST/CWD.

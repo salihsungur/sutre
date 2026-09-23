@@ -1,0 +1,15 @@
+=== https://sutre.store/ | HTTP 200 ===
+  robots meta: ["<meta name='robots' content='noindex, nofollow' />"]
+  Sitemap satiri: YOK
+  <urlset>=0 <sitemapindex>=0 <loc>=0
+
+=== https://sutre.store/shop/ | HTTP 200 ===
+  robots meta: ["<meta name='robots' content='noindex, nofollow' />"]
+  Sitemap satiri: YOK
+  <urlset>=0 <sitemapindex>=0 <loc>=0
+
+=== https://sutre.store/robots.txt | HTTP 200 ===
+  robots meta: YOK (regex)
+  Sitemap satiri: YOK
+  <urlset>=0 <sitemapindex>=0 <loc>=0
+

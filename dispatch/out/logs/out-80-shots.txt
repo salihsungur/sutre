@@ -1,0 +1,10 @@
+[desktop] chips=4 rows=1 overflow=0px overflowNoFooter=null fatal=0 cookieBand=false
+[desktop] chipH=30,30,30,30 svgH=18,18,18,18
+[desktop] paymentsRight=960.9 originBox={"x":1264.9,"y":3313.1,"w":55.1,"h":26.3}  barCenterY=3327.7 chipMaxDev=1.5
+[tablet] chips=4 rows=1 overflow=0px overflowNoFooter=null fatal=0 cookieBand=false
+[tablet] chipH=30,30,30,30 svgH=18,18,18,18
+[tablet] paymentsRight=554.5 originBox={"x":356.4,"y":4727.6,"w":55.1,"h":26.3}  barCenterY=4706.8 chipMaxDev=2.2
+[mobile] chips=4 rows=1 overflow=2px overflowNoFooter=2 fatal=0 cookieBand=false
+[mobile] chipH=26,26,26,26 svgH=16,16,16,16
+[mobile] paymentsRight=334.4 originBox={"x":159.9,"y":3522.8,"w":55.1,"h":26.3}  barCenterY=3504 chipMaxDev=2.2
+DONE

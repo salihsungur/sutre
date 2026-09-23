@@ -1,0 +1,19 @@
+login fail (@staging.sutre.store): error_perm: 530 Login authentication failed
+login OK (@spokenlab.com.tr) cwd=/sutre.store/wp-content/themes/sutre-child (ABSOLUTE)
+--- 1) backup current PRODUCTION remote copies (before overwrite) ---
+BACKUP footer.php: 5626B sha256=a4fbdfe731599b517c0f34b9061202e124eecc8270fe0050082e3419add1201f
+BACKUP style.css: 104337B sha256=8b61dc9fa3072e72a7757dab5a464f044a6c1f332bb8eba1ee4ac863bf7290f7
+BACKUP functions.php: 95257B sha256=7a90e8d95e07346bbef4f12c0409f5c2a49073e87f67ea3332fa599d03af22b0
+SHA256SUMS yazildi: /Users/salihsungur/dev/sutre/dispatch/out/backups/p76-prod-pre-deploy/SHA256SUMS
+--- 2) upload new copies (binary, absolute remote path) ---
+UPLOAD footer.php: local 12760B -> remote SIZE 12760B
+UPLOAD style.css: local 104975B -> remote SIZE 104975B
+UPLOAD functions.php: local 95257B -> remote SIZE 95257B
+--- 3) download back and compare SHA-256 (local vs remote) ---
+PASS footer.php: local 12760B 20effb742cb0bf695beedaf5c1cba0e20a95e28d51f64affa79a22669e74f1b0
+     remote 12760B 20effb742cb0bf695beedaf5c1cba0e20a95e28d51f64affa79a22669e74f1b0
+PASS style.css: local 104975B 43326422532504f4e1af0bbe8f2a97e2fe7888074626c1bd512f91a56e0a9f6d
+     remote 104975B 43326422532504f4e1af0bbe8f2a97e2fe7888074626c1bd512f91a56e0a9f6d
+PASS functions.php: local 95257B 20492e8a1d5ecfa69e0bdaea1ee530353fc8cbb7a6974c76d6cf5ed1d53d0841
+     remote 95257B 20492e8a1d5ecfa69e0bdaea1ee530353fc8cbb7a6974c76d6cf5ed1d53d0841
+RESULT: 3/3 SHA PASS

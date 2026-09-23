@@ -1,0 +1,40 @@
+Rapor yazıldı (842 kelime ≤900). Read-only sınır korundu: repoda takip edilen dosyada değişiklik yok, commit/push/FTP/production yok.
+
+═══════════════════════════════════════════
+P76 FOOTER LOGOLARI — BAĞIMSIZ DOĞRULAMA
+═══════════════════════════════════════════
+
+NİHAİ HÜKÜM: **CONDITIONAL PASS**
+
+Ön koşul: HEAD = origin/main = `be6dc4320c7554b5d80d4026ecb4ddacc08e50e9` ✓ (beklenen ile aynı).
+Hedef: staging.sutre.store (production'a dokunulmadı). Ölçüm gerçek Brave + curl.
+
+MADDE SONUÇLARI (her biri kendi kanıtıyla yeniden üretildi)
+
+1. Footer bloğu + 4 inline SVG, harici istek yok — **PASS**
+   `sv-footer__payments`=1; aria-label Visa/Mastercard/TROY/PayTR=4; blok içi `<img>`=0, `src=`=0, `<svg>`=4.
+2. İstanbul'un SOLUNDA (DOM + geometri, 1440) — **PASS**
+   DOM: `payments BEFORE origin`; pay.right=960.86 < origin.x=1264.88.
+3. SVG yükseklik farkı ≤2px, aralıklar eşit — **PASS**
+   svg h=[18,18,18,18]@1440 / [16×4]@375; gap=[12/11.99/12] / [10/9.99/10.01].
+4. Footer kendi taşmasını üretmiyor — **PASS** (mobil 2px P76 DIŞI)
+   1440/768 taşma=0; 375=2px, **footer gizlenince de 2px** → kaynak `.sv-cat-card` (379px, ana sayfa kategori kartı). Coder raporuyla tutarlı.
+5. Sayfa yelpazesi — **PASS**: 9 sayfa × 3 viewport = 27/27 yükleme 200, pay=1/chip=4/logo=4, konsol hatası=0; HTML Fatal/Warning/Deprecated=0.
+6. CSS `?ver=3.6.6` + canlı style.css'te kural var — **PASS** (satır 974/1000/2085).
+7. 3/3 SHA iddiası — **CONDITIONAL**: `style.css` bağımsız birebir PASS (`43326422…`); `footer.php`/`functions.php` HTTP'de **0 byte** dönüyor (sunucu PHP'yi çalıştırıyor, kaynağı vermiyor) → kaynak SHA **DOĞRULANAMADI** (FTP/yasak). Dolaylı kanıt güçlü: canlı footer markup'ı repo `footer.php` ile karakter düzeyinde örtüşüyor.
+8. AGENTS §7 P76 kaydı — **PASS**: commit `619c2e3` var (footer.php +31 / style.css +26 / functions.php +2−1); SHA'lar repo+canlı ile aynı; screenshot yolları+boyutları doğru. Yalnız "yerel↔uzak 3/3" alt-iddiası teyit edilemedi.
+9. Doğru tema (`sutre-child`) — **PASS** (canlı HTML'de 7× `themes/sutre-child/`, başka varyant yok).
+
+BULGULAR
+- P76 içi: bulgu yok.
+- P76 dışı: (F1) mobil 2px taşma `.sv-cat-card` kaynaklı; (F2) `/magaza/`=404 (rota yok, nav → `/shop/`).
+- Uyuşmazlık yok: coder'ın 2880×1160 / 750×2294 ekran görüntüsü iddiaları doğru.
+
+KOŞULLAR / KAPANIŞ: (a) PHP kaynak SHA teyidi FTP/cPanel gerektirir; (b) 2px taşma ayrı paket; (c) görsel onay sahipte → sahip onayı sonrası production deploy.
+
+TESLİM
+- Rapor: `/Users/salihsungur/dev/sutre/dispatch/out/out-79-footer-verification.md`
+- Kanıt: `/Users/salihsungur/dev/sutre/dispatch/out/evidence/out-79-footer-{desktop-1440,tablet-768,mobile-375}.png`
+- Ham veri: `~/.hermes/profiles/tester/cache/scratch/out79/raw/` (measure.json, pages.json, home.html, live-style.css)
+
+session_id: 20260923_154059_54faaf

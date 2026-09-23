@@ -1,0 +1,38 @@
+PACK-84 tamamlandı — doğrulandı, canlıda. Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-84-purge-noindex-sitemap.md (727 kelime, commit 900d9de = origin/main)
+
+MEVCUT DURUM → DEĞİŞİM → DOĞRULAMA
+
+1) Adım A (cPanel token) — kısmi
+   env'deki kullanıcı (FTP alt hesabı) ile çağrı: HTTP 401 + "cPanel Login" sayfası → token değil, KULLANICI yanlış.
+   Aynı token, hesap kullanıcısı ile: HTTP 200 JSON (status:1). Yani token geçerli; env dosyasındaki CPANEL_USER düzeltilmeli (sahip işi, değer yazılmadı).
+
+2) Adım B (ana yol, BAŞARILI — ürün/sipariş/kullanıcı verisine dokunulmadı)
+   /sutre.store/p84-maint-<rastgele8>.php — rastgele ad + 32-hex anahtar; anahtarsız çağrı 403 "forbidden".
+   FTP STOR → geri indirip SHA-256 PASS (972 B) → çalıştır:
+     BETIK HTTP 200 · GOVDE {"blog_public":1,"rewrite_flushed":true,"litespeed":"purged"}
+   Betik SILINDI: FTP listesinde p84-maint-* eşleşmesi yok; https://sutre.store/p84-maint-le0skn17.php → 404 (kanıt).
+
+3) Adım C (yedek yol)
+   UAPI LiteSpeed modülleri YOK (LiteSpeed/get_litespeed_info → "Failed to load module … Cpanel/API/LiteSpeed.pm").
+   Cache dizini kanıtı (salt-okunur, Fileman/list_files + FTP CWD): /sutre.store/wp-content/litespeed/ yalnız qc.*, robots.txt, .htaccess, debug/; cssjs/ ve cache/ yok; wp-content/cache yok → silinecek girdi yok, HİÇBİR dosya silinmedi, başka sitelere dokunulmadı.
+
+4) Adım D (cache-buster'sız düz URL)
+   ÖNCE  / : x-litespeed-cache hit · payments=0 · ver 3.6.5 · <meta name='robots' content='noindex, nofollow'>
+   SONRA / : 200 · miss→hit · payments=1 · ver 3.6.7 · noindex=0 · Fatal 0   (bayat cache çözüldü)
+         /shop/, /cart/, /my-account/, iki ürün sayfası, hukuki sayfa: 200 · payments=1 · ver 3.6.7 · noindex=0 · Fatal/Warning 0
+         /wp-sitemap.xml: 200 · <sitemapindex> + 6 <loc> (posts/page/product/category/product_cat/users); çocuk sitemaplar 200 (ürün 2, sayfa 13 loc)
+         /robots.txt: 200 · "Sitemap: https://sutre.store/wp-sitemap.xml"
+         geleceginbilimi.com: 200, değişmedi (173.051 B, ver 7.1.2) · staging.sutre.store: 200, 3.6.6 (kapsam dışı, dokunulmadı)
+
+5) Adım E — coder paketi GEREKMİYOR
+   functions.php (1873 satır) ve tüm temada robots_txt/wp_sitemaps/sitemap/blog_public/noindex dizgeleri 0 eşleşme → kapanma nedeni tema değil, çekirdek ayarıydı. blog_public=1 + rewrite tazeleme sonrası sitemap çekirdekten açıldı, robots satırını WP çekirdeği ekledi.
+
+RİSK / AÇIK NOKTALAR
+- docs/out/logs/p84/ altına ham kanıtlar kopyalandı (before/after, step_a/b/c/d, raw HTML'ler). Yalnız rapor commit'lendi (pack-84 rol sınırı: "git commit — rapor dosyası hariç"); AGENTS.md §7 kaydı sonraki tura bırakıldı.
+- Ham bir komut çıktısında FTP parolası görünür oldu (maskelenemedi) — rapora/log dosyalarına yazılmadı; istenirse rotasyon önerilir.
+- 404 sayfası artık noindex meta taşımıyor (HTTP 404 zaten yeterli); istenirse functions.php'ye wp_robots filtresi (öneri rapor §7-3). /sitemap_index.xml 404 (çekirdek üretmez).
+
+GERİ ALMA
+blog_public'i 0'a döndürmek: aynı desenle tek seferlik betik (update_option('blog_public', 0) + delete_option('rewrite_rules') + litespeed_purge_all) → betiği sil → /'da noindex,nofollow gör. Alternatif: WP Admin → Ayarlar → Okuma → "Arama motorlarını engelle" işaretle. Cache kendini doldurur, ek geri alma yok.
+
+session_id: 20260923_172237_66bace
