@@ -10,7 +10,7 @@ Tarih: 2026-09-23 · Paket: PACK-78 · Başlangıç durumu: HEAD = origin/main =
 - Footer ekran görüntüleri + ölçümler: Playwright-core (gerçek Brave) — masaüstü 1440px / mobil 375px; çerez bandı gerçek tıklamayla kapatıldı.
 - AGENTS.md §7 P76 durumu güncellendi (`SÜRÜYOR` → `STAGING DOĞRULANDI — production ONAY BEKLİYOR`).
 
-## 2) php -l çıktıları (PHP 8.5.10, gerçek binary)
+## 2) php -l çıktıları (PHP 8.5.10)
 ```
 $ php -l theme/sutre-child-v2/footer.php
 No syntax errors detected in theme/sutre-child-v2/footer.php
@@ -28,9 +28,9 @@ $ git rev-parse HEAD origin/main
 35572e5558f58bc5649e24855fa53ffac4d4087f
 35572e5558f58bc5649e24855fa53ffac4d4087f
 ```
-(Bu kayıt commit'i son HEAD'dir.)
+(Kayıt/düzeltme commit'leri: `72c79ae`, `6f46ef5` ve bu son düzeltme commit'i.)
 
-## 4) FTP upload + SHA-256 karşılaştırma (yerel ↔ uzak, RETR ile geri indirilerek)
+## 4) FTP upload + SHA-256 karşılaştırma (RETR ile geri indirilerek)
 | dosya | yerel B | yerel SHA-256 | uzak B | uzak SHA-256 | sonuç |
 |---|---|---|---|---|---|
 | footer.php | 12760 | `20effb742cb0bf695beedaf5c1cba0e20a95e28d51f64affa79a22669e74f1b0` | 12760 | aynı | **PASS** |
@@ -42,7 +42,7 @@ footer.php 5626B `a4fbdfe731599b517c0f34b9061202e124eecc8270fe0050082e3419add120
 
 Canlı CSS indirme: `HTTP 200 · 104975B · SHA 433264…` = yerel (birebir).
 
-## 5) Canlı curl çıktıları (staging, `?v=` cache-buster, ham)
+## 5) Canlı curl çıktıları (staging, `?v=` cache-buster)
 ```
 --- 1) sv-footer__payments sayisi ---
 1
@@ -65,12 +65,12 @@ sutre-style-css' href='https://staging.sutre.store/wp-content/themes/sutre-child
 - Mobil 375px: 4 chip **tek satır, sarmasız**; chip yüksekliği 26px (svg 16px); blok x=40.6–334.4 (<375); "İstanbul" bloğun altında (mevcut ≤781px kolon/ortalama kuralı); yatay taşma **2px** — kaynağı `.sv-cat-card` (ana sayfa kategori kartı, 379px genişlik; **P76 dışı, mevcut durum**), footer taşma üretmiyor; Fatal 0.
 
 ## 7) AGENTS.md güncellemesi
-§7 P76 maddesi: durum `SÜRÜYOR` → `STAGING DOĞRULANDI — production ONAY BEKLİYOR`; kanıt özeti (commit `619c2e3`, 3/3 SHA PASS, curl sonuçları, görsel yolları, ölçümler) eklendi — commit `<A1>`.
+§7 P76 maddesi: durum `SÜRÜYOR` → `STAGING DOĞRULANDI — production ONAY BEKLİYOR`; kanıt özeti (commit `619c2e3`, 3/3 SHA PASS, curl sonuçları, görsel yolları, ölçümler) eklendi — commit `6a30695`.
 
 ## 8) Geri alma komutu
 ```bash
 cd ~/dev/sutre
-git revert --no-edit <A2> <A1>   # yalnız kodu geri almak için: git revert 619c2e3
+git revert --no-edit 619c2e3   # ödeme bloğu kod commit'i (tek revert yeterli)
 git push origin main
 # staging FTP geri yükleme (revert sonrası yerel = P76 öncesi):
 python3 ~/.hermes/profiles/coder/cache/scratch/out78/ftp_deploy_staging.py   # backup+upload+3/3 SHA
