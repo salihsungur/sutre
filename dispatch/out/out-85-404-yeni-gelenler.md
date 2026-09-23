@@ -28,7 +28,7 @@ Kanıt `evidence/out-85-404-local.png` (1280px): başlık x473 w151 · link x642
 Yedek `backups/p85-staging-pre-deploy/` (P83 SHA'ları birebir). Deploy **3/3 SHA-256 PASS**: 404.php 4055B `edb099cf…` · style.css 109400B `8baaa364…` · functions.php 95257B `660ef6bf…` (loglar `logs/p85/ftp-staging-*.txt`).
 ```
 https://staging.sutre.store/404-test-xyz/?v=85a
-  HTTP=404 cache=miss payments=1 css=ver=3.6.8 fatal=0
+  HTTP=404 cache=miss etag=- payments=1 svg=5 css=ver=3.6.8 fatal=0
 ```
 Gövde: "Yeni gelenler"=1 · "Tüm koleksiyonu gör"=1 · "Öne Çıkanlar"=0 · `sv-404`=16 satır · `li.product`=2. Görseller `evidence/out-85-404-staging-{desktop,mobile}.png`; ölçüm 1440: başlık+link tek satır (link sağda), taşma 0px, kart 2, h1 1; 390: alt alta, ortada (merkez 195), taşma 0px.
 
@@ -36,9 +36,9 @@ Gövde: "Yeni gelenler"=1 · "Tüm koleksiyonu gör"=1 · "Öne Çıkanlar"=0 ·
 Yedek `backups/p85-prod-pre-deploy/` + `SHA256SUMS` (P83 SHA'ları birebir; drift 0) → deploy **3/3 SHA-256 PASS** (değerler staging ile aynı).
 ```
 https://sutre.store/404-test-xyz/?v=85a
-  HTTP=404 cache=miss payments=1 css=ver=3.6.8 fatal=0
+  HTTP=404 cache=miss etag=- payments=1 svg=5 css=ver=3.6.8 fatal=0
 ```
-Gövde: "Yeni gelenler"=1 · "Tüm koleksiyonu gör"=1 · "Öne Çıkanlar"=0 · `li.product`=2. Görseller `evidence/out-85-404-production-{desktop,mobile}.png`; ölçüm 1440: `main.sv-404` 1466px, başlık+link tek satır ortalanmış, taşma 0px, kart 2, fatal yok; 390: alt alta ortalanmış, taşma 0px. Görsel doğrulama: "Yeni gelenler" + "Tüm koleksiyonu gör" görünür; "Öne Çıkanlar" yok; çerez bandı yok.
+Gövde: "Yeni gelenler"=1 · "Tüm koleksiyonu gör"=1 · "Öne Çıkanlar"=0 · `li.product`=2. Görseller `evidence/out-85-404-production-{desktop,mobile}.png`; ölçüm 1440: `main.sv-404` 1466px, başlık+link tek satır ortalanmış, taşma 0px, kart 2, fatal yok; 390: alt alta ortalanmış, taşma 0px. Görsel: "Yeni gelenler" + "Tüm koleksiyonu gör" görünür; "Öne Çıkanlar" yok; çerez bandı yok.
 
 ## 7. Regresyon (check-live.sh)
 ```
@@ -53,7 +53,7 @@ P81 maddesi güncellendi: inline blok tanımı yeni davranışa çevrildi + "P85
 `backups/p85-{staging,prod}-pre-deploy/` içindeki 3 dosyayı FTP ile geri yükle (SHA256SUMS doğrula) → ver 3.6.7 + eski blok döner. Kod: `git revert a9563c7`.
 
 ## 10. Açık noktalar
-- Cache: cache-hit gövdeler hâlâ `ver=3.6.7` → sahip LiteSpeed Purge All yapmalı (kapsam dışı).
+- Cache: cache-hit gövdeler hâlâ `ver=3.6.7` → sahip LiteSpeed Purge All yapmalı.
 - pack-84'ün AGENTS §7 kaydı yok (pack-84 raporu §8); bu pakette eklenmedi (kapsam: P81).
 - Prod tema klasöründe `staging.sutre.store` dizini (pack-83'ten beri) duruyor; dokunulmadı.
 - 404 yanıtı `x-litespeed-cache: miss` (P83 ile aynı; 404 cache'lenmiyor).
