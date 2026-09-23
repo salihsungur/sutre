@@ -1,0 +1,29 @@
+İş tamamlandı. Özet:
+
+PACK-88 — Dispatch arşivi repoya kaydedildi (tam kayıt disiplini)
+
+Envanter (gerçek durum)
+- Paket 46 untracked bekliyordu; gerçek: 48 üst-seviye entry = 61 dosya (dizinler genişletilince).
+- Commit'e giren YENİ dosya: 64 → paketler 14 · bot raporları 6 · koşu logları 37 · kanıt PNG 4 · yeni SHA256SUMS 3.
+- Toplam commit: 66 değişiklik (64 yeni + .gitignore M + AGENTS.md M) → git log --stat: "66 files changed, 7385 insertions(+), 1 deletion(-)".
+- Boyut: yeni içerik ~2.055 KB; commit geneli ~2.132 KB → 15 MB sınırı AŞILMADI, normal commit; git gc yapılmadı.
+
+.gitignore kararı
+- Sorun: mevcut `backups/` deseni tüm dispatch yedek ağacını SHA256SUMS dahil ignore ediyordu (git, ignore'lu dizin altındaki dosyayı geri alamaz kuralı).
+- Çözüm: dizini geri al (`!dispatch/out/backups/`), İÇERİK dosyalarını türle dışla (`dispatch/out/backups/**/*.php` + `*.css`).
+- Sonuç: indirilen/yedek arşiv php/css dosyaları (13) repo DIŞI kaldı; SHA256SUMS kayıtları 5/5 takipte (p76 + p87 zaten takipteydi, p83/p85-prod/p85-staging yeni eklendi).
+- Paketin verdiği `*/*/*` yerine `**` kullandım: 2-seviyeli p76/p83/p85 dizinleri de kapsanmalı, aksi hâlde sızarlardı (raporda gerekçeli).
+
+Commit / push kanıtı
+- 2ead00e — "docs(dispatch): pack-76..87 paketleri + raporlar + loglar + kanitlar arsivlendi" (ana commit; AGENTS §8 kayıt satırı bu commit içinde)
+- 96e0701 — "docs(p88): dispatch arsiv raporu (inventar + push kaniti)"
+- Push: de7cdf4..2ead00e → 2ead00e..96e0701 main -> main
+- HEAD == origin/main: EVET (96e0701f7b3ec799d8678d10b2fb52a09f0869ce)
+- Commit sonrası git status --porcelain: BOŞ; yalnız --ignored listesinde beklenen backups php/css görünür. Commit'e sızan backups php/css: 0.
+
+Notlar
+- AGENTS.md'de §9 yok; kayıt defteri §8 ("Tarihsel Kayıt Defteri"). §0.2'nin "§9 kayıt defteri" atfı bu dosyada §8'i işaret ediyor — kayıt satırı §8 sonuna eklendi.
+- Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-88-dispatch-arsiv.md (399 kelime ≤ 400).
+- YAPILAMADI: yok.
+
+session_id: 20260923_192428_f2804d
