@@ -21,8 +21,14 @@ No syntax errors detected in theme/sutre-child-v2/functions.php
 
 ## 3) Commit/push SHA'ları
 - Başlangıç: `git rev-parse HEAD origin/main` → her ikisi de `619c2e36d88ecc84f93c13e497b60040730d4eb1`.
-- Bu tur: `<A1>` `docs(agents): P76 staging dogrulandi - production onay bekliyor` (AGENTS.md) · `<A2>` `docs(p76): out-78 staging deploy + canli kanit raporu` (bu rapor + 2 PNG).
-- Push sonrası `git rev-parse HEAD origin/main` eşitliği doğrulandı (A2 = HEAD = origin/main; kayıt commit'i A3).
+- Bu tur: `6a30695e097b8219360c8dbdc01fe49aa95d1cf3` `docs(agents): P76 staging dogrulandi - production onay bekliyor` (AGENTS.md) · `35572e5558f58bc5649e24855fa53ffac4d4087f` `docs(p76): out-78 staging deploy + canli kanit raporu` (bu rapor + 2 PNG).
+- Push (`619c2e3..35572e5 main -> main`) sonrası doğrulama:
+```
+$ git rev-parse HEAD origin/main
+35572e5558f58bc5649e24855fa53ffac4d4087f
+35572e5558f58bc5649e24855fa53ffac4d4087f
+```
+(Bu kayıt commit'i — SHA/temizlik güncellemesi — son HEAD'dir.)
 
 ## 4) FTP upload + SHA-256 karşılaştırma (yerel ↔ uzak, RETR ile geri indirilerek)
 | dosya | yerel B | yerel SHA-256 | uzak B | uzak SHA-256 | sonuç |
@@ -80,4 +86,15 @@ Alternatif (scratch silinmişse): `git checkout fea2080 -- theme/sutre-child-v2/
 - YAPILAMADI: yok (tüm adımlar kanıtlı).
 
 ## Temizlik / git durumu
-`git status -sb` (A3 kaydında güncellenir — pushtan sonra ağaç temiz; repodaki `dispatch/pack-*.md` ve `logs/` satırları diğer ajanların paket dosyalarıdır, bu paket kapsamı dışında bırakıldı).
+`git status -sb` (A2 push'u sonrası, takip edilen dosyalarda değişiklik yok):
+```
+## main...origin/main
+?? dispatch/out/logs/
+?? dispatch/out/out-76-paytr-logos-research.md
+?? dispatch/out/out-76b-agents-p76-record.md
+?? dispatch/pack-76-paytr-payment-logos-research.md
+?? dispatch/pack-76b-agents-p76-record.md
+?? dispatch/pack-77-footer-payment-logos.md
+?? dispatch/pack-78-footer-staging-deploy.md
+```
+Not: `??` satırları başka ajanların paket/log dosyalarıdır — PACK-78 rol sınırı gereği commit EDİLMEDİ. `git diff --check` temiz (exit 0); bu paketin geçici dosyaları repo DIŞINDA (`scratch/out78/`) tutuldu.
