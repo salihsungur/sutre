@@ -1,0 +1,14 @@
+login OK (host gizli) — welcome: 220---------- Welcome to Pure-FTPd [priv
+--- liste: /sutre.store/wp-content/themes/sutre-child
+    . ?B
+    .. ?B
+    .ftpquota 9B
+    assets ?B
+    footer.php 12760B
+    functions.php 95257B
+    header.php 4429B
+    index.php 214B
+    page-templates ?B
+    staging.sutre.store ?B
+    style.css 104975B
+    woocommerce ?B

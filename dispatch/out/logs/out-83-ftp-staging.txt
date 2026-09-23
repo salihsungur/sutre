@@ -1,0 +1,11 @@
+login OK (host gizli) — welcome: 220---------- Welcome to Pure-FTPd [priv
+--- liste (hedef doğrulama): /staging.sutre.store/wp-content/themes/sutre-child
+    mevcut: style.css 104975B
+    mevcut: functions.php 95257B
+[STAGING] PASS 404.php local 3423B sha256=fd9b7018d010daf046bf4a05ea5ea6e32f0db8e8ab0ce46ddc54a8077fb67acb
+[STAGING]      remote 3423B sha256=fd9b7018d010daf046bf4a05ea5ea6e32f0db8e8ab0ce46ddc54a8077fb67acb
+[STAGING] PASS style.css local 108845B sha256=b43e024b31b6941057d88a556fa83638d1875a4014bd128a18e582ddd667c0e5
+[STAGING]      remote 108845B sha256=b43e024b31b6941057d88a556fa83638d1875a4014bd128a18e582ddd667c0e5
+[STAGING] PASS functions.php local 95257B sha256=4fbb134e93b0be30f0e24e65210b8197af5f7efa1e8c1d805e035d7528ec93bf
+[STAGING]      remote 95257B sha256=4fbb134e93b0be30f0e24e65210b8197af5f7efa1e8c1d805e035d7528ec93bf
+[STAGING] RESULT: 3/3 SHA-256 PASS

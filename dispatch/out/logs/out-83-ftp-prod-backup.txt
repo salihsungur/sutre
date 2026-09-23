@@ -1,0 +1,6 @@
+login OK (host gizli) — welcome: 220---------- Welcome to Pure-FTPd [priv
+--- PROD yedek (üzerine yazmadan ÖNCE):
+    ATLANDI 404.php: 550 Can't open /sutre.store/wp-content/themes/sutre-child/404.php: No such file or directory (uzakta yok)
+    YEDEK style.css: 104975B sha256=43326422532504f4e1af0bbe8f2a97e2fe7888074626c1bd512f91a56e0a9f6d
+    YEDEK functions.php: 95257B sha256=20492e8a1d5ecfa69e0bdaea1ee530353fc8cbb7a6974c76d6cf5ed1d53d0841
+    SHA256SUMS yazildi: /Users/salihsungur/dev/sutre/dispatch/out/backups/p83-prod-pre-deploy/SHA256SUMS
