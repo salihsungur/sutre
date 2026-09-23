@@ -1,0 +1,15 @@
+https://sutre.store/
+  HTTP=200 cache=hit etag=W/"6ab3e79c-3d21" payments=1 svg=5 css=ver=3.4.1,ver=3.6.7,ver=3.7.1 fatal=0
+  robots=yok
+https://sutre.store/shop/
+  HTTP=200 cache=hit etag=W/"6ab3e79d-3da5" payments=1 svg=5 css=ver=3.4.1,ver=3.6.7,ver=3.7.1 fatal=0
+  robots=yok
+https://sutre.store/cart/
+  HTTP=200 cache=miss etag=- payments=1 svg=5 css=ver=3.4.1,ver=3.6.8,ver=3.7.1 fatal=0
+  robots=yok
+https://sutre.store/my-account/
+  HTTP=200 cache=miss etag=- payments=1 svg=5 css=ver=3.4.1,ver=3.6.8,ver=3.7.1 fatal=0
+  robots=yok
+https://sutre.store/product/jakarli-sal/
+  HTTP=200 cache=hit etag=W/"6ab3e8ab-6d1b" payments=1 svg=5 css=ver=3.4.1,ver=3.6.7,ver=3.7.1 fatal=0
+  robots=yok

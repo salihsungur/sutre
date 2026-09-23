@@ -1,0 +1,10 @@
+AKSIYON: deploy / staging
+HEDEF: /staging.sutre.store/wp-content/themes/sutre-child/
+  yuklendi: 404.php (4055B)
+  yuklendi: style.css (109400B)
+  yuklendi: functions.php (95257B)
+DOGRULAMA (uzaktan geri indir + SHA-256):
+  PASS 404.php  yerel=edb099cfead17f0ac53e3b8233dde4fc45136dcdc99d90ddc66cb3a597b5a037 uzak=edb099cfead17f0ac53e3b8233dde4fc45136dcdc99d90ddc66cb3a597b5a037 (4055B)
+  PASS style.css  yerel=8baaa3643cb307c75896c92ab4db1918567a50e2da1c2b3e8ba951d06d260b75 uzak=8baaa3643cb307c75896c92ab4db1918567a50e2da1c2b3e8ba951d06d260b75 (109400B)
+  PASS functions.php  yerel=660ef6bf63e43e38329ff76712a86bdbafa0f4b7a8256878d8d232bba0fcbbbb uzak=660ef6bf63e43e38329ff76712a86bdbafa0f4b7a8256878d8d232bba0fcbbbb (95257B)
+SONUC: 3/3 SHA-256 PASS

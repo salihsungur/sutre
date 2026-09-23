@@ -1,0 +1,37 @@
+cookie band: kapatildi
+{
+  "url": "https://sutre.store/404-test-xyz/?v=85a",
+  "httpStatus": 404,
+  "viewport": "390x844",
+  "docHeight": 3132,
+  "overflowX": 0,
+  "main": {
+    "x": 0,
+    "y": 103,
+    "w": 390,
+    "h": 1883
+  },
+  "titleText": "Yeni gelenler",
+  "title": {
+    "x": 129,
+    "y": 664,
+    "w": 132,
+    "h": 29
+  },
+  "linkText": "Tüm koleksiyonu gör",
+  "link": {
+    "x": 118,
+    "y": 703,
+    "w": 154,
+    "h": 22
+  },
+  "sameHeadLine": false,
+  "linkRightOfTitle": false,
+  "cards": 2,
+  "hasFeaturedWord": false,
+  "hasLatestHeading": true,
+  "hasSeeAll": true,
+  "h1Count": 1,
+  "fatal": false
+}
+shot: /Users/salihsungur/dev/sutre/dispatch/out/evidence/out-85-404-production-mobile.png

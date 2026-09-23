@@ -1,0 +1,5 @@
+AKSIYON: backup / prod
+  404.php: 3423B fd9b7018d010... -> yedek
+  style.css: 108845B b43e024b31b6... -> yedek
+  functions.php: 95257B 4fbb134e93b0... -> yedek
+  SHA256SUMS yazildi: /Users/salihsungur/dev/sutre/dispatch/out/backups/p85-prod-pre-deploy
