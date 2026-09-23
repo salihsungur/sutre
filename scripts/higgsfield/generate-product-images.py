@@ -45,15 +45,23 @@ SHOTS = {
 def load_credentials() -> str:
     key = os.environ.get("HF_KEY") or os.environ.get("HF_CREDENTIALS")
     if not key and CRED_FILE.exists():
+        vals: dict[str, str] = {}
         for line in CRED_FILE.read_text(encoding="utf-8").splitlines():
             line = line.strip()
-            if line.startswith("HF_KEY=") and line.partition("=")[2].strip():
-                key = line.partition("=")[2].strip()
-                break
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            vals[k.strip()] = v.strip()
+        key = vals.get("HF_KEY") or vals.get("HF_CREDENTIALS")
+        if not key:
+            api_key = vals.get("HF_API_KEY") or vals.get("HF_API_KEY_ID")
+            api_secret = vals.get("HF_API_SECRET") or vals.get("HF_KEY_SECRET")
+            if api_key and api_secret:
+                key = f"{api_key}:{api_secret}"
     if not key:
         sys.exit(
-            f"HATA: HF kimlik bilgisi yok. {CRED_FILE} içine 'HF_KEY=KEY_ID:KEY_SECRET' yazın "
-            "(veya HF_KEY ortam değişkenini ayarlayın)."
+            f"HATA: Higgsfield kimlik bilgisi yok. {CRED_FILE} içine 'HF_KEY=KEY_ID:KEY_SECRET' yazın "
+            "(ya da HF_API_KEY + HF_API_SECRET satırlarını ayrı ayrı)."
         )
     return key
 
