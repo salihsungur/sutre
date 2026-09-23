@@ -19,12 +19,14 @@
 | Çıktı adı | `<slug>-pamuk-<tip>.png` · tipler: `urun-drape`, `makro-doku`, `model-portre` |
 | Arşiv | denemeler `_deneme/<Renk>*/`, onaylılar `<Renk>/` |
 
-### A2. KESKİNLİK / DOKU NETLİĞİ KURALI (24-09-2026 dersi — sahip onayı)
+### A2. KESKİNLİK / DOKU NETLİĞİ KURALI (24-09-2026 — sahip dersi + DERS 2)
 Sahip dersi: *"gölge kısımlarda motif tamamen kaybolmuş; motifin silikleştiği makro kabul edilemez. Görseller çok yumuşak/plastik olmasın, motiften detay kaybetmesin."*
-Hedef referans: **jakarlı setinin makroları** (2480×3312, tack-sharp, raking ışık, gölgede motif okunur, yüksek mikro-kontrast).
-- **Makro promptta zorunlu:** `tack-sharp, high micro-contrast, raking oblique light from the upper left, strong specular highlights on raised satin threads vs matte ground weave, motif clearly readable even inside the shadowed folds, not soft, not plastic, no smoothing, no haze, no bokeh over the fabric surface`.
-- **Ürün ve portrede zorunlu:** kumaş motifi kıvrımlarda **keskin ve okunur** kalır (yumuşaklaşma/plastikleşme yok).
-- Yasak kelimeler makroda: yalnız `soft/gentle` nitelendirmeleriyle bırakılan kıvrım-gölge anlatımı (gölge "motif yutan" hale gelmemeli).
+Hedef referans görsel: `_deneme/Karamel-motif-test/karamel-MOTIF-TEST2-makro-doku.png` (sahibin onayladığı standart).
+
+**DERS 2 — keskinlik prompt'tan gelmez:** makro promptuna `raking light`, `strong specular highlights`, `pronounced 3D relief` gibi **ışık-doku yorumu** eklemek modeli **dokumayı yeniden tasarlamaya** itti (Gül Kurusu makrosunda motif yapısı değişti → sahip: *"ürünün tasarımını tamamen değiştirmiş"*). Bu nedenle:
+- **Makro promptu sabittir** (onaylı TEST2 metni) — ışık/doku yorumu eklenmez.
+- **Keskinlik yalnızca post-process ile artırılır:** `--upscale-to 2480x3312` (jakarlı setiyle aynı tuval, Lanczos) + `--sharpen` (unsharp mask): **makro 160 · ürün 110 · portre 80**.
+- Ürün ve portrede yalnız "motif kıvrımlarda keskin/okunur kalır, plastik değil" düzeyinde nötr ifade kullanılır; dokuma yapısını yeniden yorumlatan ifade yasak.
 
 ---
 
