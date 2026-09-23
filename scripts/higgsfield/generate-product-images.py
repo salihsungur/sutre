@@ -123,11 +123,12 @@ def main() -> int:
 
     spec = load_prompt_spec(args.prompts)
     prompt, aspect_default, defaults = build_prompt(spec, args.color, args.shot)
+    fileslug = {c["slug"]: c for c in spec["colors"]}[args.color].get("file_slug", args.color)
     aspect = args.aspect or aspect_default
     resolution = args.resolution or defaults.get("resolution", "2k")
     quality = args.quality or defaults.get("quality", "medium")
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    out_name = f"{args.color}-pamuk-{args.shot}.png"
+    out_name = f"{fileslug}-pamuk-{args.shot}.png"
 
     if args.dry_run:
         print("DRY-RUN — API çağrısı yapılmadı")
@@ -181,7 +182,7 @@ def main() -> int:
         url = img.get("url") if isinstance(img, dict) else None
         if not url:
             continue
-        target = args.out_dir / (out_name if i == 0 else f"{args.color}-pamuk-{args.shot}-{i}.png")
+        target = args.out_dir / (out_name if i == 0 else f"{fileslug}-pamuk-{args.shot}-{i}.png")
         urllib.request.urlretrieve(url, target)
         print(f"indirildi: {target}  ({target.stat().st_size} B)")
         post_process(target, args)

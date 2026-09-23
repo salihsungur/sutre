@@ -13,7 +13,8 @@
     "fabric_note": "COZULDU (24-09-2026, sahip onayi): urun malzemesi PAMUK-POLYESTER; dokuma sekli ipek/saten hissi veriyor. Promptlar 'cotton-polyester ... silky satin-finish jacquard weave' yazar — parlak dokuma gorunumu korunur, yanlis 'silk' iddiasi yok. Urun aciklamasi da boyle: malzeme pamuk/polyester, dokuma ipek gibi.",
     "rules_ref": "docs/visual-prompts/prompt-pack-v3-iman-nour.md",
     "reference_lock": "ZORUNLU KURAL (24-09-2026 dersi): prompt'ta desen/motif METINLE TARIF EDILMEZ. Desen tarifi referansi ezer ve model kendi desenini uydurur (barok floral vakasi). Daima 'referanstaki motifi birebir koru, ayni olcek, ayni tekrar' cumlesi kullanilir. Renk/sahne/baglam stili tarif edilebilir; DESEN ASLA.",
-    "sharpness_rule": "24-09-2026 DERS 2: makro promptuna 'raking light / strong specular highlights / pronounced 3D relief' gibi ISIK-DOKU yorumu eklemek modeli DOKUMAYI YENIDEN TASARLAMAYA itiyor (Gul Kurusu makrosunda motif yapisi degisti). Cozum: makro promptu sahibin onayladigi TEST2 metnine sabit; keskinlik yalnizca post-process ile (--upscale-to 2480x3312 --sharpen) artirilir. Prompt dokumaya dokunmaz."
+    "sharpness_rule": "24-09-2026 DERS 2: makro promptuna 'raking light / strong specular highlights / pronounced 3D relief' gibi ISIK-DOKU yorumu eklemek modeli DOKUMAYI YENIDEN TASARLAMAYA itiyor (Gul Kurusu makrosunda motif yapisi degisti). Cozum: makro promptu sahibin onayladigi TEST2 metnine sabit; keskinlik yalnizca post-process ile (--upscale-to 2480x3312 --sharpen) artirilir. Prompt dokumaya dokunmaz.",
+    "naming": "Dosya adi Jakarli setiyle ayni stil: birlesik kucuk harf slug (karamel, gulkurusu, gribej, lacivert, visnecurugu) + '-pamuk-<tip>.png'. CLI --color anahtari tireli kalir (gul-kurusu); cikti adi file_slug kullanir."
   },
   "colors": [
     {
@@ -42,7 +43,8 @@
         "macro_light": "soft directional studio light",
         "macro_atmosphere": "warm serene sophisticated atmosphere",
         "back": "Warm caramel-mocha palette with soft rose undertones"
-      }
+      },
+      "file_slug": "karamel"
     },
     {
       "slug": "gul-kurusu",
@@ -71,7 +73,8 @@
         "macro_light": "soft directional daylight",
         "macro_atmosphere": "airy refined atelier atmosphere",
         "back": "Dusty rose-brown palette with warm sand undertones"
-      }
+      },
+      "file_slug": "gulkurusu"
     },
     {
       "slug": "gri-bej",
@@ -100,7 +103,8 @@
         "macro_light": "soft directional studio light",
         "macro_atmosphere": "modern sophisticated understated atmosphere",
         "back": "Refined greige palette with warm ivory undertones"
-      }
+      },
+      "file_slug": "gribej"
     },
     {
       "slug": "lacivert",
@@ -129,7 +133,8 @@
         "macro_light": "warm directional studio light",
         "macro_atmosphere": "deep, calm, sophisticated atmosphere",
         "back": "Deep navy palette with cool petrol undertones"
-      }
+      },
+      "file_slug": "lacivert"
     },
     {
       "slug": "visne-curugu",
@@ -158,7 +163,8 @@
         "macro_light": "warm directional studio light",
         "macro_atmosphere": "rich intimate sophisticated atmosphere",
         "back": "Deep cherry-burgundy palette with warm gold undertones"
-      }
+      },
+      "file_slug": "visnecurugu"
     }
   ],
   "templates": {
