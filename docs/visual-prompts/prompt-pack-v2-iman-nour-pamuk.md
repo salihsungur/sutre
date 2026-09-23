@@ -16,19 +16,20 @@
 ## HİJAB STİL SABİTİ (insanlı görsellerde — v1 rehberiyle aynı)
 "styled as an elegant modest headscarf: placed high on the crown, fully covering all hair with NO hair visible; KNOTLESS tying — no tight knot under the chin, the fabric wrapped once loosely around the neck creating a soft draped cowl-collar; one long end drapes asymmetrically over one shoulder falling fluidly toward the waist, the other side tucks shorter behind; soft vertical folds over the chest; matte cotton folds fall softly with matte edge shadows (not shiny)"
 
-## RENKLER (klasör adı → prompt karşılığı)
-| Klasör | Prompt rengi |
-|---|---|
-| Açık Bej | light warm beige |
-| Bej | classic warm beige |
-| Karamel | rich caramel |
-| Koyu Bej | deep dark beige / taupe |
-| Siyah | deep matte black |
-| Sütlü Kahve | milk-coffee (soft mocha) |
+## RENKLER (24-09-2026 — sahibin 5 referans fotoğrafından AI ölçümüyle belirlendi)
+| Klasör | Prompt rengi | Referans dosyası | Ölçülen ton |
+|---|---|---|---|
+| Karamel | rich caramel | `ref-karamel.jpeg` | `#815F49` |
+| Gül Kurusu | dusty rose-brown (gul kurusu) | `ref-gul-kurusu.jpeg` | `#A66B4F`–`#B88370` |
+| Gri Bej | soft greige (grey-beige) | `ref-gri-bej.jpeg` | `#BEBDB7` |
+| Lacivert | deep navy blue | `ref-lacivert.jpeg` | `#26344B` |
+| Vişne Çürüğü | deep cherry red (visne curugu) | `ref-visne-curugu.jpeg` | `#AC213C` |
+
+> NOT (24-09-2026): Eski plan listesi (Açık Bej/Bej/Koyu Bej/Siyah/Sütlü Kahve) GERÇEK renklerle uyuşmuyordu; ölçüm sonucu bu 5 renk geçerlidir. Eski boş klasörler `_arsiv-bos-klasorler/` altına alındı (silinmedi). Eşleşme kaydı: `_renk-eslesmesi.json`. Tüm referanslar mat pamuk DEĞİL (fotoğraflar parlak jakar görünümlü) — doku referansı olarak kullanılır, kumaş karakteri prompt'taki "matte cotton, no sheen" ifadesiyle belirlenir.
 
 ## GÖRSELLER (renk başına 3 — arşiv adlandırması)
 Tür adları ve dosya adları: `<renk-slug>-pamuk-urun-drape.png`, `<renk-slug>-pamuk-makro-doku.png`, `<renk-slug>-pamuk-model-portre.png`
-(renk-slug: acik-bej, bej, karamel, koyu-bej, siyah, sutlu-kahve)
+(renk-slug: karamel, gul-kurusu, gri-bej, lacivert, visne-curugu)
 
 ### GÖRSEL 1 — ÜRÜN DRAPE (API: `resolution=2k`, `aspect_ratio=2:3`)
 Professional e-commerce product photography of a premium rectangular cotton scarf measuring 190 cm × 70 cm, in {COLOR}, soft matte woven cotton fabric with a fine natural grain, gently hemmed edges without fringe. The scarf is elegantly folded and draped in a soft flowing arrangement on a clean warm-white seamless studio background. Soft diffused studio lighting from top-left, gentle natural shadow beneath the fabric. Matte surface absorbs light — no shine, no satin sheen. Premium editorial fashion catalog style, ultra sharp fabric texture detail, vertical composition. No props, no text, no watermark, no person.

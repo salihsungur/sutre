@@ -28,12 +28,11 @@ CRED_FILE = pathlib.Path.home() / "Library/Application Support/Hermes/sutre-higg
 MODEL_ID = "xai/grok-imagine-image-2.0"
 
 COLOR_PROMPT = {
-    "acik-bej": "light warm beige",
-    "bej": "classic warm beige",
     "karamel": "rich caramel",
-    "koyu-bej": "deep dark beige / taupe",
-    "siyah": "deep matte black",
-    "sutlu-kahve": "milk-coffee (soft mocha)",
+    "gul-kurusu": "dusty rose-brown (gul kurusu)",
+    "gri-bej": "soft greige (grey-beige)",
+    "lacivert": "deep navy blue",
+    "visne-curugu": "deep cherry red (visne curugu)",
 }
 
 SHOTS = {
