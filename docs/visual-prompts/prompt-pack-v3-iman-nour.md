@@ -75,10 +75,12 @@ Her renk kendi **sahnesini, ışığını, yüzeyini, bağlama stilini, fonunu v
 
 ---
 
-## G. ONAY KAPISI (açık nokta)
-Örnek promptlar **"silk + satin sheen"** diyor. Plan notu ise İman Nour için **"pamuk / mat, satin parlaklık YOK"** diyordu. Bu ikisi çelişir ve **ürün doğruluğu** meselesidir (müşteriye yanlış kumaş izlenimi verilmemeli). Sahip hangisini onaylarsa JSON'daki `fabric` + `sheen` alanları ona göre güncellenir:
-- **(a) İpek/jakar + parlaklık** → mevcut v3 promptları aynen kullanılır.
-- **(b) Pamuk/mat** → `silk` → `cotton`, `satin sheen` → `soft matte finish with no shine`, ve makro/portre cümleleri mat dokuya uyarlanır.
+## G. KUMAŞ KARAKTERİ — ÇÖZÜLDÜ (24-09-2026, sahip onayı)
+Ürün malzemesi **pamuk-polyester**; dokuma şekli **ipek/saten hissi** veriyor. Ürün açıklamasında da böyle yazılıyor ("malzeme pamuk, polyester dokuma şekline ipek").
+→ Promptlar şu kalıbı kullanır: **`cotton-polyester shawl with a silky satin-finish {desen} jacquard weave ... {sheen}`**
+- Parlak/ipeksi dokuma görünümü **korunur** (ürünün görsel gerçeği bu).
+- Yanlış **"silk" (saf ipek) iddiası kullanılmaz** — müşteriye hatalı malzeme izlenimi verilmez.
+- Mat pamuk kuralı (eski plan notu) **geçersiz**.
 
 ---
 
