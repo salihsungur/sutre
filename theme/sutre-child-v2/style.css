@@ -970,11 +970,34 @@ h3, .sv-h3 {
 	margin: 0;
 }
 
+/* P76 — footer ödeme yöntemi logoları (Visa · Mastercard · TROY · PayTR): inline SVG, harici istek yok */
+.sv-footer__payments {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.sv-footer__pay {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #fff;
+	border-radius: 4px;
+	padding: 6px 10px;
+	line-height: 0;
+}
+.sv-footer__pay svg {
+	display: block;
+	height: 18px;
+	width: auto;
+}
+
 /* mobil */
 @media (max-width: 781px) {
 	.sv-footer { padding: 56px 24px 0; }
 	.sv-footer__grid { grid-template-columns: 1fr; gap: 36px; }
 	.sv-footer__bottom { flex-direction: column; gap: 8px; padding: 24px 0; margin-top: 40px; }
+	.sv-footer__payments { justify-content: center; }
 }
 
 
@@ -2059,6 +2082,9 @@ ul.products::after {
 	.sv-footer__col a { padding: 11px 0; font-size: 14px; }
 	.sv-footer__logo { height: 56px; }
 	.sv-footer__bottom { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+	.sv-footer__payments { justify-content: center; gap: 10px; }
+	.sv-footer__pay { padding: 5px 8px; }
+	.sv-footer__pay svg { height: 16px; }
 }
 
 /* ═══ P72 — HEADER YENİDEN DÜZEN (burger + orta logo + drawer) ═══ */
