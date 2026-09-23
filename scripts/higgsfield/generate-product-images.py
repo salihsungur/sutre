@@ -19,6 +19,7 @@ Notlar:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import pathlib
 import re
@@ -26,20 +27,34 @@ import sys
 
 CRED_FILE = pathlib.Path.home() / "Library/Application Support/Hermes/sutre-higgsfield.env"
 MODEL_ID = "xai/grok-imagine-image-2.0"
+DEFAULT_PROMPTS = pathlib.Path(__file__).resolve().parents[2] / "docs/visual-prompts/prompts-iman-nour-v3.json"
 
-COLOR_PROMPT = {
-    "karamel": "rich caramel",
-    "gul-kurusu": "dusty rose-brown (gul kurusu)",
-    "gri-bej": "soft greige (grey-beige)",
-    "lacivert": "deep navy blue",
-    "visne-curugu": "deep cherry red (visne curugu)",
-}
+SHOTS = ("urun-drape", "makro-doku", "model-portre")
 
-SHOTS = {
-    "urun-drape": {"aspect_ratio": "2:3", "resolution": "2k", "heading": "GÖRSEL 1 — ÜRÜN DRAPE"},
-    "makro-doku": {"aspect_ratio": "1:1", "resolution": "2k", "heading": "GÖRSEL 2 — MAKRO DOKU"},
-    "model-portre": {"aspect_ratio": "2:3", "resolution": "2k", "heading": "GÖRSEL 3 — MODEL PORTRE"},
-}
+
+def load_prompt_spec(prompts_path: pathlib.Path) -> dict:
+    spec = json.loads(prompts_path.read_text(encoding="utf-8"))
+    return spec
+
+
+def build_prompt(spec: dict, color_slug: str, shot: str) -> tuple[str, str, dict]:
+    """(prompt, aspect_ratio, defaults) döndürür."""
+    colors = {c["slug"]: c for c in spec["colors"]}
+    if color_slug not in colors:
+        sys.exit(f"HATA: '{color_slug}' renk tanımı yok. Seçenekler: {sorted(colors)}")
+    c = colors[color_slug]
+    tmpl = spec["templates"].get(shot)
+    if not tmpl:
+        sys.exit(f"HATA: '{shot}' şablonu yok. Seçenekler: {sorted(spec['templates'])}")
+    vals = dict(c)
+    vals.update(c.get("portrait", {}))
+    vals["pattern_short"] = c["pattern"]
+    try:
+        prompt = tmpl.format(**vals)
+    except KeyError as e:
+        sys.exit(f"HATA: şablonda eksik alan {e} (renk: {color_slug}).")
+    d = spec.get("_meta", {}).get("defaults", {})
+    return prompt, d.get("aspect_ratio", "3:4"), d
 
 
 def load_credentials() -> str:
@@ -66,32 +81,17 @@ def load_credentials() -> str:
     return key
 
 
-def load_prompt(pack_path: pathlib.Path, shot: str, color: str) -> str:
-    text = pack_path.read_text(encoding="utf-8")
-    heading = SHOTS[shot]["heading"]
-    pattern = re.compile(rf"^###\s+{re.escape(heading)}.*?$", re.MULTILINE)
-    m = pattern.search(text)
-    if not m:
-        sys.exit(f"HATA: prompt paketinde '{heading}' başlığı bulunamadı ({pack_path}).")
-    rest = text[m.end():]
-    nxt = re.search(r"^###\s+", rest, re.MULTILINE)
-    block = rest[: nxt.start()] if nxt else rest
-    # başlık altındaki parantez notunu at, ilk paragrafı al
-    lines = [ln.strip() for ln in block.splitlines() if ln.strip() and not ln.strip().startswith("(")]
-    if not lines:
-        sys.exit(f"HATA: '{heading}' altında prompt metni yok.")
-    prompt = lines[0]
-    return prompt.replace("{COLOR}", COLOR_PROMPT[color])
-
-
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pack", required=True, type=pathlib.Path)
-    ap.add_argument("--color", required=True, choices=sorted(COLOR_PROMPT))
-    ap.add_argument("--shot", required=True, choices=sorted(SHOTS))
+    ap.add_argument("--prompts", type=pathlib.Path, default=DEFAULT_PROMPTS,
+                    help=f"JSON prompt kaynağı (varsayılan: {DEFAULT_PROMPTS})")
+    ap.add_argument("--color", required=True)
+    ap.add_argument("--shot", required=True, choices=list(SHOTS))
     ap.add_argument("--ref", required=True, nargs="+", type=pathlib.Path, help="referans görsel(ler) — ZORUNLU")
     ap.add_argument("--out-dir", required=True, type=pathlib.Path)
-    ap.add_argument("--quality", default="medium", choices=["low", "medium"])
+    ap.add_argument("--quality", default=None, choices=["low", "medium"])
+    ap.add_argument("--resolution", default=None, choices=["1k", "2k"])
+    ap.add_argument("--aspect", default=None, help="geçersiz kıl (varsayılan: JSON'daki değer)")
     ap.add_argument("--dry-run", action="store_true", help="API çağrısı yapmadan prompt/parametreleri yazdır")
     args = ap.parse_args()
 
@@ -99,15 +99,18 @@ def main() -> int:
         if not ref.exists():
             sys.exit(f"HATA: referans bulunamadı: {ref}")
 
-    prompt = load_prompt(args.pack, args.shot, args.color)
-    shot = SHOTS[args.shot]
+    spec = load_prompt_spec(args.prompts)
+    prompt, aspect_default, defaults = build_prompt(spec, args.color, args.shot)
+    aspect = args.aspect or aspect_default
+    resolution = args.resolution or defaults.get("resolution", "2k")
+    quality = args.quality or defaults.get("quality", "medium")
     args.out_dir.mkdir(parents=True, exist_ok=True)
     out_name = f"{args.color}-pamuk-{args.shot}.png"
 
     if args.dry_run:
         print("DRY-RUN — API çağrısı yapılmadı")
         print(f"model      : {MODEL_ID}")
-        print(f"aspect     : {shot['aspect_ratio']}  resolution: {shot['resolution']}  quality: {args.quality}")
+        print(f"aspect     : {aspect}  resolution: {resolution}  quality: {quality}")
         print(f"referans   : {[str(r) for r in args.ref]}")
         print(f"çıktı      : {args.out_dir / out_name}")
         print(f"prompt     :\n{prompt}")
@@ -126,9 +129,9 @@ def main() -> int:
         arguments={
             "prompt": prompt,
             "image_urls": urls,
-            "quality": args.quality,
-            "resolution": shot["resolution"],
-            "aspect_ratio": shot["aspect_ratio"],
+            "quality": quality,
+            "resolution": resolution,
+            "aspect_ratio": aspect,
         },
     )
 
