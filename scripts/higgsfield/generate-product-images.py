@@ -81,6 +81,23 @@ def load_credentials() -> str:
     return key
 
 
+def post_process(path: pathlib.Path, args) -> None:
+    """İsteğe bağlı: jakarlı setiyle aynı tuval + hafif unsharp mask (keskinlik)."""
+    if not args.upscale_to and not args.sharpen:
+        return
+    from PIL import Image, ImageFilter
+
+    img = Image.open(path).convert("RGB")
+    before = img.size
+    if args.upscale_to:
+        w, h = (int(x) for x in args.upscale_to.lower().split("x"))
+        img = img.resize((w, h), Image.LANCZOS)
+    if args.sharpen:
+        img = img.filter(ImageFilter.UnsharpMask(radius=2.0, percent=int(args.sharpen), threshold=3))
+    img.save(path, "PNG")
+    print(f"post: {before[0]}x{before[1]} → {img.size[0]}x{img.size[1]}  (sharpen={args.sharpen or 'kapalı'})")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompts", type=pathlib.Path, default=DEFAULT_PROMPTS,
@@ -92,6 +109,8 @@ def main() -> int:
     ap.add_argument("--quality", default=None, choices=["low", "medium"])
     ap.add_argument("--resolution", default=None, choices=["1k", "2k"])
     ap.add_argument("--aspect", default=None, help="geçersiz kıl (varsayılan: JSON'daki değer)")
+    ap.add_argument("--upscale-to", default=None, help="ör. 2480x3312 (jakarlı setiyle aynı tuval)")
+    ap.add_argument("--sharpen", type=float, default=0.0, help="unsharp mask yüzdesi (ör. 110)")
     ap.add_argument("--dry-run", action="store_true", help="API çağrısı yapmadan prompt/parametreleri yazdır")
     args = ap.parse_args()
 
@@ -154,6 +173,7 @@ def main() -> int:
         target = args.out_dir / (out_name if i == 0 else f"{args.color}-pamuk-{args.shot}-{i}.png")
         urllib.request.urlretrieve(url, target)
         print(f"indirildi: {target}  ({target.stat().st_size} B)")
+        post_process(target, args)
 
     print("TAMAM")
     return 0

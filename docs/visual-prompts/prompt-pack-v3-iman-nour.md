@@ -11,12 +11,20 @@
 |---|---|
 | Model | `xai/grok-imagine-image-2.0` (Higgsfield API) |
 | Oran | **3:4 (dikey)** — üç görsel tipinde de. Sahibin kuralı; 2:3 DEĞİL |
-| Çözünürlük | `2k` |
-| Kalite | `medium` |
+| Çözünürlük / kalite | `2k` / `quality=medium` (API'de üst sınır) |
+| Tuval (post) | `--upscale-to 2480x3312` → **jakarlı setiyle birebir aynı tuval** (Lanczos) |
+| Keskinleştirme (post) | `--sharpen`: **makro 160 · ürün 110 · portre 80** (unsharp mask; jakarlı setinin keskinlik seviyesi) |
 | Referans | **ZORUNLU** (`image_urls`) — ürünün gerçek fotoğrafı; referanssız üretim yasak |
 | Ürün ölçüsü | **190cm × 70cm** her prompt'ta yazılır |
 | Çıktı adı | `<slug>-pamuk-<tip>.png` · tipler: `urun-drape`, `makro-doku`, `model-portre` |
-| Arşiv | denemeler `_deneme/<Renk>/`, onaylılar `<Renk>/` |
+| Arşiv | denemeler `_deneme/<Renk>*/`, onaylılar `<Renk>/` |
+
+### A2. KESKİNLİK / DOKU NETLİĞİ KURALI (24-09-2026 dersi — sahip onayı)
+Sahip dersi: *"gölge kısımlarda motif tamamen kaybolmuş; motifin silikleştiği makro kabul edilemez. Görseller çok yumuşak/plastik olmasın, motiften detay kaybetmesin."*
+Hedef referans: **jakarlı setinin makroları** (2480×3312, tack-sharp, raking ışık, gölgede motif okunur, yüksek mikro-kontrast).
+- **Makro promptta zorunlu:** `tack-sharp, high micro-contrast, raking oblique light from the upper left, strong specular highlights on raised satin threads vs matte ground weave, motif clearly readable even inside the shadowed folds, not soft, not plastic, no smoothing, no haze, no bokeh over the fabric surface`.
+- **Ürün ve portrede zorunlu:** kumaş motifi kıvrımlarda **keskin ve okunur** kalır (yumuşaklaşma/plastikleşme yok).
+- Yasak kelimeler makroda: yalnız `soft/gentle` nitelendirmeleriyle bırakılan kıvrım-gölge anlatımı (gölge "motif yutan" hale gelmemeli).
 
 ---
 

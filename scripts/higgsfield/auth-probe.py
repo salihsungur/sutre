@@ -46,12 +46,19 @@ def load_value() -> str:
 
 
 def call(headers: dict[str, str]) -> tuple[int | None, str]:
-    req = urllib.request.Request(PROBE, headers=headers, method="GET")
+    base = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/140.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    merged = {**base, **headers}
+    req = urllib.request.Request(PROBE, headers=merged, method="GET")
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
-            return r.status, r.read(200).decode("utf-8", "replace")
+            return r.status, r.read(300).decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
-        return e.code, e.read(200).decode("utf-8", "replace")
+        return e.code, e.read(300).decode("utf-8", "replace")
     except Exception as e:  # ağ hatası
         return None, f"{type(e).__name__}: {e}"
 
@@ -64,6 +71,8 @@ def main() -> int:
     print(f"prob uc noktasi: {PROBE}\n")
 
     attempts: list[tuple[str, dict[str, str]]] = []
+    # KONTROL: sahte kimlik — bununla da aynı kod dönerse, kod kimlikle ilgili DEĞİL (WAF/engel)
+    attempts.append(("KONTROL: sahte kimlik", {"Authorization": "Key invalid-key:invalid-secret"}))
     if has_pair:
         kid, _, sec = val.partition(":")
         attempts += [
@@ -80,24 +89,33 @@ def main() -> int:
         ]
 
     ok = False
+    control_code = None
     for label, headers in attempts:
         code, body = call(headers)
+        if label.startswith("KONTROL"):
+            control_code = code
         note = ""
         if code == 401:
             note = "→ kimlik REDDEDİLDİ"
-        elif code is not None and code != 401:
-            note = "→ kimlik KABUL (uç nokta kaydı yok)"
-            ok = True
+        elif code is not None:
+            note = "→ 401 dışı yanıt"
         else:
             note = f"→ ağ hatası ({body[:80]})"
         print(f"  {label:38s} HTTP {code}  {note}")
-        if code is not None and code not in (401, 403):
+        if body:
             try:
-                print(f"     yanıt: {json.dumps(json.loads(body))[:120]}")
+                print(f"     yanıt: {json.dumps(json.loads(body), ensure_ascii=False)[:150]}")
             except Exception:
-                pass
+                print(f"     yanıt(metin): {body[:150]}")
 
-    print("\nSONUÇ:", "çalışan bir şema bulundu ✓" if ok else "hiçbir şema kabul edilmedi ✗")
+    # yorum: kontrol denemesiyle aynı kod → kimlik değerlendirmesi YAPILAMAZ
+    print()
+    if control_code is not None and control_code != 401:
+        print(f"UYARI: sahte kimlik de HTTP {control_code} döndü → {control_code} kimlikle ilgili değil "
+              "(WAF/erişim engeli). Bu prob kredi doğrulaması YAPAMAZ; gerçek bir çağrı denemesi gerekir.")
+        return 2
+    ok = not any(c is None for c, _ in [(call(h)[0], "") for _, h in attempts])
+    print("SONUÇ:", "kimlik şeması doğrulandı ✓" if ok else "kimlik reddedildi ✗")
     return 0 if ok else 1
 
 
