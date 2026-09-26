@@ -44,7 +44,27 @@ Kopya değil bağ: `07-operasyon/` boyutu 0B; drift yok.
 
 ## 4. COMMIT / PUSH
 
-(commit + HEAD==origin aşağıda)
+```
+staged: AGENTS.md · dispatch/out/out-99-sop-kaydi.md · docs/operations/SOP-siparis-yasal-dongu.md
+commit 7a83b5a  docs(operations): satis & yasal islem dongusu SOP'u verbatim eklendi
+push : 773cfe6..7a83b5a  main -> main   (origin: github-sutre)
+
+git rev-parse HEAD origin/main:
+7a83b5aa0aa9b11bda2613064e25782db7c1801c   HEAD
+7a83b5aa0aa9b11bda2613064e25782db7c1801c   origin/main     → EŞİT
+```
+
+Commit içi blob doğrulaması: `git show HEAD:docs/operations/SOP-siparis-yasal-dongu.md | shasum -a 256` = `86420ca7…` (kaynakla birebir).
+
+Son `git status --porcelain` (benim kapsamım TEMİZ):
+```
+ M dispatch/out/logs/run-pack-98.log      (başka paket — kapsam dışı)
+?? dispatch/out/logs/run-pack-100.log     (başka paket — kapsam dışı)
+?? dispatch/out/logs/run-pack-99.log      (koşu logu — kapsam dışı)
+?? dispatch/pack-100-instagram-bio.md     (başka paket — kapsam dışı)
+?? dispatch/pack-99-sop-kaydi.md          (orkestratör paket dosyası — rol sınırı dışı)
+```
+Kalan izler başka paketlerin/orkestratörün dosyalarıdır; rol sınırı gereği DOKUNULMADI. Bu paketin ürettiği üç dosyanın tümü commit'lendi → kapsam temiz.
 
 ## 5. DURDURULDU / YAPILAMADI
 
