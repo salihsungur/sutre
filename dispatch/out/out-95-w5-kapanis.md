@@ -14,7 +14,7 @@ $ ls ~/Desktop | grep -iE 'sutre|p2[789]|promptun|referans|İman|Jakarlı'  → 
 $ ls ~/*.png ~/*.txt 2>/dev/null                                          →  (yok)
 ```
 
-Masaüstü kökündeki diğer öğeler (aivideoeditor, geleceginbilimi, `client_secret_*.json`…) başka projelere ait → **DOKUNULMADI**.
+Diğer masaüstü öğeleri başka projelere ait → **DOKUNULMADI**.
 
 ## 2. Eski repo kopyası arşive (silme yok)
 
@@ -33,7 +33,7 @@ lrwxr-xr-x@  1 salihsungur staff    40 Sep 26 12:50 sutre -> /Users/salihsungur/
 
 ```text
 chore(dispatch): pack-90..95 + raporlar + loglar arsivlendi   ce34ae6..0a9c57c   (18 dosya)
-docs(agents): SUTRE ev duzeni W1-W5 kaydi + yol guncellemeleri 0a9c57c..dca0444  (AGENTS.md + README-POINTER.md)
+docs(agents): SUTRE ev duzeni W1-W5 kaydi + yol guncellemeleri 0a9c57c..dca0444
 $ git rev-parse HEAD origin/main  →  dca04444… / dca04444…   EŞİT
 $ git status --porcelain          →  (boş)
 ```
@@ -41,8 +41,8 @@ $ git status --porcelain          →  (boş)
 ## 4. Güncellenen dokümanlar
 
 - `~/Desktop/SUTRE/README.md`: tam ağaç (00–99 + alt klasörler), `01-repo` symlink notu, `04-hesaplar` 700/600 kuralı, "sistem yolları: `00-proje/POINTER-SISTEM.md`", `du -sh` tablosu.
-- `00-proje/POINTER-SISTEM.md`: repo **taşındı/symlink**, `06-arsiv/repo-eski-kopya-20260926`, secret'lar `04-hesaplar` + iCloud kuralı, taşınmaz sistem katmanı (19 profil, OpenViking, SSH, venv, `.env` symlink).
-- `01-repo/README-POINTER.md`: "bu klasörün kendisi repodur; `~/dev/sutre` buraya symlink" (repoya ilk kez alındı).
+- `00-proje/POINTER-SISTEM.md`: repo **taşındı/symlink**, `06-arsiv/repo-eski-kopya-20260926`, secret'lar `04-hesaplar` + iCloud kuralı, taşınmaz sistem katmanı tablosu.
+- `01-repo/README-POINTER.md`: "bu klasörün kendisi repodur; `~/dev/sutre` buraya symlink".
 
 ## 5. AGENTS.md değişiklikleri
 
@@ -54,10 +54,10 @@ $ git status --porcelain          →  (boş)
 | §7 görsel tur | `…/Site Görselleri/` → `…/02-icerik/Site Görselleri/` |
 | §7 İman Nour | `Ürün Fotoğrafları`→`02-icerik/…`; `_web/`→`03-yayin/İman-Nour-web/`; `_deneme/`→`06-arsiv/İman-Nour-deneme/` (4 yer) |
 | §8 kayıt defteri | **Yeni madde:** "SUTRE ev düzeni (26-09-2026, W1–W5)…" |
-| §6 KURAL | **Teyit: W4 satırı zaten var → tekrar eklenmedi** |
+| §6 KURAL | **W4 satırı zaten var → tekrar eklenmedi** |
 
 Stale ref kontrolü: `_deneme/`=0 · `` `_web/ ``=0 · `8-Sozlesme-Promptlari`=0.
-**Sapma:** AGENTS.md'de **§9 bölümü yok** (§0–§8 var; kayıt defteri = §8) → madde §8'e eklendi.
+**Sapma:** AGENTS.md'de **§9 yok** (§0–§8; kayıt defteri §8) → madde §8'e eklendi.
 
 ## 6. 12 kontrol — ham çıktı
 
@@ -78,12 +78,12 @@ Stale ref kontrolü: `_deneme/`=0 · `` `_web/ ``=0 · `8-Sozlesme-Promptlari`=0
 
 ## 7. Ağaç + boyut
 
-Tam ağaç ve `du` tablosu **`~/Desktop/SUTRE/README.md`**'de; ham çıktı kontrol 9/10'da.
+Tam ağaç + `du` tablosu: **`~/Desktop/SUTRE/README.md`** (ham çıktı: kontrol 9/10).
 
 ## 8. Geri alma
 
 - Arşiv: `mv 06-arsiv/repo-eski-kopya-20260926 ~/dev/sutre-eski-20260926`
-- Silinen dizin: yalnız `.DS_Store` içeriyordu (veri kaybı yok).
+- Silinen dizin: yalnız `.DS_Store` (veri kaybı yok).
 - Commit'ler: `git revert dca0444 0a9c57c`.
 - Canlı site/FTP: **yazım yapılmadı** → deploysuz tur.
 
@@ -92,4 +92,5 @@ Tam ağaç ve `du` tablosu **`~/Desktop/SUTRE/README.md`**'de; ham çıktı kont
 - §9 kayıt defteri bölümü dosyada yok → madde §8'e yazıldı.
 - `~/dev`'de `flutter/` de var (SUTRE dışı, dokunulmadı).
 - `04-hesaplar` `.env` symlink'leri `lrwxr-xr-x` görünür (symlink izni hedefe değil bağa aittir).
+- **Eşzamanlı süreç:** commit'lerimden sonra `dispatch/pack-96-paytr-logo.md` + `dispatch/out/logs/run-pack-96.log` (13:27) untracked belirdi → **kapsam dışı, dokunulmadı**; kontrol 3 (boş status) commit anında geçerliydi.
 - fsck'teki 5 `dangling blob` bilgi çıktısıdır, etkisi yok.
