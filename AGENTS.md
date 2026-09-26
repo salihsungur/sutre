@@ -22,6 +22,8 @@ Teknik sözleşme: `WOOCOMMERCE_PAYTR_AI_PROJE_ANAYASASI.md` (repo kökü) — H
 
 ## 1. Depo Haritası
 
+> **Repo fiziksel konumu:** `~/Desktop/SUTRE/01-repo/` — `~/dev/sutre` bu yola **symlink**'tir (2026-09-26, W2 dalgası). Tüm yollar symlink üzerinden geçerli; eski kopya `~/dev/sutre-eski-20260926` doğrulama sonrası silinir.
+
 ```text
 sutre/                                 TEK PROJE DEPOSU (monorepo DEĞİL — tek site, tek tema)
 ├── theme/sutre-child-v2/            AKTİF TEMA KAYNAĞI (sunucuda iki sitede de sutre-child)
@@ -113,6 +115,8 @@ staging.sutre.store/
 
 ## 3. Ortam ve Deploy Kanalları
 
+> **Repo fiziksel konumu:** `~/Desktop/SUTRE/01-repo/` — `~/dev/sutre` bu yola **symlink**'tir (2026-09-26, W2 dalgası). Tüm yollar symlink üzerinden geçerli; eski kopya `~/dev/sutre-eski-20260926` doğrulama sonrası silinir.
+
 - **Hosting:** paylaşımlı cPanel (`mt-charon.guzelhosting.com`); docroot'lar: production `/home/spokenla/sutre.store/` (canlı), staging `/home/spokenla/staging.sutre.store/` (dev/test). SSH YOK. Production DB: `spokenla_sutre_prod` (şifre `~/Desktop/sutre-db-prod.txt`).
 - **Deploy kanal A (ana):** ajan git push → kullanıcı cPanel Terminal'de `git pull` + `cp -a` ile themes/ altına kopyalar. (rsync yok → `cp -a`, önce `.bak` yedek.)
 - **Deploy kanal B (ajan doğrudan):** ftplib ile FTP (`sutredeploy@spokenlab.com.tr`, 89.252.180.243; bilgiler `~/Desktop/ftpinfo.txt`), upload sonrası SHA-256/MD5 karşılaştırma ZORUNLU; ardından canlı doğrulama:
@@ -155,6 +159,8 @@ staging.sutre.store/
 8. Genel yerleşim/konum korunur; yalnız görsel/UX iyileştirilir (anayasa §9 UI politikası).
 
 ## 6. Hızlı Komut Özeti
+
+> **Repo fiziksel konumu:** `~/Desktop/SUTRE/01-repo/` — `~/dev/sutre` bu yola **symlink**'tir (2026-09-26, W2 dalgası). Tüm yollar symlink üzerinden geçerli; eski kopya `~/dev/sutre-eski-20260926` doğrulama sonrası silinir.
 
 ```bash
 # Depo (host — local Hermes)
