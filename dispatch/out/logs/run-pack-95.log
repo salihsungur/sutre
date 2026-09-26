@@ -1,0 +1,22 @@
+PACK-95 (W5) tamamlandı. Tüm adımlar gerçek çıktıyla doğrulandı.
+
+DURUM
+- Temizlik: `~/Desktop/SUTRE/Ürün Fotoğrafları/` içinde yalnız `.DS_Store` vardı → dizin silindi (`No such file or directory`). Başka silme YOK. `~/Desktop` grep → yalnız `SUTRE`; `~/` kökünde png/txt artığı yok. Diğer masaüstü öğelerine (aivideoeditor, geleceginbilimi, client_secret…​) dokunulmadı.
+- Arşiv: `~/dev/sutre-eski-20260926` → `~/Desktop/SUTRE/06-arsiv/repo-eski-kopya-20260926` (mv, silme yok, 130M). `ls -la ~/dev` → yalnız `flutter/` + `sutre -> /Users/salihsungur/Desktop/SUTRE/01-repo`.
+- Repo kaydı: 3 commit push edildi — `0a9c57c` (pack-89..95 + out-90..93 + run-pack-89..95.log, 18 dosya), `dca0444` (AGENTS.md + README-POINTER.md), `21cca36`/`3eea288` (out-95 raporu). Son `git status --porcelain` commit'imden sonra yalnız eşzamanlı başka bir paketin dosyalarını gösteriyor.
+- Dokümanlar: `README.md` (tam ağaç + `du` tablosu), `00-proje/POINTER-SISTEM.md` (repo taşındı/symlink, arşiv kaydı, 04-hesaplar kuralı), `01-repo/README-POINTER.md` (klasörün kendisi repo).
+- AGENTS.md: 3 blokquote "silinir" → "arşivlendi (silinmedi)"; §4 `_deneme/…` ve §7 `8-Sozlesme-Promptlari` / `Site Görselleri` / `Ürün Fotoğrafları` / `_web` / `_deneme` yolları gerçek konumlara çekildi (stale ref: 0); §8 kayıt defterine W1–W5 maddesi eklendi; §6 KURAL satırı **teyit edildi, tekrar eklenmedi**.
+
+12 KONTROL (ham çıktıların özeti; tamamı raporda)
+1 `git fsck` exit=0, yalnız 5 dangling blob (hata yok) · 2 HEAD==origin/main (son: `3eea288…`==`3eea288…`) · 3 status boş (commit anında) · 4 `check-live.sh`: `/` HTTP=200 payments=1 fatal=0, `/404-test-xyz/` HTTP=404 payments=1 fatal=0 · 5 `ftp-tool.py ls` tema dosyaları listelendi (404.php…style.css 109400) · 6 symlink üzerinden `git log -1` → `dca0444` · 7 `~/dev` yalnız `sutre` symlink (+önceden var olan `flutter`) · 8 `04-hesaplar` 700, dosyalar 600 · 9 23 dizinli temiz ağaç · 10 toplam 1.2G (01-repo 130M, 02-icerik 597M, 06-arsiv 487M…) · 11 Desktop'ta yalnız `SUTRE` · 12 coder profili sağlam (PACK-85/83 oturumları).
+
+SAPMALAR / YAPILAMADI
+- AGENTS.md'de **§9 numaralı bölüm yok** (§0–§8 var; kayıt defteri §8) → madde §8'e eklendi.
+- Commit'lerimden sonra **başka bir paketin** işi belirdi: `dispatch/pack-96-paytr-logo.md` + `dispatch/out/logs/run-pack-96.log` (13:27) — kapsam dışı, dokunulmadı; bu yüzden son status çıktısı tamamen boş değil.
+- Canlı siteye/FTP'ye hiç yazılmadı; deploy yok.
+
+Geri alma: `mv ~/Desktop/SUTRE/06-arsiv/repo-eski-kopya-20260926 ~/dev/sutre-eski-20260926`; commit'ler `git revert`; silinen dizin yalnız `.DS_Store` içeriyordu.
+
+Rapor: `/Users/salihsungur/Desktop/SUTRE/01-repo/dispatch/out/out-95-w5-kapanis.md` (699 kelime).
+
+session_id: 20260926_132313_11b01d

@@ -1,0 +1,22 @@
+PACK-97 tamamlandı. Rol sınırı korundu: yalnız `03-yayin/paytr-logo-*` + `05-raporlar/paytr-logo-preview.png` + rapor dosyası yazıldı; commit yok, FTP yok.
+
+Üretilen 4 dosya (hepsi sips ile 300×100 · png, önizleme 988×374 · png):
+
+1. /Users/salihsungur/Desktop/SUTRE/03-yayin/paytr-logo-300x100.png — Bone #F5F2EC zemin, Ink wordmark (6.4K)
+2. /Users/salihsungur/Desktop/SUTRE/03-yayin/paytr-logo-300x100-seffaf.png — saydam zemin, Ink yazı (4.4K)
+3. /Users/salihsungur/Desktop/SUTRE/03-yayin/paytr-logo-300x100-seffaf-beyaz-yazi.png — YENİ: saydam zemin, Bone #F5F2EC yazı (4.4K)
+4. /Users/salihsungur/Desktop/SUTRE/05-raporlar/paytr-logo-preview.png — 6 panel: 3 dosya × 2 zemin (Bone + Marine), altında dosya adı + kullanım notu (45K)
+
+Yerleşim (pack-96 → pack-97): wordmark 295×46 x=2 → 276×43 x=12 · y=28. Ölçülen ink bbox (12,28,288,71), yatay pay 12/12 (≥10 ✓), ink yüksekliği 43 px (≥34 ✓), oran 6.418605 vs kaynak 6.412607 → sapma %0,09352 (<%0,1 ✓). Beyaz-yazı dosyasında alfa>0 olan 3207 pikselin tamamı RGB (245,242,236) — Bone sapması 0; alfa zemini 0 (4 köşe 0). Kontrast: Ink/Bone 15.58:1 · Ink/Marine 1.45:1 · Bone/Marine 10.72:1.
+
+Yol boyunca yakalanan iki hata:
+- Önizlemenin ilk sürümünde Marine satırının başlık ve dosya-adı satırları beyaz yazıyla beyaz sayfa zeminine basılmış, görünmez kalmıştı. Satır etiketleri kendi renginde çipe, tüm alt yazılar koyuya çevrildi; piksel satır taraması (y 351–359 ve 364–370 dolu) ve görsel okuma ile teyit edildi.
+- Raporda önizleme boyutunu 40K yazmıştım, son ölçüm 45K → düzeltildi.
+
+Rapor (276 kelime): /Users/salihsungur/Desktop/SUTRE/01-repo/dispatch/out/out-97-paytr-logo-ince-ayar.md
+
+YAPILAMADI notları raporda: "4 varyant" istendi ama dosya 3 → 6 panel kuruldu; oran sapması eşiğin altında fakat sınıra yakın (276×43 tam sayı ölçüde en iyi seçenek); PayTR paneline yükleme yapılmadı (sahip adımı); AGENTS.md işlenmedi (paket §3 rol sınırı).
+
+§0.6 gereği: görsel değişiklik onayı sizde — önizlemeyi açıp bakabilirsiniz, revize isterseniz uygularım. Panel görünümü paketin istediğinden farklıysa (örn. tek satır 4 varyant isteniyorsa) söyleyin, yalnız önizleme dosyasını yeniden üretirim.
+
+session_id: 20260926_134738_26f6bc
