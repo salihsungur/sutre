@@ -1,0 +1,42 @@
+PACK-93 (W3) tamamlandı. Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-93-w3-kategorizasyon.md (604 kelime, ≤700).
+
+YÖNTEM
+kaynak+hedef aynı birim (df → /dev/disk3s5, ~/Desktop ve ~/Downloads dahil) → mv = os.rename, anlık; kopya yok, silme yok. Her taşımada öncesi/sonrası dosya sayısı + byte karşılaştırıldı → 43/43 OK.
+
+TAŞIMA (30 öğe, 6 partide; 15 satır geri alma komutu bash -n ile sözdizimi doğrulandı)
+  A1  Desktop/sutre_eski_dosyalar            → 06-arsiv/eski-dosyalar                10 · 9.8M
+  A2  Desktop/Referanslar                    → 02-icerik/Referanslar                  3 · 18.9M
+  A3  Desktop 8×p2{7,8,9} png + home 13 png  → 05-raporlar/ekran-goruntuleri         21 · 9.4M
+  A4  5× *_promptun_çıktısı.txt              → 05-raporlar/prompt-ciktilari           5 · 46K
+  A5  3× yasal metin                         → 00-proje/yasal-metinler                3 · 19K
+  A6  ~/Downloads/sutrescarfs.rar            → 06-arsiv/                              1 · 8.6M
+  C1  SUTRE/Logo ve Marka                    → 02-icerik/Logo ve Marka                9 · 16M
+  C2  SUTRE/Site Görselleri                  → 02-icerik/Site Görselleri              3 · 22M
+  C3  /Ürün Fotoğrafları/İman Nour           → 02-icerik/Ürün Fotoğrafları/İman Nour  67→22 · 582M→205M
+  C4  /Ürün Fotoğrafları/Jakarlı             → 02-icerik/Ürün Fotoğrafları/Jakarlı   32 · 334M
+  C5  İman Nour/_web                         → 03-yayin/İman-Nour-web                16 · 39.6M
+  C6  İman Nour/_deneme                      → 06-arsiv/İman-Nour-deneme             29 · 337.5M
+  C7  İman Nour/_arsiv-bos-klasorler         → 06-arsiv/bos-klasorler                 0 · 0
+  C8  SUTRE/Dev Arşiv                        → 06-arsiv/dev-arsiv                     9 · 1.0M
+  C9  SUTRE/8-Sozlesme-Promptlari            → 00-proje/sozlesme-promptlari           5 · 12K
+
+DOĞRULAMA (15/15 hedef OK, ALL TARGETS MATCH: True)
+Boyut korunumu: SUTRE 1.122.582.498 B → 1.171.623.642 B = +49.041.144 B (+43 dosya); beklenen giriş toplamı 10.323.264+19.785.150+8.104.203+46.409+19.351+9.029.357+1.733.410 = 49.041.144 B → birebir. İç taşımalar net sıfır. du -sh: 1070.6MB → 1.1G. Kategoriler: 02-icerik 597M, 06-arsiv 357M, 03-yayin 40M, 05-raporlar 9.5M, 00-proje 48K.
+
+_renk-eslesmesi.json
+5 web_jpeg satırı _web/… → 03-yayin/İman-Nour-web/…; ÖNCE `"_web/Karamel/karamel-pamuk-<tip>.jpg"` → SONRA `"03-yayin/İman-Nour-web/Karamel/karamel-pamuk-<tip>.jpg"` (5 renk). JSON parse OK, 1987→2082 B. Orijinal kopya SUTRE ağacı DIŞINDA (scratch) tutuldu — içeriğe çöp dosya bırakılmadı; geri alma cp komutu raporda.
+
+~/Desktop KÖK TARAMASI
+`ls ~/Desktop | grep -iE 'sutre|p2[789]|promptun|referans'` → yalnız `SUTRE` ve `sutre-db-prod.txt` (secret, W4 kapsamı). Geniş tarama (bilgilendirme|kullanım|TİCARİ|*.png|prompt) → boş. `ls ~/*.png` → yok. Home kökünde hiç png kalmadı.
+
+REPO DOKUNULMADI
+HEAD 24a64af sabit, git diff --stat boş (0 değişmiş izlenen dosya). Untracked 14 → 15; tek yeni kayıt bu raporun kendisi. W3 hiçbir repo dosyasını okumadı/değiştirdi.
+
+YAPILAMADI
+1. SUTRE/Ürün Fotoğrafları/ silinemedi — içinde yalnız .DS_Store (6148 B) kaldı; kanıt: rmdir → "Directory not empty" (exit 1). "Silme YASAK" gereği silmedim. Sahip komutu: rm "$S/Ürün Fotoğrafları/.DS_Store" && rmdir "$S/Ürün Fotoğrafları" (S=$HOME/Desktop/SUTRE)
+2. 04-hesaplar içeriği taşınmadı — paket gereği W4.
+3. JSON'daki arsiv_png/referans yolları güncellenmedi — talimat yalnız _web/ yollarını kapsıyordu ve bu satırlar İman Nour klasörüne göre göreli olduğu için hâlâ geçerli.
+
+Bilinçli boş dizinler (yeni boş dizin yok): 06-arsiv/bos-klasorler/{Açık Bej,Bej,Koyu Bej,Siyah,Sütlü Kahve}, 04-hesaplar (W1), 01-repo/…/assets/img/{logo,site} (repo, W3 dışı, önceden vardı).
+
+session_id: 20260926_125556_90f820

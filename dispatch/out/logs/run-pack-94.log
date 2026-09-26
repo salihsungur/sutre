@@ -1,0 +1,9 @@
+PACK-94 (W4) işi bitti ve doğrulandı. Özet:
+
+- 3 secret `~/Desktop/SUTRE/04-hesaplar/`'a taşındı (700/600, mv — kopya yok); Desktop kökü temiz.
+- `.env`'ler symlink, SSH anahtarları yalnız README işaretçisi (taşınmadı).
+- `ftp-tool.py` CREDS sabiti + AGENTS.md yolları güncellendi, §6 iCloud KURAL satırı eklendi.
+- Kabul kapısı 3/3 PASS; commit `ce34ae6` push edildi, HEAD==origin/main.
+- Rapor: `/Users/salihsungur/Desktop/SUTRE/01-repo/dispatch/out/out-94-w4-secret-tasima.md`
+
+session_id: 20260926_131614_d3ea13

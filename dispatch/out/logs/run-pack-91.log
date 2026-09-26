@@ -1,0 +1,38 @@
+PACK-91 (W1) tamamlandı. Tüm adımlar gerçek komut çıktısıyla doğrulandı; hiçbir mevcut dosya taşınmadı, repo değişmedi, FTP'ye yazılmadı.
+
+1) İSKELET (mkdir EXIT=0)
+   ~/Desktop/SUTRE/ altında: 00-proje, 01-repo, 02-icerik, 03-yayin, 04-hesaplar, 05-raporlar, 06-arsiv, 99-gecici
+   Mevcut 5 içerik klasörüne (Ürün Fotoğrafları, Logo ve Marka, Site Görselleri, Dev Arşiv, 8-Sozlesme-Promptlari) dokunulmadı.
+
+2) İZİNLER
+   drwx------  04-hesaplar
+   -rw-------  ~/Desktop/ftpinfo.txt (167 B)
+   -rw-------  ~/Desktop/sutre-db-prod.txt (140 B)
+   -rw-------  ~/Desktop/staging-db-yedek-2026-09-22.sql (2.2 MB)
+
+3) GÜVENLİK HİJYENİ
+   Silme öncesi özdeşlik: SHA-256 99f008f350776df7… hem ~/Downloads/sutre hem ~/.ssh/sutre_hosting için aynı.
+   rm ~/Downloads/sutre → EXIT=0; ls: /Users/salihsungur/Downloads/sutre: No such file or directory
+   Anahtarın aslı yerinde: -rw------- ~/.ssh/sutre_hosting (1856 B). ~/Downloads/sutre.pub (public) kaldı.
+   Not: master SSH key dünya-okunur kopyası kaldırıldı; anahtarın aslı yerinde; rotasyon sahibin kararı.
+
+4) TCC / ARAÇ PROBLARI
+   tcc-probe.txt yazıldı + geri okundu (33 B, "TCC probe W1 2026-09-26 12:44:20").
+   ftp-tool.py ls /sutre.store/wp-content/themes/sutre-child/ → dizin listesi geldi (., .., .ftpquota).
+   check-live.sh https://sutre.store/ → HTTP=200 cache=hit fatal=0 payments=1.
+   → Desktop erişimi varken FTP ve canlı kontrol araçları çalışıyor.
+
+5) YAZILAN DOKÜMANLAR
+   ~/Desktop/SUTRE/00-proje/POINTER-SISTEM.md — 335 kelime (tablo: repo, 19 Hermes profili, OpenViking 608 MB, Obsidian vault, araçlar, SSH anahtarları, venv + neden taşınmazlar)
+   ~/Desktop/SUTRE/README.md — 253 kelime (00–99 ne içerir + W2–W5 planı + kimlik dosyaları 04-hesaplar'da 600 notu)
+   ~/Desktop/SUTRE/01-repo/README-POINTER.md — 157 kelime (şimdiki yol ~/dev/sutre, W2 taşıma + symlink, remote git@github-sutre:salihsungur/sutre.git, tek dal main)
+
+6) REPO DURUMU — git -C ~/dev/sutre status --porcelain: yalnız önceki paketlerden kalan untracked dosyalar (pack-89/90/91 paketleri + out/logs + out-90 + bu rapor). Değiştirilmiş/silinen dosya YOK, commit/push YOK.
+
+7) RAPOR: /Users/salihsungur/dev/sutre/dispatch/out/out-91-w1-iskelet-hijyen.md — 400 kelime.
+
+YAPILAMADI: yok. Tek sapma: paket metni "15 Hermes profili" diyor, canlı sayım 19 — POINTER-SISTEM.md'ye 19 yazıldı (profiller alfabetik listelendi).
+
+Rollback yolu: yeni iskelet klasörlerinin silinmesi (içleri boş), izinlerin geri alınması ve ~/Downloads/sutre dosyasının ~/.ssh/sutre_hosting'den kopyalanması tek komutla mümkün; repo ve site tarafında değişiklik olmadığı için geri alınacak sistem durumu yok.
+
+session_id: 20260926_124341_b4cb00

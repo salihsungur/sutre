@@ -1,0 +1,35 @@
+PACK-89 tamam (3 adım, 9 tool çağrısı). Ham kanıtlar:
+
+(A) ftp-tool.py `mv`
+`~/.hermes/tools/ftp-tool.py` — docstring kullanım listesine `ftp-tool.py mv <eski_yol> <yeni_yol>` satırı eklendi; `rm` dalının hemen yanına RNFR+RNTO (ftplib.rename) dalı yazıldı, hata yolu `HATA:` + exit 1. Parola yine `creds()` üzerinden.
+
+Test çıktısı (gerçek taşıma YOK — hedef bilinçli olarak yok):
+  $ python3 ~/.hermes/tools/ftp-tool.py mv /sutre-yok-boyle-yol-89-deneme /tmp/x
+  HATA: yeniden adlandırılamadı: /sutre-yok-boyle-yol-89-deneme -> /tmp/x (550 Sorry, but that file doesn't exist)
+  exit code: 1
+
+FTP'de hiçbir dosya/dizin taşınmadı veya silinmedi; sadece bu tek çağrı yapıldı.
+
+(B) Commit'ler
+- 865a8c0 chore(dispatch): run-pack-88 log kalinti kapatildi (dispatch/out/logs/run-pack-88.log)
+- 1695c79 docs(agents): dispatch arsivi kalici kaydi
+- Push: 96e0701..865a8c0..1695c79 → `git rev-parse HEAD origin/main` ikisi de 1695c792cabf002266f5e007d93e80e5e978dbb5 (eşitlik teyitli).
+
+(C) AGENTS.md §9 (satır 261)
+- **Dispatch arşivi (23-09-2026):** pack-76→88 paketleri + tüm koşu logları + kanıt görselleri repoda kalıcıdır (tam çıktı; `tail` yok).
+
+Not: aynı konuda iki çelişkili satır oluşmasın diye (AGENTS §0.5 tek-kaynak kuralı) mevcut "pack-76→87" satırı güncellendi, ikinci satır eklenmedi.
+
+(D) Son `git status --porcelain` (ham)
+  ?? dispatch/out/logs/run-pack-89.log
+  ?? dispatch/pack-89-kapanis-kisa.md
+
+Bu iki kalıntı bu paketin KENDİ koşu dosyaları: run-pack-89.log koşu sürerken yazılıyor ve prompt dosyası paketle birlikte geldi — pack-88 logu da aynı desenle bir sonraki pakette kapatılmıştı (Adım B'nin varlık nedeni). Rol sınırı gereği (yalnız 88 logu + AGENTS + rapor) bunları commit etmedim; tazeyken commit etmek de anlamsız olurdu çünkü log hâlâ büyümekte.
+
+(E) YAPILAMADI: yok.
+
+Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-89-kapanis.md (2313 B, repoda commit'li)
+
+Kullanıcı adımı yok — canlı site/tema/DB'ye dokunulmadı, LiteSpeed purge gerekmiyor.
+
+session_id: 20260923_193554_ff030a

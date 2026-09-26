@@ -1,0 +1,40 @@
+PACK-90 tamamlandı — READ-ONLY PLAN. Hiçbir dosya taşınmadı, yeniden adlandırılmadı, silinmedi; `git status` yalnız bu paketin ürettiği rapor/log dosyalarını untracked gösteriyor.
+
+Rapor: /Users/salihsungur/dev/sutre/dispatch/out/out-90-sutre-envanter-plan.md
+(913 kelime düz metin + 74 satır zorunlu tablo; §1-§7 tam)
+
+ÖZET BULGULAR
+
+Envanter: 43 öğe, SUTRE ile doğrudan ilgili toplam ~1.13 GB
+  Desktop/SUTRE 956M · repo 130M (.git 29M) · sutre_eski_dosyalar 9.9M · Referanslar 19M · sutrescarfs.rar 8.6M
+Secret nitelikli 9 öğe. Disk: 693 Gi boş → kopyala-doğrula fazlasıyla sığar.
+
+ÜÇ KRİTİK BULGU
+
+1) `~/Downloads/sutre` (1856 B, izin 644) ile `~/.ssh/sutre_hosting` SHA-256 birebir aynı (99f008f3…). Yani özel anahtarın dünya-okunur bir kopyası Downloads'ta. İçerik okunmadı, eşleşme hash ile kanıtlandı. Öneri: kopyayı kaldır + anahtar rotasyonu.
+
+2) iCloud: `~/Desktop` iCloud'a BAĞLI DEĞİL — gerçek dizin (symlink yok), `Mobile Documents/com~apple~CloudDocs` boş, brctl container'larında Desktop/Documents yok. Yani bugün Desktop'a konan secret buluta gitmez; ama Apple ID tarafında "Masaüstü ve Belgeler" sonradan açılırsa sessizce gider. Bu yüzden önerim: secret'lar Desktop ağacının DIŞINDA kalsın (`~/.hermes/secrets/sutre/`, izin 600) + `ftp-tool.py:19` sabiti güncellensin.
+
+3) Repo taşınmasın. `~/dev/sutre` → `~/Desktop/SUTRE/01-repo` olursa kırılanlar: 5 profilin checkpoint projesi (`workdir=/Users/salihsungur/dev/sutre` + saklı dev/inode), 15 profil SOUL.md'deki bağlayıcı `~/dev/sutre/AGENTS.md` referansı, AGENTS.md §3/§6, dispatch pack'lerindeki 9 mutlak Desktop yolu, Desktop'ın TCC koruması ve iCloud açılırsa 130M `.git` senkronu. Symlink path-tabanlı okuyucuları kurtarır ama checkpoint inode eşleşmesini kurtarmaz → yerinde kalsın, `01-repo/README-POINTER.md` yazılsın.
+
+HEDEF YAPI (öneri)
+  ~/Desktop/SUTRE/02-icerik  ← Logo ve Marka, Site Görselleri, Ürün Fotoğrafları/{Jakarlı,İman Nour}, Referanslar, _referans
+  ~/Desktop/SUTRE/03-yayin   ← _web/ (Woo'ya yüklenen 15 JPEG, 40M)
+  ~/Desktop/SUTRE/05-raporlar← Dev Arşiv, p27-p29 png'leri, 5 prompt çıktısı, 8-Sozlesme-Promptlari, yasal txt'ler, 13 home/*.png
+  ~/Desktop/SUTRE/06-arsiv   ← sutre_eski_dosyalar, _deneme (338M), _arsiv-bos-klasorler, sutrescarfs.rar
+  00-proje / 01-repo / 99-gecici → BOŞ KLASÖR AÇILMAZ, yerine POINTER-*.md (boş klasör sahte yapı olur)
+
+BUGÜN KOŞULAN DOĞRULAMA (araçlar taşımadan önce çalışıyor — referans değeri)
+  check-live.sh https://sutre.store/ → HTTP=200 cache=hit payments=1 css=ver=3.4.1,3.6.8,3.7.1 fatal=0
+  ftp-tool.py ls /sutre.store/wp-content/themes/sutre-child/ → dizin listelendi (404.php 4055B, functions.php 95257B, _OLU-ARTIK-staging.sutre.store-20260921 yerinde)
+
+DALGA PLANI (sıra bağımlılığı: W1 → W4 → W2 → W3 → W5)
+  W1 pointer + izin hijyeni (~15 dk, risk yok) · W2 Desktop kök toplama (~20 dk) · W3 SUTRE iç kategorizasyon (~25 dk) · W4 secret hedefi — sahip kararı (~20 dk) · W5 arşiv budama, silme yok (~15 dk)
+  Her dalga `mv` ile tek satırda geri alınır; yöntem: cp -a → SHA karşılaştır → araç doğrula → sonra kaynağı taşı.
+
+DOĞRULANAMADI (6 madde, raporda tam)
+  iCloud'un Apple ID tarafındaki ayarı · Downloads/sutre'nin kriptografik kimliği · staging-db-yedek .sql içinde canlı müşteri verisi var mı · sutrescarfs.rar içeriği · OpenViking'deki SUTRE girdi sayısı · profil bazlı cron işleri (global `~/.hermes/cron/jobs.json` boş: jobs: [])
+
+Uygulama için onay bekliyorum — hangi dalgadan başlayalım ve §4.1 secret kararı (Desktop dışı `~/.hermes/secrets/` mi, Desktop 04-hesaplar + 600 mü) sende.
+
+session_id: 20260926_123701_2e7c28
